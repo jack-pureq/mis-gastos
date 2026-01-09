@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor Pro: Filtro por Pagos</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <style>
+        :root { --verde: #27ae60; --rojo: #e74c3c; --oscuro: #2c3e50; --azul: #3498db; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; padding: 10px; display: flex; justify-content: center; margin:0; }
+        .tarjeta { background: white; padding: 20px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 100%; max-width: 480px; }
+        
+        /* Navegación de periodos */
+        .nav-periodos { display: flex; justify-content: space-around; border-bottom: 1px solid #eee; margin-bottom: 10px; }
+        .tab-btn { padding: 10px 5px; border: none; background: none; font-size: 16px; color: #777; cursor: pointer; border-bottom: 3px solid transparent; }
+        .tab-btn.active { color: var(--verde); border-bottom-color: var(--verde); font-weight: bold; }
+
+        .selector-fecha-libre { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 15px; background: #f8f9fa; padding: 8px; border-radius: 12px; }
+        #input-fecha-filtro { border: none; background: transparent; font-size: 18px; font-weight: bold; color: var(--oscuro); }
+
+        .balance-card { background: var(--oscuro); color: white; padding: 15px; border-radius: 50px; text-align: center; margin-bottom: 15px; }
+        #saldo { font-size: 28px; font-weight: bold; }
+
+        .seccion-graficos { 
+    display: flex; 
+    gap: 5px; /* Reducimos el espacio entre ellas */
+    justify-content: center; /* Las centra en la pantalla */
+    margin-bottom: 30px; 
+    width: 100%; /* Asegura que ocupe el ancho disponible */
+}
+
+.caja-grafico { 
+    background: #fff; 
+    padding: 10px; 
+    border-radius: 15px; 
+    flex: 1; /* Hace que ambas crezcan igual */
+    max-width: 45%; /* Evita que se expandan demasiado y se salgan */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+        .caja-grafico { background: #fff; padding: 5px; border-radius: 50px; flex: 1; height: 150px; border: 5px solid #eee; text-align: center; }
+        /* Chips de Métodos con FILTRO */
+        .metodos-pago { display: flex; gap: 5px; margin-bottom: 15px; }
+        .metodo-btn { flex: 1; padding: 30px; border-radius: 12px; border: 1px solid #ddd; background: #fff; cursor: pointer; font-size: 12px; font-weight: bold; text-align: center; transition: 0.3s; }
+        .metodo-btn.active { border-color: var(--azul); background: #e8f4fd; color: var(--azul); box-shadow: 0 4px 8px rgba(52,152,219,0.2); }
+
+        .contenedor-cats { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; margin-bottom: 10px; scrollbar-width: none; }
+        .cat-chip { background: #f0f2f5; padding: 10px 18px; border-radius: 25px; white-space: nowrap; cursor: pointer; border: 2px solid transparent; font-size: 13px; }
+        .cat-chip.activa { border-color: var(--azul); background: #e8f4fd; color: var(--azul); font-weight: bold; }
+
+        .fila { display: flex; gap: 8px; margin-bottom: 10px; }
+        input[type="number"] { padding: 14px; border-radius: 12px; border: 1px solid #ddd; flex: 1; font-size: 18px; outline: none; }
+        /* Agrégalo alrededor de la línea 52 o al final de tu <style> */
+.modal-content div {
+    display: flex;
+    flex-wrap: wrap; /* Esta es la clave para que bajen al celular */
+    gap: 10px;
+    justify-content: center;
+}
+
+.modal-content input {
+    flex: 1;
+    min-width: 10px; /* Evita que desaparezcan si la pantalla es chica */
+    width: 100%;    /* En celular ocuparán todo el ancho */
+}
+        .btn-accion { flex: 1; padding: 15px; border: none; border-radius: 12px; color: white; font-weight: bold; cursor: pointer; }
+        .btn-update { background: var(--azul) !important; display: none; width: 100%; }
+        .btn-config { background: #ddd; width: 100px; border-radius: 12px; border: none; cursor: pointer; font-size: 22px; }
+
+        .historial { max-height: 250px; overflow-y: auto; margin-top: 10px; border-top: 1px solid #eee; }
+        .item { background: #fff; padding: 12px; margin: 8px 0; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 6px solid; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+
+        #modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); align-items:center; justify-content:center; z-index:100; }
+        .modal-content { background:white; padding:25px; border-radius:25px; width:85%; max-width:350px; }
+    </style>
+</head>
+<body onload="inicializar()">
+
+<div class="tarjeta">
+    <div class="nav-periodos">
+        <button class="tab-btn active" onclick="cambiarPeriodo('dia', this)">Día</button>
+        <button class="tab-btn" onclick="cambiarPeriodo('semana', this)">Semana</button>
+        <button class="tab-btn" onclick="cambiarPeriodo('mes', this)">Mes</button>
+        <button class="tab-btn" onclick="cambiarPeriodo('año', this)">Año</button>
+    </div>
+
+    <div class="selector-fecha-libre">
+        <span>📅</span>
+        <input type="date" id="input-fecha-filtro" onchange="actualizarInterfaz()">
+    </div>
+
+    <div class="balance-card">
+        <small id="label-periodo">Selecciona una fecha</small><br>
+        <span id="saldo">0.00</span>
+    </div>
+
+    <div class="seccion-graficos">
+        <div class="caja-grafico"><h6>INGRESOS %</h6><canvas id="cIng"></canvas></div>
+        <div class="caja-grafico"><h6>GASTOS %</h6><canvas id="cGas"></canvas></div>
+    </div>
+
+    <div class="contenedor-cats" id="cat-chips"></div>
+
+    <div class="metodos-pago">
+        <button class="metodo-btn active" onclick="setMetodo('Efectivo', '💵', this)">💵 Efectivo</button>
+        <button class="metodo-btn" onclick="setMetodo('Yape', '🟣', this)">🟣 Yape</button>
+        <button class="metodo-btn" onclick="setMetodo('Tarjeta', '💳', this)">💳 Tarjeta</button>
+    </div>
+
+    <input type="hidden" id="edit-index" value="-1">
+    <div class="fila">
+        <input type="number" id="monto" placeholder="0.00">
+        <button class="btn-config" onclick="abrirModal()">⚙️</button>
+    </div>
+    
+    <div class="fila" id="btns-normales">
+        <button class="btn-accion" style="background:var(--verde)" onclick="registrar('ingreso')">Ingreso +</button>
+        <button class="btn-accion" style="background:var(--rojo)" onclick="registrar('gasto')">Gasto -</button>
+    </div>
+    <button id="btn-save" class="btn-accion btn-update" onclick="guardarEdicion()">Guardar Cambios 💾</button>
+
+    <div id="lista" class="historial"></div>
+</div>
+
+<div id="modal"><div class="modal-content">
+    <h3>Categorías</h3>
+    <div id="lista-gestion" style="max-height: 200px; overflow-y: auto;"></div>
+    <div class="fila" style="margin-top:10px">
+        <input type="text" id="n-ico" placeholder="Emoji" style="flex:0.3">
+        <input type="text" id="n-nom" placeholder="Nombre">
+        <button onclick="crearCat()">+</button>
+    </div>
+    <button onclick="cerrarModal()" style="width:100%; margin-top:15px; padding:12px; background:var(--oscuro); color:white; border-radius:12px; border:none;">Cerrar</button>
+</div></div>
+
+<script>
+    Chart.register(ChartDataLabels);
+    let movs = JSON.parse(localStorage.getItem('movs_v15')) || [];
+    let cats = JSON.parse(localStorage.getItem('cats_v15')) || [
+        {id: 0, n: "Comida", i: "🍔"}, {id: 1, n: "Sueldo", i: "💰"}, {id: 2, n: "Bus", i: "🚌"}
+    ];
+    let catSeleccionada = cats[0].id;
+    let metodoActual = { n: 'Efectivo', i: '💵' };
+    let periodoActual = 'dia';
+    let cIng, cGas;
+
+    function inicializar() {
+        document.getElementById('input-fecha-filtro').valueAsDate = new Date();
+        dibujarCats();
+        initCharts();
+        actualizarInterfaz();
+    }
+
+    // Al cambiar de método, se refresca todo para filtrar la vista
+    function setMetodo(nombre, icono, btn) {
+        metodoActual = { n: nombre, i: icono };
+        document.querySelectorAll('.metodo-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        actualizarInterfaz(); // <-- Acción clave para filtrar
+    }
+
+    function initCharts() {
+        const opciones = {
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                datalabels: {
+                    color: '#fff', font: { weight: 'bold', size: 10 },
+                    formatter: (value, ctx) => {
+                        let sum = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                        return sum > 0 ? ((value * 100) / sum).toFixed(0) + "%" : "";
+                    }
+                }
+            }
+        };
+        cIng = new Chart(document.getElementById('cIng'), { type: 'doughnut', data: { labels: [], datasets: [{ data: [], backgroundColor: ['#2ecc71', '#27ae60', '#1abc9c'] }] }, options: opciones });
+        cGas = new Chart(document.getElementById('cGas'), { type: 'doughnut', data: { labels: [], datasets: [{ data: [], backgroundColor: ['#e74c3c', '#c0392b', '#e67e22', '#f39c12', '#d35400'] }] }, options: opciones });
+    }
+
+    function cambiarPeriodo(p, btn) {
+        periodoActual = p;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        actualizarInterfaz();
+    }
+
+    function registrar(tipo) {
+        const mon = parseFloat(document.getElementById('monto').value);
+        const catObj = cats.find(c => c.id === catSeleccionada);
+        const f = new Date(document.getElementById('input-fecha-filtro').value + "T12:00:00");
+        if (mon > 0) {
+            movs.unshift({ 
+                mon, tipo, catN: catObj.n, catI: catObj.i, catId: catObj.id, 
+                metodoN: metodoActual.n, metodoI: metodoActual.i, fecha: f.toISOString() 
+            });
+            saveAndRefresh();
+        }
+    }
+
+    function actualizarInterfaz() {
+        const listaUI = document.getElementById('lista');
+        const fFiltro = new Date(document.getElementById('input-fecha-filtro').value + "T12:00:00");
+        let total = 0, dIng = {}, dGas = {};
+        listaUI.innerHTML = '';
+
+        movs.forEach((m, i) => {
+            const fM = new Date(m.fecha);
+            let pIncluir = false;
+            
+            // 1. Filtro por Tiempo
+            if(periodoActual === 'dia') pIncluir = fM.toDateString() === fFiltro.toDateString();
+            else if(periodoActual === 'semana') {
+                let d = fFiltro.getDay() === 0 ? 7 : fFiltro.getDay();
+                let lun = new Date(fFiltro); lun.setDate(fFiltro.getDate() - (d-1)); lun.setHours(0,0,0,0);
+                let dom = new Date(lun); dom.setDate(lun.getDate()+6); dom.setHours(23,59,59,999);
+                pIncluir = fM >= lun && fM <= dom;
+            } else if(periodoActual === 'mes') pIncluir = fM.getMonth() === fFiltro.getMonth() && fM.getFullYear() === fFiltro.getFullYear();
+            else pIncluir = fM.getFullYear() === fFiltro.getFullYear();
+
+            // 2. Filtro por Método de Pago Seleccionado
+            if (pIncluir && m.metodoN === metodoActual.n) {
+                const esI = m.tipo === 'ingreso';
+                total += esI ? m.mon : -m.mon;
+                if (esI) dIng[m.catN] = (dIng[m.catN] || 0) + m.mon;
+                else dGas[m.catN] = (dGas[m.catN] || 0) + m.mon;
+
+                // 3. Filtro por Categoría (Solo para la lista visual)
+                if (m.catId === catSeleccionada) {
+                    listaUI.innerHTML += `<div class="item" style="border-left-color: ${esI ? 'var(--verde)' : 'var(--rojo)'}">
+                        <div><strong>${m.catI} ${m.catN}</strong><br><small>${m.metodoI} ${m.metodoN} • ${fM.toLocaleDateString()}</small></div>
+                        <div style="display:flex; gap:10px; align-items:center;">
+                            <span style="color:${esI ? 'var(--verde)' : 'var(--rojo)'}; font-weight:bold">S/.${m.mon.toFixed(2)}</span>
+                            <button onclick="prepararEdicion(${i})" style="border:none; background:none;">✏️</button>
+                            <button onclick="eliminar(${i})" style="border:none; background:none;">🗑️</button>
+                        </div>
+                    </div>`;
+                }
+            }
+        });
+
+        document.getElementById('saldo').innerText = `S/. ${total.toFixed(2)}`;
+        cIng.data.labels = Object.keys(dIng); cIng.data.datasets[0].data = Object.values(dIng); cIng.update();
+        cGas.data.labels = Object.keys(dGas); cGas.data.datasets[0].data = Object.values(dGas); cGas.update();
+    }
+
+    // SOPORTE
+    function eliminar(i) { if(confirm("¿Borrar?")) { movs.splice(i,1); saveAndRefresh(); } }
+    function dibujarCats() { document.getElementById('cat-chips').innerHTML = cats.map(c => `<div class="cat-chip ${c.id === catSeleccionada ? 'activa' : ''}" onclick="catSeleccionada=${c.id};dibujarCats();actualizarInterfaz();">${c.i} ${c.n}</div>`).join(''); }
+    function saveAndRefresh() { localStorage.setItem('movs_v15', JSON.stringify(movs)); document.getElementById('monto').value = ''; actualizarInterfaz(); }
+    function prepararEdicion(i) { 
+        const m = movs[i]; document.getElementById('monto').value = m.mon; document.getElementById('edit-index').value = i;
+        catSeleccionada = m.catId; dibujarCats();
+        document.getElementById('btns-normales').style.display = 'none'; document.getElementById('btn-save').style.display = 'block';
+    }
+    function guardarEdicion() {
+        const i = document.getElementById('edit-index').value;
+        movs[i].mon = parseFloat(document.getElementById('monto').value);
+        movs[i].catId = catSeleccionada; movs[i].metodoN = metodoActual.n; movs[i].metodoI = metodoActual.i;
+        const c = cats.find(x => x.id === catSeleccionada); movs[i].catN = c.n; movs[i].catI = c.i;
+        document.getElementById('btns-normales').style.display = 'flex'; document.getElementById('btn-save').style.display = 'none';
+        saveAndRefresh();
+    }
+    function abrirModal() { document.getElementById('modal').style.display = 'flex'; dibujarGestion(); }
+    function cerrarModal() { document.getElementById('modal').style.display = 'none'; }
+    function dibujarGestion() { document.getElementById('lista-gestion').innerHTML = cats.map((c, i) => `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #eee;"><span>${c.i} ${c.n}</span><button onclick="cats.splice(${i},1);localStorage.setItem('cats_v15', JSON.stringify(cats));dibujarCats();dibujarGestion();" style="color:red; border:none; background:none;">X</button></div>`).join(''); }
+    function crearCat() { const i = document.getElementById('n-ico').value || "📦", n = document.getElementById('n-nom').value; if(n) { cats.push({id: Date.now(), n, i}); localStorage.setItem('cats_v15', JSON.stringify(cats)); dibujarCats(); dibujarGestion(); } }
+</script>
+</body>
+</html>
