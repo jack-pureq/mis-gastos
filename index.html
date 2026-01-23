@@ -137,8 +137,8 @@
 
 <script>
     Chart.register(ChartDataLabels);
-    let movs = JSON.parse(localStorage.getItem('movs_v14')) || [];
-    let cats = JSON.parse(localStorage.getItem('cats_v14')) || [
+    let movs = JSON.parse(localStorage.getItem('movs_v13')) || [];
+    let cats = JSON.parse(localStorage.getItem('cats_v13')) || [
         {id: 0, n: "Carrera", i: "🚕"}, {id: 1, n: "Gasolina", i: "⛽"}, {id: 2, n: "Comida", i: "🍔"}
     ];
     let catSeleccionada = cats[0].id;
@@ -199,7 +199,7 @@
                 fecha: ahora.toISOString(),
                 hora: horaActual 
             });
-            localStorage.setItem('movs_v14', JSON.stringify(movs));
+            localStorage.setItem('movs_v13', JSON.stringify(movs));
             document.getElementById('monto').value = '';
             actualizarInterfaz();
         }
@@ -280,5 +280,6 @@
 </script>
 </body>
 </html>
+
 
 
