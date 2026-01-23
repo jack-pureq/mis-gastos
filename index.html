@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestor Pro: Filtro por Pagos</title>
+    <title>JACK PUREQ - Gestor Taxi</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <style>
@@ -11,7 +11,6 @@
         body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; padding: 10px; display: flex; justify-content: center; margin:0; }
         .tarjeta { background: white; padding: 20px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 100%; max-width: 480px; }
         
-        /* Navegación de periodos */
         .nav-periodos { display: flex; justify-content: space-around; border-bottom: 1px solid #eee; margin-bottom: 10px; }
         .tab-btn { padding: 10px 5px; border: none; background: none; font-size: 16px; color: #777; cursor: pointer; border-bottom: 3px solid transparent; }
         .tab-btn.active { color: var(--verde); border-bottom-color: var(--verde); font-weight: bold; }
@@ -22,26 +21,11 @@
         .balance-card { background: var(--oscuro); color: white; padding: 15px; border-radius: 50px; text-align: center; margin-bottom: 15px; }
         #saldo { font-size: 28px; font-weight: bold; }
 
-        .seccion-graficos { 
-    display: flex; 
-    gap: 5px; /* Reducimos el espacio entre ellas */
-    justify-content: center; /* Las centra en la pantalla */
-    margin-bottom: 30px; 
-    width: 100%; /* Asegura que ocupe el ancho disponible */
-}
+        .seccion-graficos { display: flex; gap: 5px; justify-content: center; margin-bottom: 30px; width: 100%; }
+        .caja-grafico { background: #fff; padding: 10px; border-radius: 15px; flex: 1; max-width: 45%; box-shadow: 0 2px 5px rgba(0,0,0,0.05); height: 150px; border: 5px solid #eee; text-align: center; }
 
-.caja-grafico { 
-    background: #fff; 
-    padding: 10px; 
-    border-radius: 15px; 
-    flex: 1; /* Hace que ambas crezcan igual */
-    max-width: 45%; /* Evita que se expandan demasiado y se salgan */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
-        .caja-grafico { background: #fff; padding: 5px; border-radius: 50px; flex: 1; height: 150px; border: 5px solid #eee; text-align: center; }
-        /* Chips de Métodos con FILTRO */
         .metodos-pago { display: flex; gap: 5px; margin-bottom: 15px; }
-        .metodo-btn { flex: 1; padding: 30px; border-radius: 12px; border: 1px solid #ddd; background: #fff; cursor: pointer; font-size: 12px; font-weight: bold; text-align: center; transition: 0.3s; }
+        .metodo-btn { flex: 1; padding: 15px; border-radius: 12px; border: 1px solid #ddd; background: #fff; cursor: pointer; font-size: 12px; font-weight: bold; text-align: center; transition: 0.3s; }
         .metodo-btn.active { border-color: var(--azul); background: #e8f4fd; color: var(--azul); box-shadow: 0 4px 8px rgba(52,152,219,0.2); }
 
         .contenedor-cats { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; margin-bottom: 10px; scrollbar-width: none; }
@@ -49,23 +33,15 @@
         .cat-chip.activa { border-color: var(--azul); background: #e8f4fd; color: var(--azul); font-weight: bold; }
 
         .fila { display: flex; gap: 8px; margin-bottom: 10px; }
-        input[type="number"] { padding: 14px; border-radius: 12px; border: 1px solid #ddd; flex: 1; font-size: 18px; outline: none; }
-        /* Agrégalo alrededor de la línea 52 o al final de tu <style> */
-.modal-content div {
-    display: flex;
-    flex-wrap: wrap; /* Esta es la clave para que bajen al celular */
-    gap: 10px;
-    justify-content: center;
-}
+        input { padding: 14px; border-radius: 12px; border: 1px solid #ddd; flex: 1; font-size: 16px; outline: none; }
+        
+        /* Ajuste para los nuevos campos de Taxi */
+        .fila-taxi { display: flex; gap: 8px; margin-bottom: 10px; }
+        .fila-taxi input { background: #fdfdfd; border-color: #eee; font-size: 14px; padding: 10px; }
 
-.modal-content input {
-    flex: 1;
-    min-width: 10px; /* Evita que desaparezcan si la pantalla es chica */
-    width: 100%;    /* En celular ocuparán todo el ancho */
-}
         .btn-accion { flex: 1; padding: 15px; border: none; border-radius: 12px; color: white; font-weight: bold; cursor: pointer; }
         .btn-update { background: var(--azul) !important; display: none; width: 100%; }
-        .btn-config { background: #ddd; width: 100px; border-radius: 12px; border: none; cursor: pointer; font-size: 22px; }
+        .btn-config { background: #ddd; width: 60px; border-radius: 12px; border: none; cursor: pointer; font-size: 22px; }
 
         .historial { max-height: 250px; overflow-y: auto; margin-top: 10px; border-top: 1px solid #eee; }
         .item { background: #fff; padding: 12px; margin: 8px 0; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 6px solid; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
@@ -90,7 +66,7 @@
     </div>
 
     <div class="balance-card">
-        <small id="label-periodo">Selecciona una fecha</small><br>
+        <small id="label-periodo">JACK PUREQ</small><br>
         <span id="saldo">0.00</span>
     </div>
 
@@ -108,9 +84,15 @@
     </div>
 
     <input type="hidden" id="edit-index" value="-1">
+    
     <div class="fila">
-        <input type="number" id="monto" placeholder="0.00">
+        <input type="number" id="monto" placeholder="S/. Monto">
         <button class="btn-config" onclick="abrirModal()">⚙️</button>
+    </div>
+
+    <div class="fila-taxi">
+        <input type="number" id="km" placeholder="KM recorridos">
+        <input type="number" id="hrs" placeholder="Horas">
     </div>
     
     <div class="fila" id="btns-normales">
@@ -137,7 +119,7 @@
     Chart.register(ChartDataLabels);
     let movs = JSON.parse(localStorage.getItem('movs_v15')) || [];
     let cats = JSON.parse(localStorage.getItem('cats_v15')) || [
-        {id: 0, n: "Comida", i: "🍔"}, {id: 1, n: "Sueldo", i: "💰"}, {id: 2, n: "Bus", i: "🚌"}
+        {id: 0, n: "Carrera", i: "🚕"}, {id: 1, n: "Gasolina", i: "⛽"}, {id: 2, n: "Comida", i: "🍔"}
     ];
     let catSeleccionada = cats[0].id;
     let metodoActual = { n: 'Efectivo', i: '💵' };
@@ -145,18 +127,19 @@
     let cIng, cGas;
 
     function inicializar() {
-        document.getElementById('input-fecha-filtro').valueAsDate = new Date();
+        const ahora = new Date();
+        const fechaPeru = ahora.toLocaleDateString('en-CA', {timeZone: 'America/Lima'});
+        document.getElementById('input-fecha-filtro').value = fechaPeru;
         dibujarCats();
         initCharts();
         actualizarInterfaz();
     }
 
-    // Al cambiar de método, se refresca todo para filtrar la vista
     function setMetodo(nombre, icono, btn) {
         metodoActual = { n: nombre, i: icono };
         document.querySelectorAll('.metodo-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        actualizarInterfaz(); // <-- Acción clave para filtrar
+        actualizarInterfaz();
     }
 
     function initCharts() {
@@ -186,13 +169,19 @@
 
     function registrar(tipo) {
         const mon = parseFloat(document.getElementById('monto').value);
+        const kmetraje = document.getElementById('km').value || 0;
+        const tiempo = document.getElementById('hrs').value || 0;
         const catObj = cats.find(c => c.id === catSeleccionada);
         const f = new Date(document.getElementById('input-fecha-filtro').value + "T12:00:00");
+        
         if (mon > 0) {
             movs.unshift({ 
                 mon, tipo, catN: catObj.n, catI: catObj.i, catId: catObj.id, 
+                km: kmetraje, hrs: tiempo,
                 metodoN: metodoActual.n, metodoI: metodoActual.i, fecha: f.toISOString() 
             });
+            document.getElementById('km').value = '';
+            document.getElementById('hrs').value = '';
             saveAndRefresh();
         }
     }
@@ -207,7 +196,6 @@
             const fM = new Date(m.fecha);
             let pIncluir = false;
             
-            // 1. Filtro por Tiempo
             if(periodoActual === 'dia') pIncluir = fM.toDateString() === fFiltro.toDateString();
             else if(periodoActual === 'semana') {
                 let d = fFiltro.getDay() === 0 ? 7 : fFiltro.getDay();
@@ -217,17 +205,18 @@
             } else if(periodoActual === 'mes') pIncluir = fM.getMonth() === fFiltro.getMonth() && fM.getFullYear() === fFiltro.getFullYear();
             else pIncluir = fM.getFullYear() === fFiltro.getFullYear();
 
-            // 2. Filtro por Método de Pago Seleccionado
             if (pIncluir && m.metodoN === metodoActual.n) {
                 const esI = m.tipo === 'ingreso';
                 total += esI ? m.mon : -m.mon;
                 if (esI) dIng[m.catN] = (dIng[m.catN] || 0) + m.mon;
                 else dGas[m.catN] = (dGas[m.catN] || 0) + m.mon;
 
-                // 3. Filtro por Categoría (Solo para la lista visual)
                 if (m.catId === catSeleccionada) {
                     listaUI.innerHTML += `<div class="item" style="border-left-color: ${esI ? 'var(--verde)' : 'var(--rojo)'}">
-                        <div><strong>${m.catI} ${m.catN}</strong><br><small>${m.metodoI} ${m.metodoN} • ${fM.toLocaleDateString()}</small></div>
+                        <div>
+                            <strong>${m.catI} ${m.catN}</strong><br>
+                            <small>${m.metodoI} ${m.metodoN} • 🚗${m.km || 0}km • ⏱️${m.hrs || 0}h</small>
+                        </div>
                         <div style="display:flex; gap:10px; align-items:center;">
                             <span style="color:${esI ? 'var(--verde)' : 'var(--rojo)'}; font-weight:bold">S/.${m.mon.toFixed(2)}</span>
                             <button onclick="prepararEdicion(${i})" style="border:none; background:none;">✏️</button>
@@ -243,21 +232,23 @@
         cGas.data.labels = Object.keys(dGas); cGas.data.datasets[0].data = Object.values(dGas); cGas.update();
     }
 
-    // SOPORTE
     function eliminar(i) { if(confirm("¿Borrar?")) { movs.splice(i,1); saveAndRefresh(); } }
     function dibujarCats() { document.getElementById('cat-chips').innerHTML = cats.map(c => `<div class="cat-chip ${c.id === catSeleccionada ? 'activa' : ''}" onclick="catSeleccionada=${c.id};dibujarCats();actualizarInterfaz();">${c.i} ${c.n}</div>`).join(''); }
     function saveAndRefresh() { localStorage.setItem('movs_v15', JSON.stringify(movs)); document.getElementById('monto').value = ''; actualizarInterfaz(); }
     function prepararEdicion(i) { 
-        const m = movs[i]; document.getElementById('monto').value = m.mon; document.getElementById('edit-index').value = i;
-        catSeleccionada = m.catId; dibujarCats();
+        const m = movs[i]; document.getElementById('monto').value = m.mon; document.getElementById('km').value = m.km || 0; document.getElementById('hrs').value = m.hrs || 0;
+        document.getElementById('edit-index').value = i; catSeleccionada = m.catId; dibujarCats();
         document.getElementById('btns-normales').style.display = 'none'; document.getElementById('btn-save').style.display = 'block';
     }
     function guardarEdicion() {
         const i = document.getElementById('edit-index').value;
         movs[i].mon = parseFloat(document.getElementById('monto').value);
+        movs[i].km = document.getElementById('km').value;
+        movs[i].hrs = document.getElementById('hrs').value;
         movs[i].catId = catSeleccionada; movs[i].metodoN = metodoActual.n; movs[i].metodoI = metodoActual.i;
         const c = cats.find(x => x.id === catSeleccionada); movs[i].catN = c.n; movs[i].catI = c.i;
         document.getElementById('btns-normales').style.display = 'flex'; document.getElementById('btn-save').style.display = 'none';
+        document.getElementById('km').value = ''; document.getElementById('hrs').value = '';
         saveAndRefresh();
     }
     function abrirModal() { document.getElementById('modal').style.display = 'flex'; dibujarGestion(); }
