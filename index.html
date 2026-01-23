@@ -3,51 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JACK PUREQ - Gestor Taxi</title>
+    <title>JACK PUREQ - Taxímetro Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <style>
-        :root { --verde: #27ae60; --rojo: #e74c3c; --oscuro: #2c3e50; --azul: #3498db; }
+        :root { --verde: #27ae60; --rojo: #e74c3c; --oscuro: #2c3e50; --azul: #3498db; --naranja: #f39c12; }
         body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; padding: 10px; display: flex; justify-content: center; margin:0; }
-        .tarjeta { background: white; padding: 20px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 100%; max-width: 480px; }
+        .tarjeta { background: rgba(206, 164, 189, 0.73); padding: 30px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 100%; max-width: 480px; }
         
         .nav-periodos { display: flex; justify-content: space-around; border-bottom: 1px solid #eee; margin-bottom: 10px; }
         .tab-btn { padding: 10px 5px; border: none; background: none; font-size: 16px; color: #777; cursor: pointer; border-bottom: 3px solid transparent; }
         .tab-btn.active { color: var(--verde); border-bottom-color: var(--verde); font-weight: bold; }
 
-        .selector-fecha-libre { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 15px; background: #f8f9fa; padding: 8px; border-radius: 12px; }
-        #input-fecha-filtro { border: none; background: transparent; font-size: 18px; font-weight: bold; color: var(--oscuro); }
-
         .balance-card { background: var(--oscuro); color: white; padding: 15px; border-radius: 50px; text-align: center; margin-bottom: 15px; }
         #saldo { font-size: 28px; font-weight: bold; }
 
-        .seccion-graficos { display: flex; gap: 5px; justify-content: center; margin-bottom: 30px; width: 100%; }
-        .caja-grafico { background: #fff; padding: 10px; border-radius: 15px; flex: 1; max-width: 45%; box-shadow: 0 2px 5px rgba(0,0,0,0.05); height: 150px; border: 5px solid #eee; text-align: center; }
+        .btn-gps { width: 100%; padding: 15px; border-radius: 15px; border: none; color: white; font-weight: bold; font-size: 16px; margin-bottom: 15px; cursor: pointer; }
+
+        .seccion-graficos { display: flex; gap: 1px; justify-content: center; margin-bottom: 20px; width: 100%; }
+        .caja-grafico { background: #ebeeeede; padding: 1px; border-radius: 30px; flex: 1; height: 200px; border: 3px solid #eee; text-align: center; }
+
+        .contenedor-cats { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 10px; scrollbar-width: none; }
+        .cat-chip { background: #f0f2f5; padding: 8px 15px; border-radius: 20px; white-space: nowrap; cursor: pointer; font-size: 12px; border: 2px solid transparent; }
+        .cat-chip.activa { border-color: var(--azul); background: #e8f4fd; color: var(--azul); }
 
         .metodos-pago { display: flex; gap: 5px; margin-bottom: 15px; }
-        .metodo-btn { flex: 1; padding: 15px; border-radius: 12px; border: 1px solid #ddd; background: #fff; cursor: pointer; font-size: 12px; font-weight: bold; text-align: center; transition: 0.3s; }
-        .metodo-btn.active { border-color: var(--azul); background: #e8f4fd; color: var(--azul); box-shadow: 0 4px 8px rgba(52,152,219,0.2); }
+        .metodo-btn { flex: 1; padding: 12px; border-radius: 12px; border: 5px solid #ddd; background: #fff; font-size: 11px; font-weight: bold; cursor: pointer; }
+        .metodo-btn.active { border-color: var(--azul); background: #e8f4fd; color: var(--azul); }
 
-        .contenedor-cats { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; margin-bottom: 10px; scrollbar-width: none; }
-        .cat-chip { background: #f0f2f5; padding: 10px 18px; border-radius: 25px; white-space: nowrap; cursor: pointer; border: 2px solid transparent; font-size: 13px; }
-        .cat-chip.activa { border-color: var(--azul); background: #e8f4fd; color: var(--azul); font-weight: bold; }
+        .fila { display: flex; gap: 1px; margin-bottom: 10px; }
+        input { padding: 12px; border-radius: 12px; border: 1px solid #ddd; flex: 1; font-size: 16px; outline: none; }
+        .input-auto { background: #fffdf0; border-color: var(--naranja); font-weight: bold; color: var(--naranja); }
 
-        .fila { display: flex; gap: 8px; margin-bottom: 10px; }
-        input { padding: 14px; border-radius: 12px; border: 1px solid #ddd; flex: 1; font-size: 16px; outline: none; }
-        
-        /* Ajuste para los nuevos campos de Taxi */
-        .fila-taxi { display: flex; gap: 8px; margin-bottom: 10px; }
-        .fila-taxi input { background: #fdfdfd; border-color: #eee; font-size: 14px; padding: 10px; }
-
-        .btn-accion { flex: 1; padding: 15px; border: none; border-radius: 12px; color: white; font-weight: bold; cursor: pointer; }
-        .btn-update { background: var(--azul) !important; display: none; width: 100%; }
-        .btn-config { background: #ddd; width: 60px; border-radius: 12px; border: none; cursor: pointer; font-size: 22px; }
-
+        .btn-accion { flex: 1; padding: 15px; border: none; border-radius: 120px; color: white; font-weight: bold; cursor: pointer; }
         .historial { max-height: 250px; overflow-y: auto; margin-top: 10px; border-top: 1px solid #eee; }
-        .item { background: #fff; padding: 12px; margin: 8px 0; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 6px solid; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .item { background: #fff; padding: 10px; margin: 5px 0; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .item-info small { color: #666; font-size: 11px; }
+        .item-hora { color: var(--azul); font-weight: bold; }
 
         #modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); align-items:center; justify-content:center; z-index:100; }
-        .modal-content { background:white; padding:25px; border-radius:25px; width:85%; max-width:350px; }
+        .modal-content { background:rgb(86, 172, 226); padding:90px; border-radius:25px; width:85%; max-width:350px; }
+        #n-ico { flex: 0.4; padding: 15px; font-size: 10px; } /* Cuadro Emoji */
+#n-nom { flex: 1; padding: 10px; font-size: 10px; }   /* Cuadro Nombre */
+.modal-content .fila button { padding: 15px 20px; font-size: 20px; border-radius: 12px; } /* Botón + */
+
     </style>
 </head>
 <body onload="inicializar()">
@@ -57,22 +56,22 @@
         <button class="tab-btn active" onclick="cambiarPeriodo('dia', this)">Día</button>
         <button class="tab-btn" onclick="cambiarPeriodo('semana', this)">Semana</button>
         <button class="tab-btn" onclick="cambiarPeriodo('mes', this)">Mes</button>
-        <button class="tab-btn" onclick="cambiarPeriodo('año', this)">Año</button>
-    </div>
-
-    <div class="selector-fecha-libre">
-        <span>📅</span>
-        <input type="date" id="input-fecha-filtro" onchange="actualizarInterfaz()">
     </div>
 
     <div class="balance-card">
-        <small id="label-periodo">JACK PUREQ</small><br>
-        <span id="saldo">0.00</span>
+        <small>JACK PUREQ - CONTROL TAXI</small><br>
+        <span id="saldo">S/. 0.00</span>
     </div>
 
+    <button id="btn-gps" class="btn-gps" style="background: var(--naranja);" onclick="toggleSeguimiento()">🚀 INICIAR TURNO (GPS)</button>
+
     <div class="seccion-graficos">
-        <div class="caja-grafico"><h6>INGRESOS %</h6><canvas id="cIng"></canvas></div>
-        <div class="caja-grafico"><h6>GASTOS %</h6><canvas id="cGas"></canvas></div>
+        <div class="caja-grafico"><canvas id="cIng"></canvas></div>
+        <div class="caja-grafico"><canvas id="cGas"></canvas></div>
+    </div>
+
+    <div class="selector-fecha-libre" style="text-align:center; margin-bottom:10px;">
+        <input type="date" id="input-fecha-filtro" onchange="actualizarInterfaz()" style="border:none; background:transparent; font-weight:bold;">
     </div>
 
     <div class="contenedor-cats" id="cat-chips"></div>
@@ -83,23 +82,20 @@
         <button class="metodo-btn" onclick="setMetodo('Tarjeta', '💳', this)">💳 Tarjeta</button>
     </div>
 
-    <input type="hidden" id="edit-index" value="-1">
-    
     <div class="fila">
         <input type="number" id="monto" placeholder="S/. Monto">
-        <button class="btn-config" onclick="abrirModal()">⚙️</button>
+        <button onclick="abrirModal()" style="border-radius:12px; border:none; padding:10px; background:#ddd;">⚙️</button>
     </div>
 
-    <div class="fila-taxi">
-        <input type="number" id="km" placeholder="KM recorridos">
-        <input type="number" id="hrs" placeholder="Horas">
+    <div class="fila">
+        <input type="number" id="km" class="input-auto" placeholder="0.00 KM" step="0.01">
+        <input type="number" id="hrs" class="input-auto" placeholder="0.00 Horas" step="0.01">
     </div>
     
-    <div class="fila" id="btns-normales">
+    <div class="fila">
         <button class="btn-accion" style="background:var(--verde)" onclick="registrar('ingreso')">Ingreso +</button>
         <button class="btn-accion" style="background:var(--rojo)" onclick="registrar('gasto')">Gasto -</button>
     </div>
-    <button id="btn-save" class="btn-accion btn-update" onclick="guardarEdicion()">Guardar Cambios 💾</button>
 
     <div id="lista" class="historial"></div>
 </div>
@@ -117,8 +113,8 @@
 
 <script>
     Chart.register(ChartDataLabels);
-    let movs = JSON.parse(localStorage.getItem('movs_v15')) || [];
-    let cats = JSON.parse(localStorage.getItem('cats_v15')) || [
+    let movs = JSON.parse(localStorage.getItem('movs_v17')) || [];
+    let cats = JSON.parse(localStorage.getItem('cats_v17')) || [
         {id: 0, n: "Carrera", i: "🚕"}, {id: 1, n: "Gasolina", i: "⛽"}, {id: 2, n: "Comida", i: "🍔"}
     ];
     let catSeleccionada = cats[0].id;
@@ -126,138 +122,115 @@
     let periodoActual = 'dia';
     let cIng, cGas;
 
+    // GPS Y TIEMPO
+    let watchId = null, latAnt = null, lonAnt = null, distTotal = 0, tInicio = null, activo = false;
+
     function inicializar() {
         const ahora = new Date();
-        const fechaPeru = ahora.toLocaleDateString('en-CA', {timeZone: 'America/Lima'});
-        document.getElementById('input-fecha-filtro').value = fechaPeru;
+        const fPeru = ahora.toLocaleDateString('en-CA', {timeZone: 'America/Lima'});
+        document.getElementById('input-fecha-filtro').value = fPeru;
         dibujarCats();
         initCharts();
         actualizarInterfaz();
     }
 
-    function setMetodo(nombre, icono, btn) {
-        metodoActual = { n: nombre, i: icono };
-        document.querySelectorAll('.metodo-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        actualizarInterfaz();
-    }
-
-    function initCharts() {
-        const opciones = {
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                datalabels: {
-                    color: '#fff', font: { weight: 'bold', size: 10 },
-                    formatter: (value, ctx) => {
-                        let sum = ctx.dataset.data.reduce((a, b) => a + b, 0);
-                        return sum > 0 ? ((value * 100) / sum).toFixed(0) + "%" : "";
-                    }
-                }
+    function toggleSeguimiento() {
+        const btn = document.getElementById('btn-gps');
+        if (!activo) {
+            distTotal = 0; tInicio = new Date(); latAnt = null; lonAnt = null;
+            if ("geolocation" in navigator) {
+                watchId = navigator.geolocation.watchPosition(actualizarGPS, null, { enableHighAccuracy: true });
+                activo = true; btn.innerText = "🛑 FINALIZAR TURNO"; btn.style.background = "#7f8c8d";
             }
-        };
-        cIng = new Chart(document.getElementById('cIng'), { type: 'doughnut', data: { labels: [], datasets: [{ data: [], backgroundColor: ['#2ecc71', '#27ae60', '#1abc9c'] }] }, options: opciones });
-        cGas = new Chart(document.getElementById('cGas'), { type: 'doughnut', data: { labels: [], datasets: [{ data: [], backgroundColor: ['#e74c3c', '#c0392b', '#e67e22', '#f39c12', '#d35400'] }] }, options: opciones });
+        } else {
+            navigator.geolocation.clearWatch(watchId);
+            activo = false; btn.innerText = "🚀 INICIAR TURNO (GPS)"; btn.style.background = "var(--naranja)";
+        }
     }
 
-    function cambiarPeriodo(p, btn) {
-        periodoActual = p;
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        actualizarInterfaz();
+    function actualizarGPS(pos) {
+        if (latAnt && lonAnt) {
+            const R = 6371;
+            const dLat = (pos.coords.latitude - latAnt) * Math.PI / 180;
+            const dLon = (pos.coords.longitude - lonAnt) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(latAnt * Math.PI / 180) * Math.cos(pos.coords.latitude * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
+            distTotal += (R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+            document.getElementById('km').value = distTotal.toFixed(2);
+        }
+        latAnt = pos.coords.latitude; lonAnt = pos.coords.longitude;
+        document.getElementById('hrs').value = ((new Date() - tInicio) / 3600000).toFixed(2);
     }
 
     function registrar(tipo) {
         const mon = parseFloat(document.getElementById('monto').value);
-        const kmetraje = document.getElementById('km').value || 0;
-        const tiempo = document.getElementById('hrs').value || 0;
-        const catObj = cats.find(c => c.id === catSeleccionada);
-        const f = new Date(document.getElementById('input-fecha-filtro').value + "T12:00:00");
-        
         if (mon > 0) {
+            const catObj = cats.find(c => c.id === catSeleccionada);
+            const ahora = new Date();
+            // Guardamos la hora exacta de Lima
+            const horaActual = ahora.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'America/Lima' });
+            
             movs.unshift({ 
                 mon, tipo, catN: catObj.n, catI: catObj.i, catId: catObj.id, 
-                km: kmetraje, hrs: tiempo,
-                metodoN: metodoActual.n, metodoI: metodoActual.i, fecha: f.toISOString() 
+                km: document.getElementById('km').value || 0, 
+                hrs: document.getElementById('hrs').value || 0,
+                metodoN: metodoActual.n, metodoI: metodoActual.i,
+                fecha: ahora.toISOString(),
+                hora: horaActual 
             });
-            document.getElementById('km').value = '';
-            document.getElementById('hrs').value = '';
-            saveAndRefresh();
+            localStorage.setItem('movs_v17', JSON.stringify(movs));
+            document.getElementById('monto').value = '';
+            actualizarInterfaz();
         }
     }
 
     function actualizarInterfaz() {
         const listaUI = document.getElementById('lista');
-        const fFiltro = new Date(document.getElementById('input-fecha-filtro').value + "T12:00:00");
+        const fFiltro = document.getElementById('input-fecha-filtro').value;
         let total = 0, dIng = {}, dGas = {};
         listaUI.innerHTML = '';
 
-        movs.forEach((m, i) => {
-            const fM = new Date(m.fecha);
-            let pIncluir = false;
-            
-            if(periodoActual === 'dia') pIncluir = fM.toDateString() === fFiltro.toDateString();
-            else if(periodoActual === 'semana') {
-                let d = fFiltro.getDay() === 0 ? 7 : fFiltro.getDay();
-                let lun = new Date(fFiltro); lun.setDate(fFiltro.getDate() - (d-1)); lun.setHours(0,0,0,0);
-                let dom = new Date(lun); dom.setDate(lun.getDate()+6); dom.setHours(23,59,59,999);
-                pIncluir = fM >= lun && fM <= dom;
-            } else if(periodoActual === 'mes') pIncluir = fM.getMonth() === fFiltro.getMonth() && fM.getFullYear() === fFiltro.getFullYear();
-            else pIncluir = fM.getFullYear() === fFiltro.getFullYear();
+        movs.forEach((m) => {
+            const fM = new Date(m.fecha).toLocaleDateString('en-CA', {timeZone: 'America/Lima'});
+            let pIncluir = (fM === fFiltro); // Por ahora filtro diario para mayor claridad
 
             if (pIncluir && m.metodoN === metodoActual.n) {
                 const esI = m.tipo === 'ingreso';
                 total += esI ? m.mon : -m.mon;
-                if (esI) dIng[m.catN] = (dIng[m.catN] || 0) + m.mon;
-                else dGas[m.catN] = (dGas[m.catN] || 0) + m.mon;
-
-                if (m.catId === catSeleccionada) {
-                    listaUI.innerHTML += `<div class="item" style="border-left-color: ${esI ? 'var(--verde)' : 'var(--rojo)'}">
-                        <div>
-                            <strong>${m.catI} ${m.catN}</strong><br>
-                            <small>${m.metodoI} ${m.metodoN} • 🚗${m.km || 0}km • ⏱️${m.hrs || 0}h</small>
-                        </div>
-                        <div style="display:flex; gap:10px; align-items:center;">
-                            <span style="color:${esI ? 'var(--verde)' : 'var(--rojo)'}; font-weight:bold">S/.${m.mon.toFixed(2)}</span>
-                            <button onclick="prepararEdicion(${i})" style="border:none; background:none;">✏️</button>
-                            <button onclick="eliminar(${i})" style="border:none; background:none;">🗑️</button>
-                        </div>
-                    </div>`;
-                }
+                if (esI) dIng[m.catN] = (dIng[m.catN] || 0) + m.mon; else dGas[m.catN] = (dGas[m.catN] || 0) + m.mon;
+                
+                listaUI.innerHTML += `<div class="item" style="border-left-color: ${esI ? 'var(--verde)' : 'var(--rojo)'}">
+    <div class="item-info">
+        <strong>${m.catI} ${m.catN}</strong><br>
+        <span style="color:var(--azul); font-size:12px; font-weight:bold;">
+            📅 ${new Date(m.fecha).toLocaleDateString('es-PE', {day:'2-digit', month:'2-digit'})} | 🕒 ${m.hora}
+        </span><br>
+        <small>🚗 ${m.km}km • ⏱️ ${m.hrs}h</small>
+    </div>
+    <span style="color:${esI ? 'var(--verde)' : 'var(--rojo)'}; font-weight:bold">S/.${m.mon.toFixed(2)}</span>
+</div>`;
             }
         });
-
         document.getElementById('saldo').innerText = `S/. ${total.toFixed(2)}`;
+        actualizarCharts(dIng, dGas);
+    }
+
+    function actualizarCharts(dIng, dGas) {
         cIng.data.labels = Object.keys(dIng); cIng.data.datasets[0].data = Object.values(dIng); cIng.update();
         cGas.data.labels = Object.keys(dGas); cGas.data.datasets[0].data = Object.values(dGas); cGas.update();
     }
 
-    function eliminar(i) { if(confirm("¿Borrar?")) { movs.splice(i,1); saveAndRefresh(); } }
+    function setMetodo(n, i, btn) { metodoActual = { n, i }; document.querySelectorAll('.metodo-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); actualizarInterfaz(); }
+    function cambiarPeriodo(p, btn) { periodoActual = p; document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); actualizarInterfaz(); }
     function dibujarCats() { document.getElementById('cat-chips').innerHTML = cats.map(c => `<div class="cat-chip ${c.id === catSeleccionada ? 'activa' : ''}" onclick="catSeleccionada=${c.id};dibujarCats();actualizarInterfaz();">${c.i} ${c.n}</div>`).join(''); }
-    function saveAndRefresh() { localStorage.setItem('movs_v15', JSON.stringify(movs)); document.getElementById('monto').value = ''; actualizarInterfaz(); }
-    function prepararEdicion(i) { 
-        const m = movs[i]; document.getElementById('monto').value = m.mon; document.getElementById('km').value = m.km || 0; document.getElementById('hrs').value = m.hrs || 0;
-        document.getElementById('edit-index').value = i; catSeleccionada = m.catId; dibujarCats();
-        document.getElementById('btns-normales').style.display = 'none'; document.getElementById('btn-save').style.display = 'block';
-    }
-    function guardarEdicion() {
-        const i = document.getElementById('edit-index').value;
-        movs[i].mon = parseFloat(document.getElementById('monto').value);
-        movs[i].km = document.getElementById('km').value;
-        movs[i].hrs = document.getElementById('hrs').value;
-        movs[i].catId = catSeleccionada; movs[i].metodoN = metodoActual.n; movs[i].metodoI = metodoActual.i;
-        const c = cats.find(x => x.id === catSeleccionada); movs[i].catN = c.n; movs[i].catI = c.i;
-        document.getElementById('btns-normales').style.display = 'flex'; document.getElementById('btn-save').style.display = 'none';
-        document.getElementById('km').value = ''; document.getElementById('hrs').value = '';
-        saveAndRefresh();
+    function initCharts() {
+        const opt = { maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { color: '#fff', font: {size: 10}, formatter: (v, c) => { let s = c.dataset.data.reduce((a, b) => a + b, 0); return s > 0 ? ((v * 100) / s).toFixed(0) + "%" : ""; } } } };
+        cIng = new Chart(document.getElementById('cIng'), { type: 'doughnut', data: { labels: [], datasets: [{ data: [], backgroundColor: ['#2ecc71', '#27ae60'] }] }, options: opt });
+        cGas = new Chart(document.getElementById('cGas'), { type: 'doughnut', data: { labels: [], datasets: [{ data: [], backgroundColor: ['#e74c3c', '#e67e22'] }] }, options: opt });
     }
     function abrirModal() { document.getElementById('modal').style.display = 'flex'; dibujarGestion(); }
     function cerrarModal() { document.getElementById('modal').style.display = 'none'; }
-    function dibujarGestion() { document.getElementById('lista-gestion').innerHTML = cats.map((c, i) => `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #eee;"><span>${c.i} ${c.n}</span><button onclick="cats.splice(${i},1);localStorage.setItem('cats_v15', JSON.stringify(cats));dibujarCats();dibujarGestion();" style="color:red; border:none; background:none;">X</button></div>`).join(''); }
-    function crearCat() { const i = document.getElementById('n-ico').value || "📦", n = document.getElementById('n-nom').value; if(n) { cats.push({id: Date.now(), n, i}); localStorage.setItem('cats_v15', JSON.stringify(cats)); dibujarCats(); dibujarGestion(); } }
+    function dibujarGestion() { document.getElementById('lista-gestion').innerHTML = cats.map((c, i) => `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #eee;"><span>${c.i} ${c.n}</span><button onclick="cats.splice(${i},1);localStorage.setItem('cats_v17', JSON.stringify(cats));dibujarCats();dibujarGestion();" style="color:red; border:none; background:none;">X</button></div>`).join(''); }
+    function crearCat() { const i = document.getElementById('n-ico').value || "📦", n = document.getElementById('n-nom').value; if(n) { cats.push({id: Date.now(), n, i}); localStorage.setItem('cats_v17', JSON.stringify(cats)); dibujarCats(); dibujarGestion(); } }
 </script>
 </body>
 </html>
-
-
-
