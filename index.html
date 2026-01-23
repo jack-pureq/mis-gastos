@@ -20,25 +20,9 @@
 
         .btn-gps { width: 100%; padding: 15px; border-radius: 15px; border: none; color: white; font-weight: bold; font-size: 16px; margin-bottom: 15px; cursor: pointer; }
 
-        /* Gráficos Estilo Profesional con Totales al Centro */
         .seccion-graficos { display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; width: 100%; }
-        .caja-grafico { 
-            position: relative; 
-            background: #fff; 
-            padding: 10px; 
-            border-radius: 20px; 
-            height: 220px; 
-            border: 2px solid #eee; 
-            text-align: center; 
-        }
-        .texto-centro {
-            position: absolute;
-            top: 55%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            pointer-events: none;
-        }
+        .caja-grafico { position: relative; background: #fff; padding: 10px; border-radius: 20px; height: 220px; border: 2px solid #eee; text-align: center; }
+        .texto-centro { position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none; }
 
         .contenedor-cats { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 10px; scrollbar-width: none; }
         .cat-chip { background: #f0f2f5; padding: 10px 18px; border-radius: 20px; white-space: nowrap; cursor: pointer; font-size: 14px; border: 2px solid transparent; }
@@ -71,7 +55,7 @@
     </div>
 
     <div class="balance-card">
-        <small style="opacity: 0.8;">SALDO NETO REAL</small><br>
+        <small style="opacity: 0.8;">JACK PUREQ - Gestor/taximetro</small><br>
         <span id="saldo">S/. 0.00</span>
     </div>
 
@@ -137,6 +121,7 @@
 
 <script>
     Chart.register(ChartDataLabels);
+    // Recuperamos v15 para que tus datos aparezcan
     let movs = JSON.parse(localStorage.getItem('movs_v15')) || [];
     let cats = JSON.parse(localStorage.getItem('cats_v15')) || [
         {id: 0, n: "Carrera", i: "🚕"}, {id: 1, n: "Gasolina", i: "⛽"}, {id: 2, n: "Comida", i: "🍔"}
@@ -211,7 +196,7 @@
         let dIng = {}, dGas = {};
         listaUI.innerHTML = '';
 
-        movs.forEach((m) => {
+        movs.forEach((m, index) => {
             const fM = new Date(m.fecha).toLocaleDateString('en-CA', {timeZone: 'America/Lima'});
             if (fM === fFiltro && m.metodoN === metodoActual.n) {
                 const esI = m.tipo === 'ingreso';
@@ -226,12 +211,17 @@
                         </span><br>
                         <small>🚗 ${m.km}km • ⏱️ ${m.hrs}h</small>
                     </div>
-                    <span style="color:${esI ? 'var(--verde)' : 'var(--rojo)'}; font-weight:bold">S/.${m.mon.toFixed(2)}</span>
+                    <div style="text-align: right;">
+                        <span style="color:${esI ? 'var(--verde)' : 'var(--rojo)'}; font-weight:bold; font-size:16px;">S/.${m.mon.toFixed(2)}</span>
+                        <div style="margin-top:8px;">
+                            <button onclick="editarMovimiento(${index})" style="background:none; border:none; font-size:18px; cursor:pointer;">✏️</button>
+                            <button onclick="eliminarMovimiento(${index})" style="background:none; border:none; font-size:18px; cursor:pointer; margin-left:10px;">🗑️</button>
+                        </div>
+                    </div>
                 </div>`;
             }
         });
 
-        // CÁLCULOS PARA DONAS PROFESIONALES
         const totalIng = Object.values(dIng).reduce((a, b) => a + b, 0);
         const totalGas = Object.values(dGas).reduce((a, b) => a + b, 0);
         const neto = totalIng - totalGas;
@@ -244,6 +234,23 @@
         saldoE.style.color = neto >= 0 ? '#2ecc71' : '#e74c3c';
 
         actualizarCharts(dIng, dGas);
+    }
+
+    function editarMovimiento(idx) {
+        let nV = prompt("Nuevo monto S/.", movs[idx].mon);
+        if (nV !== null && !isNaN(nV) && nV > 0) {
+            movs[idx].mon = parseFloat(nV);
+            localStorage.setItem('movs_v15', JSON.stringify(movs));
+            actualizarInterfaz();
+        }
+    }
+
+    function eliminarMovimiento(idx) {
+        if (confirm("¿Eliminar este registro?")) {
+            movs.splice(idx, 1);
+            localStorage.setItem('movs_v15', JSON.stringify(movs));
+            actualizarInterfaz();
+        }
     }
 
     function actualizarCharts(dIng, dGas) {
@@ -275,8 +282,8 @@
     }
     function abrirModal() { document.getElementById('modal').style.display = 'flex'; dibujarGestion(); }
     function cerrarModal() { document.getElementById('modal').style.display = 'none'; }
-    function dibujarGestion() { document.getElementById('lista-gestion').innerHTML = cats.map((c, i) => `<div style="display:flex; justify-content:space-between; padding:12px; border-bottom:1px solid rgba(255,255,255,0.2); align-items:center;"><span>${c.i} ${c.n}</span><button onclick="cats.splice(${i},1);localStorage.setItem('cats_v17', JSON.stringify(cats));dibujarCats();dibujarGestion();" style="color:white; background:#e74c3c; border:none; border-radius:8px; padding:5px 10px; cursor:pointer;">Borrar</button></div>`).join(''); }
-    function crearCat() { const i = document.getElementById('n-ico').value || "📦", n = document.getElementById('n-nom').value; if(n) { cats.push({id: Date.now(), n, i}); localStorage.setItem('cats_v17', JSON.stringify(cats)); dibujarCats(); dibujarGestion(); } }
+    function dibujarGestion() { document.getElementById('lista-gestion').innerHTML = cats.map((c, i) => `<div style="display:flex; justify-content:space-between; padding:12px; border-bottom:1px solid rgba(255,255,255,0.2); align-items:center;"><span>${c.i} ${c.n}</span><button onclick="cats.splice(${i},1);localStorage.setItem('cats_v15', JSON.stringify(cats));dibujarCats();dibujarGestion();" style="color:white; background:#e74c3c; border:none; border-radius:8px; padding:5px 10px; cursor:pointer;">Borrar</button></div>`).join(''); }
+    function crearCat() { const i = document.getElementById('n-ico').value || "📦", n = document.getElementById('n-nom').value; if(n) { cats.push({id: Date.now(), n, i}); localStorage.setItem('cats_v15', JSON.stringify(cats)); dibujarCats(); dibujarGestion(); } }
 </script>
 </body>
 </html>
