@@ -136,16 +136,10 @@
 </div></div>
 
 <script>
-    // Este código busca en la v17, si no hay nada busca en la v16, y si no, en la normal
-let movs = JSON.parse(localStorage.getItem('movs_v17')) || 
-           JSON.parse(localStorage.getItem('movs_v16')) || 
-           JSON.parse(localStorage.getItem('movs')) || [];
-
-let cats = JSON.parse(localStorage.getItem('cats_v17')) || 
-           JSON.parse(localStorage.getItem('cats_v16')) || 
-           JSON.parse(localStorage.getItem('cats')) || [
-               {id: 0, n: "Carrera", i: "🚕"}, {id: 1, n: "Gasolina", i: "⛽"}, {id: 2, n: "Comida", i: "🍔"}
-           ];
+    Chart.register(ChartDataLabels);
+    let movs = JSON.parse(localStorage.getItem('movs_v15')) || [];
+    let cats = JSON.parse(localStorage.getItem('cats_v15')) || [
+        {id: 0, n: "Carrera", i: "🚕"}, {id: 1, n: "Gasolina", i: "⛽"}, {id: 2, n: "Comida", i: "🍔"}
     ];
     let catSeleccionada = cats[0].id;
     let metodoActual = { n: 'Efectivo', i: '💵' };
