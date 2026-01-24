@@ -27,7 +27,7 @@
             background: rgba(206, 164, 189, 0.85); 
             padding: 15px; 
             width: 100%; 
-            max-width: 4800px; 
+            max-width: 480px; 
             height: 100vh; 
             display: flex; 
             flex-direction: column; 
@@ -68,7 +68,33 @@
         .metodo-btn { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #ddd; background: #fff; font-size: 10px; font-weight: bold; cursor: pointer; }
         .metodo-btn.active { border-color: var(--azul); background: #e8f4fd; color: var(--azul); }
 
-        .fila { display: flex; gap: 8px; margin-bottom: 8px; flex-shrink: 0; }
+        .fila { display: flex; gap: 8px; margin-bottom: 8px; flex-shrink: 0;/* Busca esta parte y déjala así: */
+        .fila { 
+            display: flex; 
+            gap: 8px; 
+            margin-bottom: 8px; 
+            flex-shrink: 0; 
+            width: 100%; /* Asegura que la fila no se pase del ancho */
+            box-sizing: border-box;
+        }
+
+        input { 
+            padding: 12px; 
+            border-radius: 10px; 
+            border: 1px solid #ddd; 
+            flex: 1; 
+            font-size: 16px; 
+            outline: none; 
+            min-width: 0; /* ESTO ES CLAVE: evita que el input empuje hacia afuera */
+        }
+
+        .input-auto { 
+            background: #fffdf0; 
+            border-color: var(--naranja); 
+            color: var(--naranja); 
+            font-weight: bold; 
+            width: 50%; /* Obliga a que cada uno ocupe la mitad */
+        } }
         input { padding: 12px; border-radius: 10px; border: 1px solid #ddd; flex: 1; font-size: 16px; outline: none; }
         .input-auto { background: #fffdf0; border-color: var(--naranja); color: var(--naranja); font-weight: bold; }
 
@@ -345,6 +371,3 @@
 </script>
 </body>
 </html>
-
-
-
