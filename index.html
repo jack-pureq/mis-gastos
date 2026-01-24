@@ -55,7 +55,7 @@
     </div>
 
     <div class="balance-card">
-        <small style="opacity: 0.8;">JACK PUREQ - Gestor/taximetro</small><br>
+        <small style="opacity: 0.8;">JACK PUREQ - Gestor/Taxímetro</small><br>
         <span id="saldo">S/. 0.00</span>
     </div>
 
@@ -121,7 +121,6 @@
 
 <script>
     Chart.register(ChartDataLabels);
-    // Recuperamos v15 para que tus datos aparezcan
     let movs = JSON.parse(localStorage.getItem('movs_v15')) || [];
     let cats = JSON.parse(localStorage.getItem('cats_v15')) || [
         {id: 0, n: "Carrera", i: "🚕"}, {id: 1, n: "Gasolina", i: "⛽"}, {id: 2, n: "Comida", i: "🍔"}
@@ -144,15 +143,40 @@
 
     function toggleSeguimiento() {
         const btn = document.getElementById('btn-gps');
+        const campoKm = document.getElementById('km');
+        const campoHrs = document.getElementById('hrs');
+
         if (!activo) {
             distTotal = 0; tInicio = new Date(); latAnt = null; lonAnt = null;
             if ("geolocation" in navigator) {
                 watchId = navigator.geolocation.watchPosition(actualizarGPS, null, { enableHighAccuracy: true });
-                activo = true; btn.innerText = "🛑 FINALIZAR TURNO"; btn.style.background = "#7f8c8d";
+                activo = true; 
+                btn.innerText = "🛑 FINALIZAR TURNO"; 
+                btn.style.background = "#7f8c8d";
             }
         } else {
+            // AL FINALIZAR
+            const tFinal = new Date();
+            const diffMs = tFinal - tInicio;
+            const totalMinutos = Math.floor(diffMs / 60000);
+            const totalHoras = (diffMs / 3600000).toFixed(2);
+            let tiempoTexto = totalMinutos < 60 ? `${totalMinutos} min` : `${totalHoras} hrs`;
+            
+            if (distTotal > 0.01) {
+                let montoAuto = prompt(`RESUMEN DEL VIAJE:\n🚗 Distancia: ${distTotal.toFixed(2)} km\n⏱️ Tiempo: ${tiempoTexto}\n\n¿Cuánto cobraste? (S/.)`);
+                if (montoAuto !== null && montoAuto !== "") {
+                    document.getElementById('monto').value = montoAuto;
+                    registrar('ingreso'); 
+                }
+            }
+
             navigator.geolocation.clearWatch(watchId);
-            activo = false; btn.innerText = "🚀 INICIAR TURNO (GPS)"; btn.style.background = "var(--naranja)";
+            activo = false; 
+            btn.innerText = "🚀 INICIAR TURNO (GPS)"; 
+            btn.style.background = "var(--naranja)";
+            campoKm.value = "";
+            campoHrs.value = "";
+            distTotal = 0;
         }
     }
 
@@ -171,7 +195,7 @@
 
     function registrar(tipo) {
         const mon = parseFloat(document.getElementById('monto').value);
-        if (mon > 0) {
+        if (mon >= 0) {
             const catObj = cats.find(c => c.id === catSeleccionada);
             const ahora = new Date();
             const horaActual = ahora.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'America/Lima' });
@@ -228,7 +252,6 @@
 
         document.getElementById('txt-total-ing').innerText = `S/. ${totalIng.toFixed(2)}`;
         document.getElementById('txt-total-gas').innerText = `S/. ${totalGas.toFixed(2)}`;
-        
         const saldoE = document.getElementById('saldo');
         saldoE.innerText = `S/. ${neto.toFixed(2)}`;
         saldoE.style.color = neto >= 0 ? '#2ecc71' : '#e74c3c';
@@ -238,7 +261,7 @@
 
     function editarMovimiento(idx) {
         let nV = prompt("Nuevo monto S/.", movs[idx].mon);
-        if (nV !== null && !isNaN(nV) && nV > 0) {
+        if (nV !== null && !isNaN(nV)) {
             movs[idx].mon = parseFloat(nV);
             localStorage.setItem('movs_v15', JSON.stringify(movs));
             actualizarInterfaz();
@@ -254,29 +277,17 @@
     }
 
     function actualizarCharts(dIng, dGas) {
-        cIng.data.labels = Object.keys(dIng); cIng.data.datasets[0].data = Object.values(dIng); cIng.update();
-        cGas.data.labels = Object.keys(dGas); cGas.data.datasets[0].data = Object.values(dGas); cGas.update();
+        if(cIng && cGas) {
+            cIng.data.labels = Object.keys(dIng); cIng.data.datasets[0].data = Object.values(dIng); cIng.update();
+            cGas.data.labels = Object.keys(dGas); cGas.data.datasets[0].data = Object.values(dGas); cGas.update();
+        }
     }
 
     function setMetodo(n, i, btn) { metodoActual = { n, i }; document.querySelectorAll('.metodo-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); actualizarInterfaz(); }
     function cambiarPeriodo(p, btn) { periodoActual = p; document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); actualizarInterfaz(); }
     function dibujarCats() { document.getElementById('cat-chips').innerHTML = cats.map(c => `<div class="cat-chip ${c.id === catSeleccionada ? 'activa' : ''}" onclick="catSeleccionada=${c.id};dibujarCats();actualizarInterfaz();">${c.i} ${c.n}</div>`).join(''); }
     function initCharts() {
-        const opt = { 
-            maintainAspectRatio: false, 
-            cutout: '70%',
-            plugins: { 
-                legend: { display: false }, 
-                datalabels: { 
-                    color: '#444', 
-                    font: { weight: 'bold', size: 11 }, 
-                    formatter: (v, c) => { 
-                        let s = c.dataset.data.reduce((a, b) => a + b, 0); 
-                        return s > 0 ? ((v * 100) / s).toFixed(0) + "%" : ""; 
-                    } 
-                } 
-            } 
-        };
+        const opt = { maintainAspectRatio: false, cutout: '70%', plugins: { legend: { display: false }, datalabels: { color: '#444', font: { weight: 'bold', size: 11 }, formatter: (v, c) => { let s = c.dataset.data.reduce((a, b) => a + b, 0); return s > 0 ? ((v * 100) / s).toFixed(0) + "%" : ""; } } } };
         cIng = new Chart(document.getElementById('cIng'), { type: 'doughnut', data: { labels: [], datasets: [{ data: [], backgroundColor: ['#2ecc71', '#27ae60', '#1abc9c'] }] }, options: opt });
         cGas = new Chart(document.getElementById('cGas'), { type: 'doughnut', data: { labels: [], datasets: [{ data: [], backgroundColor: ['#e74c3c', '#e67e22', '#f1c40f'] }] }, options: opt });
     }
