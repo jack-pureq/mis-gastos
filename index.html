@@ -6,6 +6,7 @@
     <title>JIMMY JACK PUREQ -  Gestor Taxímetro Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root { --verde: #27ae60; --rojo: #e74c3c; --oscuro: #2c3e50; --azul: #3498db; --naranja: #f39c12; }
         
@@ -53,6 +54,9 @@
         .balance-card { background: var(--oscuro); color: white; padding: 15px; border-radius: 25px; text-align: center; margin-bottom: 10px; flex-shrink: 0; }
         #saldo { font-size: 28px; font-weight: bold; }
 
+        /* BOTON PDF AGREGADO */
+        .btn-pdf { background: #555; color: white; border: none; padding: 5px 12px; border-radius: 10px; font-size: 12px; cursor: pointer; margin-top: 5px; }
+
         .btn-gps { width: 100%; padding: 12px; border-radius: 15px; border: none; color: white; font-weight: bold; font-size: 16px; margin-bottom: 10px; cursor: pointer; flex-shrink: 0; }
 
         .seccion-graficos { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
@@ -94,7 +98,8 @@
 
     <div class="balance-card">
         <small style="opacity: 0.8;">JIMMY JACK PUREQ - Gestor/Taxímetro Pro</small><br>
-        <span id="saldo">S/. 0.00</span>
+        <span id="saldo">S/. 0.00</span><br>
+        <button class="btn-pdf" onclick="extraerResumenPDF()">📄 Descargar Resumen PDF</button>
     </div>
 
     <div class="scroll-interno">
@@ -319,6 +324,49 @@
     function cerrarModal() { document.getElementById('modal').style.display = 'none'; }
     function dibujarGestion() { document.getElementById('lista-gestion').innerHTML = cats.map((c, i) => `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #eee;"><span>${c.i} ${c.n}</span><button onclick="cats.splice(${i},1);localStorage.setItem('cats_v15', JSON.stringify(cats));dibujarCats();dibujarGestion();">❌</button></div>`).join(''); }
     function crearCat() { const i = document.getElementById('n-ico').value || "📦", n = document.getElementById('n-nom').value; if(n) { cats.push({id: Date.now(), n, i}); localStorage.setItem('cats_v15', JSON.stringify(cats)); dibujarCats(); dibujarGestion(); } }
+
+    /* --- FUNCION DE EXTRACCION PDF --- */
+    function extraerResumenPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        let y = 20;
+
+        doc.setFontSize(16);
+        doc.text("RESUMEN DE INGRESOS Y EGRESOS", 20, y);
+        y += 10;
+        doc.setFontSize(12);
+        doc.text(`Usuario: JIMMY JACK PUREQ`, 20, y);
+        y += 7;
+        doc.text(`Fecha Reporte: ${new Date().toLocaleDateString()}`, 20, y);
+        y += 10;
+        doc.line(20, y, 190, y);
+        y += 10;
+
+        doc.setFont(undefined, 'bold');
+        doc.text(`BALANCE TOTAL: ${document.getElementById('saldo').innerText}`, 20, y);
+        y += 10;
+        doc.setFont(undefined, 'normal');
+        doc.text(`Total Ingresos: ${document.getElementById('txt-total-ing').innerText}`, 20, y);
+        y += 7;
+        doc.text(`Total Gastos: ${document.getElementById('txt-total-gas').innerText}`, 20, y);
+        y += 15;
+
+        doc.setFont(undefined, 'bold');
+        doc.text("DETALLE DE MOVIMIENTOS:", 20, y);
+        y += 10;
+        doc.setFontSize(9);
+        doc.setFont(undefined, 'normal');
+
+        // Filtrar movimientos según el periodo actual para el PDF
+        movs.forEach((m) => {
+            if (y > 280) { doc.addPage(); y = 20; }
+            let linea = `${m.hora} | ${m.tipo.toUpperCase()} | ${m.catN} | S/. ${m.mon.toFixed(2)} | ${m.km}km`;
+            doc.text(linea, 20, y);
+            y += 6;
+        });
+
+        doc.save(`Resumen_JackPureq_${new Date().getTime()}.pdf`);
+    }
 </script>
 </body>
 </html>
