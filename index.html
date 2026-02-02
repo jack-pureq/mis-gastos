@@ -12,83 +12,39 @@
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3448/3448636.png">
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3448/3448636.png">
 
-    <title>JIMMY JACK PUREQ - Gestor Taxímetro Pro</title>
-    
+    <title>JIMMY JACK PUREQ - Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
     <style>
         :root { --verde: #27ae60; --rojo: #e74c3c; --oscuro: #2c3e50; --azul: #3498db; --naranja: #f39c12; }
-        
-        html, body { 
-            overflow: hidden; 
-            height: 100%; 
-            width: 100%; 
-            position: fixed; 
-            margin: 0; 
-            padding: 0;
-            touch-action: manipulation;
-        }
-
-        body { 
-            font-family: 'Segoe UI', sans-serif; 
-            background-color: #f0f2f5; 
-            display: flex; 
-            justify-content: center; 
-        }
-
-        .tarjeta { 
-            background: rgba(206, 164, 189, 0.73); 
-            padding: 15px; 
-            width: 100%; 
-            max-width: 480px; 
-            height: 100vh;
-            display: flex; 
-            flex-direction: column; 
-            box-sizing: border-box;
-        }
-        
-        .scroll-interno {
-            flex: 1;
-            overflow-y: auto;
-            padding-bottom: 20px;
-            -webkit-overflow-scrolling: touch;
-        }
-
+        html, body { overflow: hidden; height: 100%; width: 100%; position: fixed; margin: 0; padding: 0; touch-action: manipulation; font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; }
+        body { display: flex; justify-content: center; }
+        .tarjeta { background: rgba(206, 164, 189, 0.73); padding: 15px; width: 100%; max-width: 480px; height: 100vh; display: flex; flex-direction: column; box-sizing: border-box; }
+        .scroll-interno { flex: 1; overflow-y: auto; padding-bottom: 20px; -webkit-overflow-scrolling: touch; }
         .nav-periodos { display: flex; justify-content: space-around; border-bottom: 1px solid #eee; margin-bottom: 10px; flex-shrink: 0; }
         .tab-btn { padding: 10px 5px; border: none; background: none; font-size: 16px; color: #777; cursor: pointer; border-bottom: 3px solid transparent; }
         .tab-btn.active { color: var(--verde); border-bottom-color: var(--verde); font-weight: bold; }
-
         .balance-card { background: var(--oscuro); color: white; padding: 15px; border-radius: 25px; text-align: center; margin-bottom: 10px; flex-shrink: 0; }
         #saldo { font-size: 28px; font-weight: bold; }
-
         .btn-pdf { background: #555; color: white; border: none; padding: 5px 12px; border-radius: 10px; font-size: 12px; cursor: pointer; margin-top: 5px; }
-
         .btn-gps { width: 100%; padding: 12px; border-radius: 15px; border: none; color: white; font-weight: bold; font-size: 16px; margin-bottom: 10px; cursor: pointer; flex-shrink: 0; }
-
         .seccion-graficos { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
         .caja-grafico { position: relative; background: #fff; padding: 5px; border-radius: 20px; height: 180px; border: 2px solid #eee; text-align: center; }
         .texto-centro { position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none; }
-
         .contenedor-cats { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 10px; flex-shrink: 0; }
         .cat-chip { background: #f0f2f5; padding: 8px 15px; border-radius: 20px; white-space: nowrap; cursor: pointer; font-size: 14px; border: 2px solid transparent; }
         .cat-chip.activa { border-color: var(--azul); background: #e8f4fd; color: var(--azul); }
-
         .metodos-pago { display: flex; gap: 5px; margin-bottom: 10px; flex-shrink: 0; }
         .metodo-btn { flex: 1; padding: 10px; border-radius: 12px; border: 1px solid #ddd; background: #fff; font-size: 11px; font-weight: bold; cursor: pointer; }
         .metodo-btn.active { border-color: var(--azul); background: #e8f4fd; color: var(--azul); }
-
         .fila { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; flex-shrink: 0; }
         input { padding: 12px; border-radius: 12px; border: 1px solid #ddd; flex: 1; font-size: 18px; outline: none; min-width: 0; }
-        
         .input-auto { background: #fffdf0; border-color: var(--naranja); font-weight: bold; color: var(--naranja); flex: 1; max-width: 48%; }
-
         .btn-accion { flex: 1; padding: 15px; border: none; border-radius: 120px; color: white; font-weight: bold; cursor: pointer; font-size: 16px; }
-        
         .historial { margin-top: 10px; border-top: 1px solid #eee; }
         .item { background: #fff; padding: 12px; margin: 8px 0; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-
         #modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); align-items:center; justify-content:center; z-index:100; }
         .modal-content { background:rgb(86, 172, 226); padding:25px; border-radius:25px; width:90%; max-width:400px; color: white; }
     </style>
@@ -104,58 +60,44 @@
     </div>
 
     <div class="balance-card">
-        <small style="opacity: 0.8;">JIMMY JACK PUREQ - Gestor/Taxímetro Pro</small><br>
+        <small style="opacity: 0.8;">JIMMY JACK PUREQ - Pro</small><br>
         <span id="saldo">S/. 0.00</span><br>
-        <button class="btn-pdf" onclick="extraerResumenPDF()">📄 Descargar Resumen PDF</button>
+        <button class="btn-pdf" onclick="extraerResumenPDF()">📄 Descargar PDF</button>
     </div>
 
     <div class="scroll-interno">
         <button id="btn-gps" class="btn-gps" style="background: var(--naranja);" onclick="toggleSeguimiento()">🚀 INICIAR TURNO (GPS)</button>
-
         <div class="seccion-graficos">
             <div class="caja-grafico">
-                <div class="texto-centro">
-                    <small style="color: var(--verde); font-weight: bold;">INGRESOS</small><br>
-                    <span id="txt-total-ing" style="font-size: 20px; font-weight: bold; color: var(--oscuro);">S/. 0.00</span>
-                </div>
+                <div class="texto-centro"><small style="color:var(--verde);font-weight:bold;">INGRESOS</small><br><span id="txt-total-ing" style="font-size:20px;font-weight:bold;">S/. 0.00</span></div>
                 <canvas id="cIng"></canvas>
             </div>
             <div class="caja-grafico">
-                <div class="texto-centro">
-                    <small style="color: var(--rojo); font-weight: bold;">GASTOS</small><br>
-                    <span id="txt-total-gas" style="font-size: 20px; font-weight: bold; color: var(--oscuro);">S/. 0.00</span>
-                </div>
+                <div class="texto-centro"><small style="color:var(--rojo);font-weight:bold;">GASTOS</small><br><span id="txt-total-gas" style="font-size:20px;font-weight:bold;">S/. 0.00</span></div>
                 <canvas id="cGas"></canvas>
             </div>
         </div>
-
         <div style="text-align:center; margin-bottom:10px;">
             <input type="date" id="input-fecha-filtro" onchange="actualizarInterfaz()" style="border:none; background:transparent; font-weight:bold;">
         </div>
-
         <div class="contenedor-cats" id="cat-chips"></div>
-
         <div class="metodos-pago">
             <button class="metodo-btn active" onclick="setMetodo('Efectivo', '💵', this)">💵 Efectivo</button>
             <button class="metodo-btn" onclick="setMetodo('Yape', '🟣', this)">🟣 Yape</button>
             <button class="metodo-btn" onclick="setMetodo('Tarjeta', '💳', this)">💳 Tarjeta</button>
         </div>
-
         <div class="fila">
             <input type="number" id="monto" placeholder="S/. Monto">
             <button onclick="abrirModal()" style="border-radius:12px; border:none; padding:12px; background:#ddd;">⚙️</button>
         </div>
-
         <div class="fila">
-            <input type="number" id="km" class="input-auto" placeholder="0.00 KM" step="0.01">
-            <input type="number" id="hrs" class="input-auto" placeholder="0.00 Horas" step="0.01">
+            <input type="number" id="km" class="input-auto" placeholder="0.00 KM">
+            <input type="number" id="hrs" class="input-auto" placeholder="0.00 Horas">
         </div>
-        
         <div class="fila">
             <button class="btn-accion" style="background:var(--verde)" onclick="registrar('ingreso')">Ingreso +</button>
             <button class="btn-accion" style="background:var(--rojo)" onclick="registrar('gasto')">Gasto -</button>
         </div>
-
         <div id="lista" class="historial"></div>
     </div>
 </div>
@@ -163,67 +105,19 @@
 <div id="modal"><div class="modal-content">
     <h3>Categorías</h3>
     <div id="lista-gestion" style="max-height: 200px; overflow-y: auto; margin-bottom: 15px;"></div>
-    <div class="fila">
-        <input type="text" id="n-ico" placeholder="Emoji" style="flex:0.3">
-        <input type="text" id="n-nom" placeholder="Nombre">
-        <button onclick="crearCat()" style="padding:15px; background:var(--verde); color:white; border:none; border-radius:12px;">+</button>
-    </div>
-    <button onclick="cerrarModal()" style="width:100%; margin-top:15px; padding:15px; background:var(--oscuro); color:white; border-radius:12px; border:none; font-weight:bold;">Cerrar</button>
+    <div class="fila"><input type="text" id="n-ico" placeholder="Emoji" style="flex:0.3"><input type="text" id="n-nom" placeholder="Nombre"><button onclick="crearCat()" style="padding:15px; background:var(--verde); color:white; border:none; border-radius:12px;">+</button></div>
+    <button onclick="cerrarModal()" style="width:100%; margin-top:15px; padding:15px; background:var(--oscuro); color:white; border-radius:12px; border:none;">Cerrar</button>
 </div></div>
 
 <script>
     Chart.register(ChartDataLabels);
     let movs = JSON.parse(localStorage.getItem('movs_v15')) || [];
-    let cats = JSON.parse(localStorage.getItem('cats_v15')) || [
-        {id: 0, n: "Carrera", i: "🚕"}, {id: 1, n: "Gasolina", i: "⛽"}, {id: 2, n: "Comida", i: "🍔"}
-    ];
-    let catSeleccionada = cats[0].id;
-    let metodoActual = { n: 'Efectivo', i: '💵' };
-    let periodoActual = 'dia';
-    let cIng, cGas;
-    let watchId = null, latAnt = null, lonAnt = null, distTotal = 0, tInicio = null, activo = false;
+    let cats = JSON.parse(localStorage.getItem('cats_v15')) || [{id:0,n:"Carrera",i:"🚕"},{id:1,n:"Gasolina",i:"⛽"},{id:2,n:"Comida",i:"🍔"}];
+    let catSeleccionada = cats[0].id, metodoActual = {n:'Efectivo',i:'💵'}, periodoActual = 'dia', cIng, cGas, watchId, latAnt, lonAnt, distTotal = 0, tInicio, activo = false;
 
     function inicializar() {
-        const ahora = new Date();
-        document.getElementById('input-fecha-filtro').value = ahora.toLocaleDateString('en-CA', {timeZone: 'America/Lima'});
-        dibujarCats();
-        initCharts();
-        actualizarInterfaz();
-    }
-
-    function toggleSeguimiento() {
-        const btn = document.getElementById('btn-gps');
-        if (!activo) {
-            distTotal = 0; tInicio = new Date(); latAnt = null; lonAnt = null;
-            if ("geolocation" in navigator) {
-                watchId = navigator.geolocation.watchPosition(actualizarGPS, null, { enableHighAccuracy: true });
-                activo = true; btn.innerText = "🛑 FINALIZAR TURNO"; btn.style.background = "#7f8c8d";
-            }
-        } else {
-            const tFinal = new Date();
-            const diffMs = tFinal - tInicio;
-            const totalHoras = (diffMs / 3600000).toFixed(2);
-            if (distTotal > 0.01) {
-                let montoAuto = prompt(`RESUMEN:\n🚗 ${distTotal.toFixed(2)} km\n⏱️ ${totalHoras} hrs\n\n¿Cobro?`);
-                if (montoAuto) { document.getElementById('monto').value = montoAuto; registrar('ingreso'); }
-            }
-            navigator.geolocation.clearWatch(watchId);
-            activo = false; btn.innerText = "🚀 INICIAR TURNO (GPS)"; btn.style.background = "var(--naranja)";
-            document.getElementById('km').value = ""; document.getElementById('hrs').value = "";
-        }
-    }
-
-    function actualizarGPS(pos) {
-        if (latAnt && lonAnt) {
-            const R = 6371;
-            const dLat = (pos.coords.latitude - latAnt) * Math.PI / 180;
-            const dLon = (pos.coords.longitude - lonAnt) * Math.PI / 180;
-            const a = Math.sin(dLat/2)**2 + Math.cos(latAnt*Math.PI/180)*Math.cos(pos.coords.latitude*Math.PI/180)*Math.sin(dLon/2)**2;
-            distTotal += R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-            document.getElementById('km').value = distTotal.toFixed(2);
-        }
-        latAnt = pos.coords.latitude; lonAnt = pos.coords.longitude;
-        document.getElementById('hrs').value = ((new Date() - tInicio) / 3600000).toFixed(2);
+        document.getElementById('input-fecha-filtro').value = new Date().toLocaleDateString('en-CA', {timeZone:'America/Lima'});
+        dibujarCats(); initCharts(); actualizarInterfaz();
     }
 
     function registrar(tipo) {
@@ -231,17 +125,9 @@
         if (mon >= 0) {
             const catObj = cats.find(c => c.id === catSeleccionada);
             const ahora = new Date();
-            movs.unshift({ 
-                mon, tipo, catN: catObj.n, catI: catObj.i, 
-                km: document.getElementById('km').value || 0, 
-                hrs: document.getElementById('hrs').value || 0,
-                metodoN: metodoActual.n, metodoI: metodoActual.i,
-                fecha: ahora.toISOString(),
-                hora: ahora.toLocaleTimeString('es-PE', {hour:'2-digit', minute:'2-digit', hour12:false})
-            });
+            movs.unshift({ mon, tipo, catN:catObj.n, catI:catObj.i, km:document.getElementById('km').value||0, hrs:document.getElementById('hrs').value||0, metodoN:metodoActual.n, metodoI:metodoActual.i, fecha:ahora.toISOString(), hora:ahora.toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit',hour12:false}) });
             localStorage.setItem('movs_v15', JSON.stringify(movs));
-            document.getElementById('monto').value = '';
-            actualizarInterfaz();
+            document.getElementById('monto').value = ''; actualizarInterfaz();
         }
     }
 
@@ -264,111 +150,59 @@
             } else if (periodoActual === 'mes') {
                 incluir = (fechaMov.getMonth() === ahora.getMonth() && fechaMov.getFullYear() === ahora.getFullYear());
             } else if (periodoActual === 'anio') {
-                // CORRECCIÓN: Ahora solo verifica que el año coincida, sin importar el mes
+                // LOGICA CORREGIDA PARA EL AÑO
                 incluir = (fechaMov.getFullYear() === ahora.getFullYear());
             }
 
             if (incluir && m.metodoN === metodoActual.n) {
                 const esI = m.tipo === 'ingreso';
-                if (esI) dIng[m.catN] = (dIng[m.catN] || 0) + m.mon; 
-                else dGas[m.catN] = (dGas[m.catN] || 0) + m.mon;
-                
-                listaUI.innerHTML += `<div class="item" style="border-left-color: ${esI ? 'var(--verde)' : 'var(--rojo)'}">
-                    <div class="item-info">
-                        <strong>${m.catI} ${m.catN}</strong><br>
-                        <small>🕒 ${m.hora} | ${new Date(m.fecha).toLocaleDateString('es-PE', {day:'2-digit', month:'2-digit'})}</small><br>
-                        <small>🚗 ${m.km}km • ⏱️ ${m.hrs}h</small>
-                    </div>
-                    <div style="text-align: right;">
-                        <span style="color:${esI ? 'var(--verde)' : 'var(--rojo)'}; font-weight:bold;">S/.${m.mon.toFixed(2)}</span>
-                        <div style="margin-top:8px;">
-                            <button onclick="editarMovimiento(${index})" style="background:none; border:none; font-size:18px;">✏️</button>
-                            <button onclick="eliminarMovimiento(${index})" style="background:none; border:none; font-size:18px; margin-left:10px;">🗑️</button>
-                        </div>
-                    </div>
-                </div>`;
+                if (esI) dIng[m.catN] = (dIng[m.catN] || 0) + m.mon; else dGas[m.catN] = (dGas[m.catN] || 0) + m.mon;
+                listaUI.innerHTML += `<div class="item" style="border-left-color:${esI?'var(--verde)':'var(--rojo)'}"><div><strong>${m.catI} ${m.catN}</strong><br><small>🕒 ${m.hora} | ${new Date(m.fecha).toLocaleDateString('es-PE',{day:'2-digit',month:'2-digit'})}</small></div><div style="text-align:right;"><span style="color:${esI?'var(--verde)':'var(--rojo)'};font-weight:bold;">S/.${m.mon.toFixed(2)}</span><br><button onclick="eliminarMovimiento(${index})" style="background:none;border:none;">🗑️</button></div></div>`;
             }
         });
-
-        const totalI = Object.values(dIng).reduce((a, b) => a + b, 0);
-        const totalG = Object.values(dGas).reduce((a, b) => a + b, 0);
+        const totalI = Object.values(dIng).reduce((a,b)=>a+b,0), totalG = Object.values(dGas).reduce((a,b)=>a+b,0);
         document.getElementById('txt-total-ing').innerText = `S/. ${totalI.toFixed(2)}`;
         document.getElementById('txt-total-gas').innerText = `S/. ${totalG.toFixed(2)}`;
-        document.getElementById('saldo').innerText = `S/. ${(totalI - totalG).toFixed(2)}`;
+        document.getElementById('saldo').innerText = `S/. ${(totalI-totalG).toFixed(2)}`;
         actualizarCharts(totalI, totalG, dIng, dGas);
     }
 
-    function editarMovimiento(idx) {
-        let nV = prompt("Nuevo monto S/.", movs[idx].mon);
-        if (nV !== null) { movs[idx].mon = parseFloat(nV); localStorage.setItem('movs_v15', JSON.stringify(movs)); actualizarInterfaz(); }
-    }
-
-    function eliminarMovimiento(idx) {
-        if (confirm("¿Eliminar?")) { movs.splice(idx, 1); localStorage.setItem('movs_v15', JSON.stringify(movs)); actualizarInterfaz(); }
-    }
-
-    function setMetodo(n, i, btn) { metodoActual = { n, i }; document.querySelectorAll('.metodo-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); actualizarInterfaz(); }
-    
-    function cambiarPeriodo(p, btn) {
-        periodoActual = p;
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById('input-fecha-filtro').style.display = (p === 'dia') ? 'inline-block' : 'none';
-        actualizarInterfaz();
-    }
-
-    function dibujarCats() { document.getElementById('cat-chips').innerHTML = cats.map(c => `<div class="cat-chip ${c.id === catSeleccionada ? 'activa' : ''}" onclick="catSeleccionada=${c.id};dibujarCats();actualizarInterfaz();">${c.i} ${c.n}</div>`).join(''); }
-    
-    function initCharts() {
-        const opt = { maintainAspectRatio: false, cutout: '70%', plugins: { legend: { display: false }, datalabels: { color: '#444', font: { weight: 'bold', size: 10 } } } };
-        cIng = new Chart(document.getElementById('cIng'), { type: 'doughnut', data: { labels: [], datasets: [{ data: [], backgroundColor: ['#2ecc71', '#27ae60', '#1abc9c'] }] }, options: opt });
-        cGas = new Chart(document.getElementById('cGas'), { type: 'doughnut', data: { labels: [], datasets: [{ data: [], backgroundColor: ['#e74c3c', '#e67e22', '#f1c40f'] }] }, options: opt });
-    }
-
-    function actualizarCharts(totalI, totalG, dI, dG) {
-        cIng.data.labels = Object.keys(dI); cIng.data.datasets[0].data = Object.values(dI); cIng.update();
-        cGas.data.labels = Object.keys(dG); cGas.data.datasets[0].data = Object.values(dG); cGas.update();
-    }
-
-    function abrirModal() { document.getElementById('modal').style.display = 'flex'; dibujarGestion(); }
-    function cerrarModal() { document.getElementById('modal').style.display = 'none'; }
-    function dibujarGestion() { document.getElementById('lista-gestion').innerHTML = cats.map((c, i) => `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #eee;"><span>${c.i} ${c.n}</span><button onclick="cats.splice(${i},1);localStorage.setItem('cats_v15', JSON.stringify(cats));dibujarCats();dibujarGestion();">❌</button></div>`).join(''); }
-    function crearCat() { const i = document.getElementById('n-ico').value || "📦", n = document.getElementById('n-nom').value; if(n) { cats.push({id: Date.now(), n, i}); localStorage.setItem('cats_v15', JSON.stringify(cats)); dibujarCats(); dibujarGestion(); } }
+    function eliminarMovimiento(idx) { if(confirm("¿Eliminar?")){ movs.splice(idx,1); localStorage.setItem('movs_v15', JSON.stringify(movs)); actualizarInterfaz(); } }
+    function setMetodo(n,i,btn) { metodoActual={n,i}; document.querySelectorAll('.metodo-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); actualizarInterfaz(); }
+    function cambiarPeriodo(p,btn) { periodoActual=p; document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); document.getElementById('input-fecha-filtro').style.display=(p==='dia')?'inline-block':'none'; actualizarInterfaz(); }
+    function dibujarCats() { document.getElementById('cat-chips').innerHTML = cats.map(c=>`<div class="cat-chip ${c.id===catSeleccionada?'activa':''}" onclick="catSeleccionada=${c.id};dibujarCats();actualizarInterfaz();">${c.i} ${c.n}</div>`).join(''); }
+    function initCharts() { const opt = {maintainAspectRatio:false,cutout:'70%',plugins:{legend:{display:false},datalabels:{color:'#444',font:{weight:'bold',size:10}}}}; cIng=new Chart(document.getElementById('cIng'),{type:'doughnut',data:{labels:[],datasets:[{data:[],backgroundColor:['#2ecc71','#27ae60','#1abc9c']}]},options:opt}); cGas=new Chart(document.getElementById('cGas'),{type:'doughnut',data:{labels:[],datasets:[{data:[],backgroundColor:['#e74c3c','#e67e22','#f1c40f']}]},options:opt}); }
+    function actualizarCharts(ti,tg,di,dg) { cIng.data.labels=Object.keys(di); cIng.data.datasets[0].data=Object.values(di); cIng.update(); cGas.data.labels=Object.keys(dg); cGas.data.datasets[0].data=Object.values(dg); cGas.update(); }
+    function abrirModal() { document.getElementById('modal').style.display='flex'; dibujarGestion(); }
+    function cerrarModal() { document.getElementById('modal').style.display='none'; }
+    function dibujarGestion() { document.getElementById('lista-gestion').innerHTML = cats.map((c,i)=>`<div style="display:flex;justify-content:space-between;padding:10px;"><span>${c.i} ${c.n}</span><button onclick="cats.splice(${i},1);localStorage.setItem('cats_v15',JSON.stringify(cats));dibujarCats();dibujarGestion();">❌</button></div>`).join(''); }
+    function crearCat() { const i=document.getElementById('n-ico').value||"📦", n=document.getElementById('n-nom').value; if(n){ cats.push({id:Date.now(),n,i}); localStorage.setItem('cats_v15',JSON.stringify(cats)); dibujarCats(); dibujarGestion(); } }
 
     function extraerResumenPDF() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        let y = 20;
-        doc.setFontSize(16);
-        doc.text("RESUMEN DE INGRESOS Y EGRESOS", 20, y);
-        y += 10;
-        doc.setFontSize(12);
-        doc.text(`Usuario: JIMMY JACK PUREQ`, 20, y);
-        y += 7;
-        doc.text(`Fecha Reporte: ${new Date().toLocaleDateString()}`, 20, y);
-        y += 10;
-        doc.line(20, y, 190, y);
-        y += 10;
-        doc.setFont(undefined, 'bold');
-        doc.text(`BALANCE TOTAL: ${document.getElementById('saldo').innerText}`, 20, y);
-        y += 10;
-        doc.setFont(undefined, 'normal');
-        doc.text(`Total Ingresos: ${document.getElementById('txt-total-ing').innerText}`, 20, y);
-        y += 7;
-        doc.text(`Total Gastos: ${document.getElementById('txt-total-gas').innerText}`, 20, y);
-        y += 15;
-        doc.setFont(undefined, 'bold');
-        doc.text("DETALLE DE MOVIMIENTOS:", 20, y);
-        y += 10;
-        doc.setFontSize(9);
-        doc.setFont(undefined, 'normal');
-        movs.forEach((m) => {
-            if (y > 280) { doc.addPage(); y = 20; }
-            let linea = `${m.hora} | ${m.tipo.toUpperCase()} | ${m.catN} | S/. ${m.mon.toFixed(2)} | ${m.km}km`;
-            doc.text(linea, 20, y);
-            y += 6;
-        });
-        doc.save(`Resumen_JackPureq_${new Date().getTime()}.pdf`);
+        const { jsPDF } = window.jspdf; const doc = new jsPDF();
+        doc.text("REPORTE JACK PUREQ", 20, 20);
+        doc.text(`Balance: ${document.getElementById('saldo').innerText}`, 20, 30);
+        doc.save("Reporte.pdf");
+    }
+
+    function toggleSeguimiento() {
+        const btn = document.getElementById('btn-gps');
+        if (!activo) {
+            distTotal = 0; tInicio = new Date();
+            watchId = navigator.geolocation.watchPosition(p => {
+                if(latAnt){
+                    const R = 6371; const dLat = (p.coords.latitude-latAnt)*Math.PI/180; const dLon = (p.coords.longitude-lonAnt)*Math.PI/180;
+                    const a = Math.sin(dLat/2)**2 + Math.cos(latAnt*Math.PI/180)*Math.cos(p.coords.latitude*Math.PI/180)*Math.sin(dLon/2)**2;
+                    distTotal += R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                    document.getElementById('km').value = distTotal.toFixed(2);
+                }
+                latAnt = p.coords.latitude; lonAnt = p.coords.longitude;
+                document.getElementById('hrs').value = ((new Date()-tInicio)/3600000).toFixed(2);
+            });
+            activo = true; btn.innerText = "🛑 PARAR TURNO";
+        } else {
+            navigator.geolocation.clearWatch(watchId); activo = false; btn.innerText = "🚀 INICIAR TURNO";
+        }
     }
 </script>
 </body>
