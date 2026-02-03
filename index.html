@@ -6,6 +6,9 @@
     <title>JIMMY JACK PUREQ -  Gestor Taxímetro Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    
     <style>
         :root { --verde: #27ae60; --rojo: #e74c3c; --oscuro: #2c3e50; --azul: #3498db; --naranja: #f39c12; }
         
@@ -83,6 +86,9 @@
         .btn-mes.active { background: var(--verde); }
         .selector-nav { display: flex; align-items: center; justify-content: center; gap: 20px; margin-top: 10px; }
         .nav-btn { background: none; border: none; color: white; font-size: 30px; cursor: pointer; }
+
+        /* Estilo Botón PDF */
+        .btn-reporte { width: 100%; padding: 12px; margin-top: 15px; border-radius: 12px; border: none; background: #fff; color: var(--azul); font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body onload="inicializar()">
@@ -154,6 +160,13 @@
     </div>
 </div>
 
+<div id="modal-mes"><div class="modal-content">
+    <h3>Seleccionar Mes</h3>
+    <div id="grid-meses" class="grid-meses"></div>
+    <button class="btn-reporte" onclick="generarPDF()">📄 Descargar Reporte PDF</button>
+    <button onclick="document.getElementById('modal-mes').style.display='none'" style="width:100%; margin-top:15px; padding:12px; background:rgba(255,255,255,0.3); color:white; border:none; border-radius:12px;">Cerrar</button>
+</div></div>
+
 <div id="modal"><div class="modal-content">
     <h3>Categorías</h3>
     <div id="lista-gestion" style="max-height: 200px; overflow-y: auto; margin-bottom: 15px;"></div>
@@ -166,15 +179,9 @@
     <div class="selector-nav">
         <button class="nav-btn" onclick="navegarSemana(-7)">◀</button>
         <div id="rango-semana-modal" style="font-weight:bold;">--</div>
-        <button class="nav-btn" onclick="navegarSemana(7)">▶</button>
+        <button class="nav-btn" onclick="navegarAnio(7)">▶</button>
     </div>
     <button onclick="document.getElementById('modal-semana').style.display='none'" style="width:100%; margin-top:20px; padding:12px; background:white; color:var(--azul); border:none; border-radius:12px; font-weight:bold;">OK</button>
-</div></div>
-
-<div id="modal-mes"><div class="modal-content">
-    <h3>Seleccionar Mes</h3>
-    <div id="grid-meses" class="grid-meses"></div>
-    <button onclick="document.getElementById('modal-mes').style.display='none'" style="width:100%; margin-top:20px; padding:12px; background:white; color:var(--azul); border:none; border-radius:12px; font-weight:bold;">Cerrar</button>
 </div></div>
 
 <div id="modal-anio"><div class="modal-content">
@@ -201,7 +208,51 @@
         dibujarCats(); initCharts(); actualizarInterfaz();
     }
 
-    // --- FUNCION GPS ACTUALIZADA A H y M ---
+    // --- FUNCIÓN PARA GENERAR PDF (SIMILAR A IMAGEN) ---
+    function generarPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        doc.setFontSize(16);
+        doc.text("REPORTE MENSUAL DE INGRESOS Y EGRESOS", 105, 15, { align: "center" });
+        doc.setFontSize(12);
+        doc.text(`MES: ${nombresMeses[mesFiltro].toUpperCase()} / AÑO: ${anioFiltro}`, 105, 22, { align: "center" });
+
+        const filas = [];
+        let totalI = 0, totalG = 0;
+
+        // Filtrar movimientos del mes seleccionado
+        const movsFiltrados = movs.filter(m => {
+            const f = new Date(m.fecha);
+            return f.getMonth() === mesFiltro && f.getFullYear() === anioFiltro;
+        }).sort((a,b) => new Date(a.fecha) - new Date(b.fecha));
+
+        movsFiltrados.forEach(m => {
+            const esI = m.tipo === 'ingreso';
+            if(esI) totalI += m.mon; else totalG += m.mon;
+            
+            filas.push([
+                new Date(m.fecha).toLocaleDateString('es-PE'),
+                esI ? `S/. ${m.mon.toFixed(2)}` : "",
+                !esI ? `S/. ${m.mon.toFixed(2)}` : "",
+                m.catN,
+                m.metodoN,
+                m.km ? `${m.km} km` : "---"
+            ]);
+        });
+
+        doc.autoTable({
+            startY: 30,
+            head: [['FECHA', 'INGRESO', 'EGRESO', 'MOVIMIENTO', 'PAGO', 'DISTANCIA']],
+            body: filas,
+            headStyles: { fillColor: [44, 62, 80] },
+            foot: [['TOTALES', `S/. ${totalI.toFixed(2)}`, `S/. ${totalG.toFixed(2)}`, '', 'BALANCE:', `S/. ${(totalI-totalG).toFixed(2)}`]],
+            footStyles: { fillColor: [240, 240, 240], textColor: [0, 0, 0], fontStyle: 'bold' }
+        });
+
+        doc.save(`Reporte_${nombresMeses[mesFiltro]}_${anioFiltro}.pdf`);
+    }
+
     function toggleSeguimiento() {
         const btn = document.getElementById('btn-gps');
         if (!activo) {
@@ -212,10 +263,8 @@
             }
         } else {
             const tFinal = new Date(), diffMs = tFinal - tInicio;
-            let hh = Math.floor(diffMs / 3600000);
-            let mm = Math.floor((diffMs % 3600000) / 60000);
+            let hh = Math.floor(diffMs / 3600000), mm = Math.floor((diffMs % 3600000) / 60000);
             const tiempoFinal = `${hh}h ${mm}m`;
-
             if (distTotal > 0.01) {
                 let montoAuto = prompt(`RESUMEN:\n🚗 ${distTotal.toFixed(2)} km\n⏱️ ${tiempoFinal}\n\n¿Cobro?`);
                 if (montoAuto) { document.getElementById('monto').value = montoAuto; registrar('ingreso'); }
@@ -233,11 +282,8 @@
             document.getElementById('km').value = distTotal.toFixed(2);
         }
         latAnt = pos.coords.latitude; lonAnt = pos.coords.longitude;
-        
-        let ms = new Date() - tInicio;
-        let hh = Math.floor(ms / 3600000);
-        let mm = Math.floor((ms % 3600000) / 60000);
-        document.getElementById('hrs').value = `${hh}H ${mm}m`;
+        let ms = new Date() - tInicio, hh = Math.floor(ms / 3600000), mm = Math.floor((ms % 3600000) / 60000);
+        document.getElementById('hrs').value = `${hh}h ${mm}m`;
     }
 
     function registrar(tipo) {
@@ -306,7 +352,7 @@
     function abrirModalAnio() { document.getElementById('modal-anio').style.display = 'flex'; }
     function abrirModalMes() {
         const g = document.getElementById('grid-meses');
-        g.innerHTML = nombresMeses.map((m, i) => `<button class="btn-mes ${i === mesFiltro ? 'active' : ''}" onclick="mesFiltro=${i};document.getElementById('modal-mes').style.display='none';actualizarInterfaz();">${m}</button>`).join('');
+        g.innerHTML = nombresMeses.map((m, i) => `<button class="btn-mes ${i === mesFiltro ? 'active' : ''}" onclick="mesFiltro=${i};actualizarInterfaz();abrirModalMes();">${m}</button>`).join('');
         document.getElementById('modal-mes').style.display = 'flex';
     }
 
@@ -323,4 +369,3 @@
 </script>
 </body>
 </html>
-
