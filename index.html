@@ -6,46 +6,15 @@
     <title>JIMMY JACK PUREQ -  Gestor Taxímetro Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     
     <style>
         :root { --verde: #27ae60; --rojo: #e74c3c; --oscuro: #2c3e50; --azul: #3498db; --naranja: #f39c12; }
         
-        html, body { 
-            overflow: hidden; 
-            height: 100%; 
-            width: 100%; 
-            position: fixed; 
-            margin: 0; 
-            padding: 0;
-            touch-action: manipulation;
-        }
+        html, body { overflow: hidden; height: 100%; width: 100%; position: fixed; margin: 0; padding: 0; touch-action: manipulation; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; }
 
-        body { 
-            font-family: 'Segoe UI', sans-serif; 
-            background-color: #f0f2f5; 
-            display: flex; 
-            justify-content: center; 
-        }
-
-        .tarjeta { 
-            background: rgba(206, 164, 189, 0.73); 
-            padding: 15px; 
-            width: 100%; 
-            max-width: 480px; 
-            height: 100vh;
-            display: flex; 
-            flex-direction: column; 
-            box-sizing: border-box;
-        }
-        
-        .scroll-interno {
-            flex: 1;
-            overflow-y: auto;
-            padding-bottom: 20px;
-            -webkit-overflow-scrolling: touch;
-        }
+        .tarjeta { background: rgba(206, 164, 189, 0.73); padding: 15px; width: 100%; max-width: 480px; height: 100vh; display: flex; flex-direction: column; box-sizing: border-box; }
+        .scroll-interno { flex: 1; overflow-y: auto; padding-bottom: 20px; -webkit-overflow-scrolling: touch; }
 
         .nav-periodos { display: flex; justify-content: space-around; border-bottom: 1px solid #eee; margin-bottom: 10px; flex-shrink: 0; }
         .tab-btn { padding: 10px 5px; border: none; background: none; font-size: 16px; color: #777; cursor: pointer; border-bottom: 3px solid transparent; }
@@ -72,7 +41,6 @@
         input { padding: 12px; border-radius: 12px; border: 1px solid #ddd; flex: 1; font-size: 18px; outline: none; min-width: 0; }
         
         .input-auto { background: #fffdf0; border-color: var(--naranja); font-weight: bold; color: var(--naranja); flex: 1; max-width: 48%; }
-
         .btn-accion { flex: 1; padding: 15px; border: none; border-radius: 120px; color: white; font-weight: bold; cursor: pointer; font-size: 16px; }
         
         .historial { margin-top: 10px; border-top: 1px solid #eee; }
@@ -87,7 +55,7 @@
         .selector-nav { display: flex; align-items: center; justify-content: center; gap: 20px; margin-top: 10px; }
         .nav-btn { background: none; border: none; color: white; font-size: 30px; cursor: pointer; }
 
-        .btn-reporte { width: 100%; padding: 12px; margin-top: 15px; border-radius: 12px; border: none; background: #fff; color: var(--azul); font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn-ws { width: 100%; padding: 12px; margin-top: 15px; border-radius: 12px; border: none; background: #25D366; color: white; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body onload="inicializar()">
@@ -110,17 +78,11 @@
 
         <div class="seccion-graficos">
             <div class="caja-grafico">
-                <div class="texto-centro">
-                    <small style="color: var(--verde); font-weight: bold;">INGRESOS</small><br>
-                    <span id="txt-total-ing" style="font-size: 20px; font-weight: bold; color: var(--oscuro);">S/. 0.00</span>
-                </div>
+                <div class="texto-centro"><small style="color: var(--verde); font-weight: bold;">INGRESOS</small><br><span id="txt-total-ing" style="font-size: 20px; font-weight: bold; color: var(--oscuro);">S/. 0.00</span></div>
                 <canvas id="cIng"></canvas>
             </div>
             <div class="caja-grafico">
-                <div class="texto-centro">
-                    <small style="color: var(--rojo); font-weight: bold;">GASTOS</small><br>
-                    <span id="txt-total-gas" style="font-size: 20px; font-weight: bold; color: var(--oscuro);">S/. 0.00</span>
-                </div>
+                <div class="texto-centro"><small style="color: var(--rojo); font-weight: bold;">GASTOS</small><br><span id="txt-total-gas" style="font-size: 20px; font-weight: bold; color: var(--oscuro);">S/. 0.00</span></div>
                 <canvas id="cGas"></canvas>
             </div>
         </div>
@@ -162,7 +124,7 @@
 <div id="modal-mes"><div class="modal-content">
     <h3>Seleccionar Mes</h3>
     <div id="grid-meses" class="grid-meses"></div>
-    <button class="btn-reporte" onclick="generarPDF()">📄 DESCARGAR REPORTE PDF</button>
+    <button class="btn-ws" onclick="compartirWhatsApp()">📲 COMPARTIR REPORTE POR WHATSAPP</button>
     <button onclick="document.getElementById('modal-mes').style.display='none'" style="width:100%; margin-top:15px; padding:12px; background:rgba(255,255,255,0.3); color:white; border:none; border-radius:12px;">Cerrar</button>
 </div></div>
 
@@ -175,21 +137,13 @@
 
 <div id="modal-semana"><div class="modal-content">
     <h3>Navegar Semanas</h3>
-    <div class="selector-nav">
-        <button class="nav-btn" onclick="navegarSemana(-7)">◀</button>
-        <div id="rango-semana-modal" style="font-weight:bold;">--</div>
-        <button class="nav-btn" onclick="navegarSemana(7)">▶</button>
-    </div>
+    <div class="selector-nav"><button class="nav-btn" onclick="navegarSemana(-7)">◀</button><div id="rango-semana-modal" style="font-weight:bold;">--</div><button class="nav-btn" onclick="navegarSemana(7)">▶</button></div>
     <button onclick="document.getElementById('modal-semana').style.display='none'" style="width:100%; margin-top:20px; padding:12px; background:white; color:var(--azul); border:none; border-radius:12px; font-weight:bold;">OK</button>
 </div></div>
 
 <div id="modal-anio"><div class="modal-content">
     <h3>Navegar Año</h3>
-    <div class="selector-nav">
-        <button class="nav-btn" onclick="navegarAnio(-1)">◀</button>
-        <div id="txt-anio-modal" style="font-size:24px; font-weight:bold;">2026</div>
-        <button class="nav-btn" onclick="navegarAnio(1)">▶</button>
-    </div>
+    <div class="selector-nav"><button class="nav-btn" onclick="navegarAnio(-1)">◀</button><div id="txt-anio-modal" style="font-size:24px; font-weight:bold;">2026</div><button class="nav-btn" onclick="navegarAnio(1)">▶</button></div>
     <button onclick="document.getElementById('modal-anio').style.display='none'" style="width:100%; margin-top:20px; padding:12px; background:white; color:var(--azul); border:none; border-radius:12px; font-weight:bold;">OK</button>
 </div></div>
 
@@ -207,60 +161,36 @@
         dibujarCats(); initCharts(); actualizarInterfaz();
     }
 
-    // --- FUNCIÓN PDF CORREGIDA PARA APK (ABRE EN NUEVA VENTANA / BLOB) ---
-    function generarPDF() {
-        try {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            doc.setFontSize(16);
-            doc.text("REPORTE MENSUAL DE INGRESOS Y EGRESOS", 105, 15, { align: "center" });
-            doc.setFontSize(10);
-            doc.text(`USUARIO: JIMMY JACK PUREQ | FECHA: ${new Date().toLocaleDateString()}`, 10, 25);
-            doc.text(`RESUMEN: 01-${nombresMeses[mesFiltro].toUpperCase()} al 31-${nombresMeses[mesFiltro].toUpperCase()} ${anioFiltro}`, 10, 30);
+    // --- FUNCIÓN WHATSAPP (REMPLAZA AL PDF) ---
+    function compartirWhatsApp() {
+        let txt = `🚕 *REPORTE GESTOR TAXI PUREQ*\n`;
+        txt += `📅 *MES:* ${nombresMeses[mesFiltro].toUpperCase()} ${anioFiltro}\n`;
+        txt += `------------------------------\n\n`;
 
-            const filas = [];
-            let totalI = 0, totalG = 0;
+        let totalI = 0, totalG = 0;
+        const movsFiltrados = movs.filter(m => {
+            const f = new Date(m.fecha);
+            return f.getMonth() === mesFiltro && f.getFullYear() === anioFiltro;
+        }).sort((a,b) => new Date(a.fecha) - new Date(b.fecha));
 
-            const movsFiltrados = movs.filter(m => {
-                const f = new Date(m.fecha);
-                return f.getMonth() === mesFiltro && f.getFullYear() === anioFiltro;
-            }).sort((a,b) => new Date(a.fecha) - new Date(b.fecha));
+        if(movsFiltrados.length === 0) { alert("No hay datos en este mes"); return; }
 
-            movsFiltrados.forEach(m => {
-                const esI = m.tipo === 'ingreso';
-                if(esI) totalI += m.mon; else totalG += m.mon;
-                filas.push([
-                    `${new Date(m.fecha).toLocaleDateString('es-PE')} ${m.hora}`,
-                    esI ? `S/. ${m.mon.toFixed(2)}` : "",
-                    !esI ? `S/. ${m.mon.toFixed(2)}` : "",
-                    m.catN,
-                    `S/. ${m.mon.toFixed(2)}`,
-                    m.km ? `${m.km} km` : "---"
-                ]);
-            });
+        movsFiltrados.forEach(m => {
+            const esI = m.tipo === 'ingreso';
+            if(esI) totalI += m.mon; else totalG += m.mon;
+            let fechaCorta = new Date(m.fecha).toLocaleDateString('es-PE', {day:'2-digit', month:'2-digit'});
+            txt += `${fechaCorta} | ${esI ? '🟢' : '🔴'} S/.${m.mon.toFixed(2)} | ${m.catN}\n`;
+        });
 
-            doc.autoTable({
-                startY: 35,
-                head: [['Fecha y Hora', 'INGRESO', 'EGRESO', 'MOVIMIENTO', 'MONTO', 'DISTANCIA']],
-                body: filas,
-                theme: 'grid',
-                headStyles: { fillColor: [44, 62, 80], fontSize: 8 },
-                bodyStyles: { fontSize: 8 },
-                didDrawPage: function (data) {
-                    doc.setFontSize(10);
-                    doc.text(`BALANCE TOTAL: S/. ${(totalI - totalG).toFixed(2)}`, 14, doc.internal.pageSize.height - 10);
-                }
-            });
+        txt += `\n------------------------------\n`;
+        txt += `🟢 *INGRESOS:* S/. ${totalI.toFixed(2)}\n`;
+        txt += `🔴 *GASTOS:* S/. ${totalG.toFixed(2)}\n`;
+        txt += `💰 *BALANCE:* S/. ${(totalI - totalG).toFixed(2)}\n`;
+        txt += `🚗 *KM TOTAL:* ${movsFiltrados.reduce((a,b)=>a+(parseFloat(b.km)||0),0).toFixed(2)} km\n\n`;
+        txt += `_Generado desde mi Gestor Pro_`;
 
-            // MÉTODO COMPATIBLE CON APK: Genera un Blob y lo intenta abrir
-            const blob = doc.output('blob');
-            const url = URL.createObjectURL(blob);
-            window.open(url, '_blank');
-            
-        } catch (e) {
-            alert("Error al generar PDF: " + e.message);
-        }
+        const encoded = encodeURIComponent(txt);
+        window.open(`https://wa.me/?text=${encoded}`, '_blank');
     }
 
     function toggleSeguimiento() {
@@ -309,7 +239,7 @@
 
     function actualizarInterfaz() {
         const listaUI = document.getElementById('lista'), fFiltro = document.getElementById('input-fecha-filtro').value;
-        const ahora = new Date(), rangoSem = getRangoSemana(fRefSemana);
+        const rangoSem = getRangoSemana(fRefSemana);
         document.getElementById('txt-semana').innerText = rangoSem.texto;
         document.getElementById('rango-semana-modal').innerText = rangoSem.texto;
         document.getElementById('txt-mes').innerText = nombresMeses[mesFiltro] + " " + anioFiltro;
