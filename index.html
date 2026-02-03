@@ -231,8 +231,14 @@
             document.getElementById('km').value = distTotal.toFixed(2);
         }
         latAnt = pos.coords.latitude; lonAnt = pos.coords.longitude;
-        document.getElementById('hrs').value = ((new Date() - tInicio) / 3600000).toFixed(2);
-    }
+        // BUSCA ESTA:
+// document.getElementById('hrs').value = ((new Date() - tInicio) / 3600000).toFixed(2);
+
+// REEMPLÁZALA POR ESTA:
+let ms = new Date() - tInicio;
+let hh = Math.floor(ms / 3600000);
+let mm = Math.floor((ms % 3600000) / 60000);
+document.getElementById('hrs').value = `${hh}h ${mm}m`;}
 
     function registrar(tipo) {
         const mon = parseFloat(document.getElementById('monto').value);
