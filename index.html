@@ -9,7 +9,6 @@
     <style>
         :root { --verde: #27ae60; --rojo: #e74c3c; --oscuro: #2c3e50; --azul: #3498db; --naranja: #f39c12; }
         
-        /* BLOQUEO DE MOVIMIENTO DE PÁGINA */
         html, body { 
             overflow: hidden; 
             height: 100%; 
@@ -32,13 +31,12 @@
             padding: 15px; 
             width: 100%; 
             max-width: 480px; 
-            height: 100vh; /* Ocupa toda la pantalla sin moverse */
+            height: 100vh;
             display: flex; 
             flex-direction: column; 
             box-sizing: border-box;
         }
         
-        /* Contenedor que sí permite scroll solo donde hay datos */
         .scroll-interno {
             flex: 1;
             overflow-y: auto;
@@ -70,7 +68,6 @@
         .fila { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; flex-shrink: 0; }
         input { padding: 12px; border-radius: 12px; border: 1px solid #ddd; flex: 1; font-size: 18px; outline: none; min-width: 0; }
         
-        /* TAMAÑO DE CASILLEROS PARA QUE NO SE SALGAN */
         .input-auto { background: #fffdf0; border-color: var(--naranja); font-weight: bold; color: var(--naranja); flex: 1; max-width: 48%; }
 
         .btn-accion { flex: 1; padding: 15px; border: none; border-radius: 120px; color: white; font-weight: bold; cursor: pointer; font-size: 16px; }
@@ -87,19 +84,19 @@
         .selector-nav { display: flex; align-items: center; justify-content: center; gap: 20px; margin-top: 10px; }
         .nav-btn { background: none; border: none; color: white; font-size: 30px; cursor: pointer; }
     </style>
-    </head>
-    <body onload="inicializar()">
+</head>
+<body onload="inicializar()">
     
-    <div class="tarjeta">
-        <div class="nav-periodos">
-            <button class="tab-btn active" onclick="cambiarPeriodo('dia', this)">Día</button>
-            <button class="tab-btn" onclick="cambiarPeriodo('semana', this)">Semana</button>
-            <button class="tab-btn" onclick="cambiarPeriodo('mes', this)">Mes</button>
-            <button class="tab-btn" onclick="cambiarPeriodo('anio', this)">Año</button>
-        </div>
-        
+<div class="tarjeta">
+    <div class="nav-periodos">
+        <button class="tab-btn active" onclick="cambiarPeriodo('dia', this)">Día</button>
+        <button class="tab-btn" onclick="cambiarPeriodo('semana', this)">Semana</button>
+        <button class="tab-btn" onclick="cambiarPeriodo('mes', this)">Mes</button>
+        <button class="tab-btn" onclick="cambiarPeriodo('anio', this)">Año</button>
+    </div>
+    
     <div class="balance-card">
-        <small style="opacity: 0.8;">JIMMY JACK PUREQ - Gestor/Taxímetro Pro</small><br>
+        <small style="opacity: 0.8;">JIMMY JACK PUREQ - Pro</small><br>
         <span id="saldo">S/. 0.00</span>
     </div>
 
@@ -145,7 +142,7 @@
 
         <div class="fila">
             <input type="number" id="km" class="input-auto" placeholder="0.00 KM" step="0.01">
-            <input type="number" id="hrs" class="input-auto" placeholder="0.00 Horas" step="0.01">
+            <input type="text" id="hrs" class="input-auto" placeholder="0h 0m" readonly>
         </div>
         
         <div class="fila">
@@ -204,6 +201,7 @@
         dibujarCats(); initCharts(); actualizarInterfaz();
     }
 
+    // --- FUNCION GPS ACTUALIZADA A H y M ---
     function toggleSeguimiento() {
         const btn = document.getElementById('btn-gps');
         if (!activo) {
@@ -213,9 +211,13 @@
                 activo = true; btn.innerText = "🛑 FINALIZAR TURNO"; btn.style.background = "#7f8c8d";
             }
         } else {
-            const tFinal = new Date(), diffMs = tFinal - tInicio, totalHoras = (diffMs / 3600000).toFixed(2);
+            const tFinal = new Date(), diffMs = tFinal - tInicio;
+            let hh = Math.floor(diffMs / 3600000);
+            let mm = Math.floor((diffMs % 3600000) / 60000);
+            const tiempoFinal = `${hh}h ${mm}m`;
+
             if (distTotal > 0.01) {
-                let montoAuto = prompt(`RESUMEN:\n🚗 ${distTotal.toFixed(2)} km\n⏱️ ${totalHoras} hrs\n\n¿Cobro?`);
+                let montoAuto = prompt(`RESUMEN:\n🚗 ${distTotal.toFixed(2)} km\n⏱️ ${tiempoFinal}\n\n¿Cobro?`);
                 if (montoAuto) { document.getElementById('monto').value = montoAuto; registrar('ingreso'); }
             }
             navigator.geolocation.clearWatch(watchId); activo = false; btn.innerText = "🚀 INICIAR TURNO (GPS)"; btn.style.background = "var(--naranja)";
@@ -231,17 +233,19 @@
             document.getElementById('km').value = distTotal.toFixed(2);
         }
         latAnt = pos.coords.latitude; lonAnt = pos.coords.longitude;
+        
         let ms = new Date() - tInicio;
-let hh = Math.floor(ms / 3600000);
-let mm = Math.floor((ms % 3600000) / 60000);
-document.getElementById('hrs').value = `${hh}h ${mm}m`;}
+        let hh = Math.floor(ms / 3600000);
+        let mm = Math.floor((ms % 3600000) / 60000);
+        document.getElementById('hrs').value = `${hh}h ${mm}m`;
+    }
 
     function registrar(tipo) {
         const mon = parseFloat(document.getElementById('monto').value);
         if (mon >= 0) {
             const catObj = cats.find(c => c.id === catSeleccionada);
             const ahora = new Date();
-            movs.unshift({ mon, tipo, catN: catObj.n, catI: catObj.i, km: document.getElementById('km').value || 0, hrs: document.getElementById('hrs').value || 0, metodoN: metodoActual.n, metodoI: metodoActual.i, fecha: ahora.toISOString(), hora: ahora.toLocaleTimeString('es-PE', {hour:'2-digit', minute:'2-digit', hour12:false}) });
+            movs.unshift({ mon, tipo, catN: catObj.n, catI: catObj.i, km: document.getElementById('km').value || 0, hrs: document.getElementById('hrs').value || "0h 0m", metodoN: metodoActual.n, metodoI: metodoActual.i, fecha: ahora.toISOString(), hora: ahora.toLocaleTimeString('es-PE', {hour:'2-digit', minute:'2-digit', hour12:false}) });
             localStorage.setItem('movs_v15', JSON.stringify(movs));
             document.getElementById('monto').value = ''; actualizarInterfaz();
         }
@@ -268,7 +272,7 @@ document.getElementById('hrs').value = `${hh}h ${mm}m`;}
                 const esI = m.tipo === 'ingreso';
                 if (esI) dIng[m.catN] = (dIng[m.catN] || 0) + m.mon; else dGas[m.catN] = (dGas[m.catN] || 0) + m.mon;
                 listaUI.innerHTML += `<div class="item" style="border-left-color: ${esI ? 'var(--verde)' : 'var(--rojo)'}">
-                    <div><strong>${m.catI} ${m.catN}</strong><br><small>🕒 ${m.hora} | ${fM.toLocaleDateString('es-PE',{day:'2-digit',month:'2-digit'})}</small><br><small>🚗 ${m.km}km • ⏱️ ${m.hrs}h</small></div>
+                    <div><strong>${m.catI} ${m.catN}</strong><br><small>🕒 ${m.hora} | ${fM.toLocaleDateString('es-PE',{day:'2-digit',month:'2-digit'})}</small><br><small>🚗 ${m.km}km • ⏱️ ${m.hrs}</small></div>
                     <div style="text-align: right;"><span style="color:${esI?'var(--verde)':'var(--rojo)'}; font-weight:bold;">S/.${m.mon.toFixed(2)}</span><br><button onclick="editarMovimiento(${index})" style="background:none; border:none; font-size:18px;">✏️</button><button onclick="eliminarMovimiento(${index})" style="background:none; border:none; font-size:18px; margin-left:10px;">🗑️</button></div>
                 </div>`;
             }
