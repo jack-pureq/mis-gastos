@@ -14,7 +14,7 @@
 
         /* SPLASH */
         #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #2c3e50 0%, #000 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; color: white; transition: opacity 0.8s ease; }
-        .logo-gt { font-size: 100px; font-weight: 900; font-family: 'Arial Black', sans-serif; background: linear-gradient(145deg, #fff 40%, #888); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)); letter-spacing: -5px; }
+        .logo-gt { font-size: 280px; font-weight: 900; font-family: 'Arial Black', sans-serif; background: linear-gradient(145deg, #fff 40%, #888); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)); letter-spacing: -5px; }
         .m-software { font-size: 12px; letter-spacing: 4px; opacity: 0.7; margin-top: -10px; }
         .loader { width: 150px; height: 3px; background: rgba(255,255,255,0.1); border-radius: 10px; margin-top: 30px; position: relative; overflow: hidden; }
         .loader::after { content: ""; position: absolute; left: -100%; width: 100%; height: 100%; background: var(--verde); animation: load 3s forwards; }
@@ -23,9 +23,13 @@
         .page { position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding: 15px; display: flex; flex-direction: column; background: var(--gris); transition: transform 0.4s ease-in-out; }
         .hidden { transform: translateX(100%); }
 
+        /* BARRA DE META EXCLUSIVA */
+        #contenedor-meta { width: 100%; height: 12px; background: #e0e0e0; position: absolute; top: 0; left: 0; cursor: pointer; z-index: 50; border-bottom: 1px solid var(--naranja); }
+        #progreso-meta { height: 100%; width: 0%; background: var(--verde); transition: width 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
         /* ELEMENTOS TRABAJO */
-        .header-perfil { display: flex; justify-content: flex-end; padding: 5px; }
-        .btn-perfil { background: #fff; border: 1px solid #ddd; padding: 8px 15px; border-radius: 12px; font-weight: bold; font-size: 12px; }
+        .header-perfil { display: flex; justify-content: flex-end; padding: 15px 5px 5px 5px; }
+        .btn-perfil { background: #fff; border: 1px solid #ddd; padding: 8px 15px; border-radius: 12px; font-weight: bold; font-size: 12px; cursor: pointer; }
         
         .main-balance-container { text-align: center; margin: 20px 0; cursor: pointer; user-select: none; }
         #saldo-principal { font-size: 48px; font-weight: 900; color: var(--oscuro); display: block; }
@@ -42,26 +46,31 @@
         .btn-engranaje { width: 65px; border-radius: 15px; border: 1px solid #ddd; background: #fff; font-size: 24px; box-shadow: 0 4px 0 #ccc; flex-shrink: 0; }
         .input-auto-visual { flex: 1; min-width: 0; padding: 12px 5px; border-radius: 12px; background: #fffdf0; border: 2px solid var(--naranja); text-align: center; font-weight: bold; color: var(--naranja); font-size: 14px; outline: none; }
 
-        /* MODALES */
+        /* PANTALLA PERFIL */
+        #page-perfil { z-index: 150; background: var(--oscuro); color: white; }
+        .card-perfil { background: rgba(255,255,255,0.1); padding: 20px; border-radius: 25px; margin-top: 60px; text-align: center; }
+        .foto-perfil-circulo { width: 100px; height: 100px; background: #555; border-radius: 50%; margin: 0 auto 15px; border: 4px solid var(--azul); overflow: hidden; position: relative; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .foto-perfil-circulo img { width: 100%; height: 100%; object-fit: cover; }
+        .edit-nombre-btn { background: none; border: none; color: var(--azul); font-size: 14px; font-weight: bold; cursor: pointer; }
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .stat-box { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; }
+
+        /* REPORTE Y MODALES */
+        #page-reportes { z-index: 100; overflow-y: auto; background: white; }
+        .btn-volver { background: none; border: none; font-size: 28px; padding: 15px; position: absolute; top: 0; left: 0; z-index: 10; color: inherit; }
+        .nav-periodos { display: flex; justify-content: space-around; margin-top: 50px; border-bottom: 1px solid #eee; }
+        .tab-btn { padding: 12px; border: none; background: none; font-weight: bold; color: #888; }
+        .tab-btn.active { color: var(--azul); border-bottom: 3px solid var(--azul); }
+        .filtros-pago-reporte { display: flex; gap: 5px; padding: 10px 15px; background: #f9f9f9; border-bottom: 1px solid #eee; }
+        .btn-filtro-pago { flex: 1; padding: 8px; border-radius: 10px; border: 1px solid #ddd; background: white; font-size: 10px; font-weight: bold; color: #666; }
+        .btn-filtro-pago.active { background: var(--azul); color: white; border-color: var(--azul); }
+        .caja-grafico { position: relative; height: 180px; background: #fff; border-radius: 20px; padding: 5px; border: 2px solid #eee; margin-bottom: 10px; }
+        .item-mov { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid #f5f5f5; font-size: 14px; border-left: 5px solid transparent; }
         .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); align-items:center; justify-content:center; z-index:1000; }
         .modal-content { background: var(--azul); padding: 25px; border-radius: 25px; width: 95%; max-width: 400px; color: white; text-align: center; position: relative; }
         .btn-emoji-selector { width: 55px; height: 55px; border-radius: 50%; border: 2px dashed white; background: rgba(255,255,255,0.2); font-size: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .emoji-grid-container { background: white; border-radius: 15px; padding: 10px; color: #333; max-height: 300px; overflow-y: auto; display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 10px; }
         .emoji-option { font-size: 30px; padding: 5px; cursor: pointer; }
-
-        #page-reportes { z-index: 100; overflow-y: auto; background: white; }
-        .btn-volver { background: none; border: none; font-size: 28px; padding: 15px; position: absolute; top: 0; left: 0; z-index: 10; }
-        .nav-periodos { display: flex; justify-content: space-around; margin-top: 50px; border-bottom: 1px solid #eee; }
-        .tab-btn { padding: 12px; border: none; background: none; font-weight: bold; color: #888; }
-        .tab-btn.active { color: var(--azul); border-bottom: 3px solid var(--azul); }
-        
-        /* FILTROS DE PAGO EN REPORTES */
-        .filtros-pago-reporte { display: flex; gap: 5px; padding: 10px 15px; background: #f9f9f9; border-bottom: 1px solid #eee; }
-        .btn-filtro-pago { flex: 1; padding: 8px; border-radius: 10px; border: 1px solid #ddd; background: white; font-size: 10px; font-weight: bold; color: #666; transition: 0.3s; }
-        .btn-filtro-pago.active { background: var(--azul); color: white; border-color: var(--azul); }
-
-        .caja-grafico { position: relative; height: 180px; background: #fff; border-radius: 20px; padding: 5px; border: 2px solid #eee; margin-bottom: 10px; }
-        .item-mov { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid #f5f5f5; font-size: 14px; border-left: 5px solid transparent; }
     </style>
 </head>
 <body onload="inicializar()">
@@ -73,58 +82,33 @@
     </div>
 
     <div id="page-trabajo" class="page">
-        <div class="header-perfil"><button class="btn-perfil">Perfil</button></div>
-        
+        <div id="contenedor-meta" onclick="abrirModalMeta()"><div id="progreso-meta"></div></div>
+        <div class="header-perfil"><button class="btn-perfil" onclick="irAPerfil(true)">👤 Perfil</button></div>
         <div class="main-balance-container" onclick="togglePrivacidad()">
             <span id="saldo-principal">S/. 0.00</span>
-            <span class="lbl-balance" id="lbl-status-balance">VER BALANCE Y REPORTES ➔</span>
+            <span class="lbl-balance" id="lbl-status-balance">GESTOR TAXI JACK </span>
         </div>
-
         <button id="btn-gps" class="btn-gps-principal" onclick="toggleSeguimiento()">🚀 INICIAR TURNO</button>
         <div class="contenedor-cats" id="cat-chips"></div>
-        
         <div class="metodos-pago">
             <button class="metodo-btn active" onclick="setMetodo('Efectivo', '💵', this)">💵 EFECTIVO</button>
             <button class="metodo-btn" onclick="setMetodo('Yape', '🟣', this)">🟣 YAPE</button>
             <button class="metodo-btn" onclick="setMetodo('Tarjeta', '💳', this)">💳 TARJETA</button>
         </div>
-        
         <div style="display:flex; gap:10px; margin-bottom:10px;">
             <input type="number" id="monto" class="input-monto" placeholder="S/. 0.00">
             <button class="btn-engranaje" onclick="abrirModal()">⚙️</button>
         </div>
-
         <div style="display:flex; gap:10px; margin-bottom:15px; width: 100%;">
-            <input type="text" id="km" class="input-auto-visual" placeholder="0.00 KM">
+            <input type="text" id="km" class="input-auto-visual" placeholder="0.00 KM" readonly>
             <input type="text" id="hrs" class="input-auto-visual" placeholder="0h 0m" readonly>
         </div>
-
         <div style="display:flex; gap:10px;">
             <button class="btn-gps-principal" style="flex:1; background:var(--verde); box-shadow:0 6px 0 #1e8449;" onclick="registrar('ingreso')">➕ INGRESO</button>
             <button class="btn-gps-principal" style="flex:1; background:var(--rojo); box-shadow:0 6px 0 #c0392b;" onclick="registrar('gasto')">➖ GASTO</button>
         </div>
-
-        <div style="text-align:center; margin-top:5px;">
-            <small onclick="irAReportes(true)" style="color:var(--azul); font-weight:bold; cursor:pointer;">📂 ABRIR REPORTES</small>
-        </div>
+        <div style="text-align:center; margin-top:5px;"><small onclick="irAReportes(true)" style="color:var(--azul); font-weight:bold; cursor:pointer;">📂 ABRIR REPORTES</small></div>
     </div>
-
-    <div id="modal" class="modal"><div class="modal-content">
-        <h3>Categorías</h3>
-        <div id="lista-gestion" style="max-height:180px; overflow-y:auto; margin-bottom:15px; background:rgba(255,255,255,0.1); border-radius:10px;"></div>
-        <div style="display:flex; align-items:center; gap:10px; background:rgba(0,0,0,0.1); padding:10px; border-radius:15px;">
-            <div id="btn-emoji-actual" class="btn-emoji-selector" onclick="abrirVariedad()">🚕</div>
-            <input type="text" id="n-nom" placeholder="Nombre de categoría" style="flex:1; padding:12px; border-radius:10px; border:none; outline:none;">
-            <button onclick="crearCat()" style="background:var(--verde); color:white; border:none; width:50px; height:50px; border-radius:10px; font-size:24px;">+</button>
-        </div>
-        <button onclick="cerrarModal()" style="width:100%; margin-top:15px; padding:12px; border:none; border-radius:10px; background:white; font-weight:bold; color:var(--azul);">CERRAR</button>
-    </div></div>
-
-    <div id="modal-emojis" class="modal"><div class="modal-content" style="background: white; color: #333;">
-        <h3 style="color: var(--azul);">Selecciona un Emoji</h3>
-        <div class="emoji-grid-container" id="grid-variedad"></div>
-        <button onclick="cerrarVariedad()" style="width:100%; margin-top:15px; padding:12px; border:none; border-radius:10px; background:var(--azul); font-weight:bold; color:white;">VOLVER</button>
-    </div></div>
 
     <div id="page-reportes" class="page hidden">
         <button class="btn-volver" onclick="irAReportes(false)">⬅</button>
@@ -134,14 +118,12 @@
             <button class="tab-btn" onclick="cambiarPeriodo('mes', this)">Mes</button>
             <button class="tab-btn" onclick="cambiarPeriodo('anio', this)">Año</button>
         </div>
-
         <div class="filtros-pago-reporte">
             <button class="btn-filtro-pago active" id="f-todos" onclick="filtrarPorMetodo('Todos', this)">TODOS</button>
             <button class="btn-filtro-pago" onclick="filtrarPorMetodo('Efectivo', this)">EFECTIVO</button>
             <button class="btn-filtro-pago" onclick="filtrarPorMetodo('Yape', this)">YAPE</button>
             <button class="btn-filtro-pago" onclick="filtrarPorMetodo('Tarjeta', this)">TARJETA</button>
         </div>
-
         <div style="flex:1; overflow-y:auto; padding-top:10px;">
             <div id="visor-fecha-general" style="text-align:center; margin-bottom:10px;">
                 <input type="date" id="input-fecha-filtro" onchange="actualizarInterfaz()" style="border:none; background:#eee; padding:10px; border-radius:10px; font-weight:bold;">
@@ -164,162 +146,221 @@
         </div>
     </div>
 
-    <div id="modal-mes" class="modal"><div class="modal-content"><h3>Mes</h3><div id="grid-meses" style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;"></div><button onclick="document.getElementById('modal-mes').style.display='none'" style="margin-top:15px; width:100%; padding:10px;">Cerrar</button></div></div>
-    <div id="modal-semana" class="modal"><div class="modal-content"><h3>Semanas</h3><div class="selector-nav"><button class="nav-btn" onclick="navegarSemana(-7)">◀</button><span id="rango-semana-modal"></span><button class="nav-btn" onclick="navegarSemana(7)">▶</button></div><button onclick="document.getElementById('modal-semana').style.display='none'" style="margin-top:15px; width:100%; padding:10px;">OK</button></div></div>
-    <div id="modal-anio" class="modal"><div class="modal-content"><h3>Año</h3><div class="selector-nav"><button class="nav-btn" onclick="navegarAnio(-1)">◀</button><span id="txt-anio-modal" style="font-size:24px; font-weight:bold;"></span><button class="nav-btn" onclick="navegarAnio(1)">▶</button></div><button onclick="document.getElementById('modal-anio').style.display='none'" style="margin-top:15px; width:100%; padding:10px;">OK</button></div></div>
+    <div id="page-perfil" class="page hidden">
+        <button class="btn-volver" onclick="irAPerfil(false)">⬅</button>
+        <div class="card-perfil">
+            <div class="foto-perfil-circulo" onclick="document.getElementById('input-foto').click()">
+                <img id="img-perfil" src="" style="display:none;">
+                <span id="icono-perfil" style="font-size:50px;">👤</span>
+            </div>
+            <input type="file" id="input-foto" accept="image/*" style="display:none;" onchange="subirFoto(this)">
+            <h2 id="perf-usuario">TAXI JACK</h2>
+            <button class="edit-nombre-btn" onclick="editarNombre()">✏️ EDITAR NOMBRE</button>
+            <p style="opacity: 0.6; font-size: 12px; margin-top:10px;">CONDUCTOR PROFESIONAL</p>
+            
+            <div class="stat-grid">
+                <div class="stat-box"><small>INGRESOS TOTALES</small><br><b id="perf-ing" style="color:var(--verde); font-size:18px;">S/. 0.00</b></div>
+                <div class="stat-box"><small>GASTOS TOTALES</small><br><b id="perf-gas" style="color:var(--rojo); font-size:18px;">S/. 0.00</b></div>
+                <div class="stat-box"><small>REGISTROS</small><br><b id="perf-regs" style="font-size:18px;">0</b></div>
+                <div class="stat-box"><small>BALANCE NETO</small><br><b id="perf-neto" style="color:var(--azul); font-size:18px;">S/. 0.00</b></div>
+            </div>
+        </div>
+        <button class="btn-gps-principal" style="margin-top:20px; background: #c0392b; font-size: 14px; padding:15px;" onclick="if(confirm('¿Reiniciar App?')){localStorage.clear(); window.location.reload();}">🔄 REINICIAR APP</button>
+    </div>
+
+    <div id="modal-meta" class="modal"><div class="modal-content" style="background: white; color: #333; border-top: 5px solid var(--verde);">
+        <h3 style="color: var(--verde); margin-top:0;">Mi Meta Diaria</h3>
+        <p style="font-size:14px; color:#666;">Define cuánto quieres ganar hoy</p>
+        <div id="txt-progreso-meta-modal" style="font-size: 24px; font-weight: 900; margin: 15px 0; color:var(--oscuro);">S/. 0 / S/. 0</div>
+        <input type="number" id="input-meta-valor" placeholder="Ej: 150" style="width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #ddd; text-align: center; font-size: 20px; outline: none; margin-bottom:10px;">
+        <button onclick="guardarMeta()" style="width:100%; padding:15px; border:none; border-radius:12px; background:var(--verde); font-weight:bold; color:white;">GUARDAR META</button>
+        <button onclick="cerrarModalesYModos()" style="width:100%; margin-top:10px; background:none; border:none; color:#999;">Cerrar</button>
+    </div></div>
+
+    <div id="modal" class="modal"><div class="modal-content">
+        <h3>Categorías</h3>
+        <div id="lista-gestion" style="max-height:180px; overflow-y:auto; margin-bottom:15px; background:rgba(255,255,255,0.1); border-radius:10px;"></div>
+        <div style="display:flex; align-items:center; gap:10px; background:rgba(0,0,0,0.1); padding:10px; border-radius:15px;">
+            <div id="btn-emoji-actual" class="btn-emoji-selector" onclick="abrirVariedad()">🚕</div>
+            <input type="text" id="n-nom" placeholder="Nombre" style="flex:1; padding:12px; border-radius:10px; border:none; outline:none;">
+            <button onclick="crearCat()" style="background:var(--verde); color:white; border:none; width:50px; height:50px; border-radius:10px; font-size:24px;">+</button>
+        </div>
+        <button onclick="cerrarModal()" style="width:100%; margin-top:15px; padding:12px; border:none; border-radius:10px; background:white; font-weight:bold; color:var(--azul);">CERRAR</button>
+    </div></div>
+
+    <div id="modal-emojis" class="modal"><div class="modal-content" style="background: white; color: #333;"><h3 style="color: var(--azul);">Selecciona un Emoji</h3><div class="emoji-grid-container" id="grid-variedad"></div><button onclick="cerrarVariedad()" style="width:100%; margin-top:15px; padding:12px; border:none; border-radius:10px; background:var(--azul); font-weight:bold; color:white;">VOLVER</button></div></div>
+
+    <div id="modal-mes" class="modal"><div class="modal-content"><h3>Mes</h3><div id="grid-meses" style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;"></div><button onclick="cerrarModalesYModos()" style="margin-top:15px; width:100%; padding:10px;">Cerrar</button></div></div>
+    <div id="modal-semana" class="modal"><div class="modal-content"><h3>Semanas</h3><div style="display:flex; justify-content:center; gap:10px; align-items:center;"><button onclick="navegarSemana(-7)">◀</button><span id="rango-semana-modal"></span><button onclick="navegarSemana(7)">▶</button></div><button onclick="cerrarModalesYModos()" style="margin-top:15px; width:100%; padding:10px;">OK</button></div></div>
+    <div id="modal-anio" class="modal"><div class="modal-content"><h3>Año</h3><div style="display:flex; justify-content:center; gap:10px; align-items:center;"><button onclick="navegarAnio(-1)">◀</button><span id="txt-anio-modal" style="font-size:24px; font-weight:bold;"></span><button onclick="navegarAnio(1)">▶</button></div><button onclick="cerrarModalesYModos()" style="margin-top:15px; width:100%; padding:10px;">OK</button></div></div>
 
     <script>
         Chart.register(ChartDataLabels);
         let movs = JSON.parse(localStorage.getItem('movs_v15')) || [];
         let cats = JSON.parse(localStorage.getItem('cats_v15')) || [{id: 0, n: "Carrera", i: "🚕"}, {id: 1, n: "Gasolina", i: "⛽"}, {id: 2, n: "Comida", i: "🍔"}];
+        let metaDiaria = parseFloat(localStorage.getItem('meta_gt_pro')) || 0;
+        let userData = JSON.parse(localStorage.getItem('gt_user_v1')) || { nombre: "TAXI JACK", foto: "" };
+        
         let catSeleccionada = cats[0].id, metodoActual = { n: 'Efectivo', i: '💵' }, periodoActual = 'dia';
         let fRefSemana = new Date(), mesFiltro = new Date().getMonth(), anioFiltro = new Date().getFullYear();
         let cIng, cGas, watchId = null, latAnt = null, lonAnt = null, distTotal = 0, tInicio = null, activo = false;
-        let emojiSeleccionado = "🚕", modoPrivado = false, saldoActualGlobal = 0;
-        let filtroMetodoReporte = 'Todos'; // Variable para el filtro de la pantalla 3
+        let emojiSeleccionado = "🚕", modoPrivado = false, saldoActualGlobal = 0, filtroMetodoReporte = 'Todos';
 
         const nombresMeses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
         const listaEmojis = ["🚕","🚗","🚙","🚌","🚐","🏎️","🚓","🚑","🚒","🚚","🚛","🚜","🏍️","🚲","🛵","✈️","⛽","🛠️","🔧","🔨","⚒️","🔩","⚙️","🧼","🧽","🧹","🅿️","🚧","🚦","🚥","🗺️","📍","🚩","🏁","⚽","🏀","🏐","🏈","⚾","🎾","🏋️","🚴","🍔","🍟","🍕","🥪","🌭","🌮","🌯","🥗","🥘","🍿","☕","🥤","💰","💵","💳","🧾","🏦","🪙","📱","🔋","🔌","💡","💧","🔥","♨️","📶","🌐","🗑️","👮","👨‍✈️","👷","🏠","🐶","🐱","🐭","🐹","🐰","🦊","🐻","🐼","✨","⭐","⚡","✅","❌","⚠️"];
 
+        // NUEVO: Manejo de retroceso del teléfono
+        window.onpopstate = function(event) {
+            cerrarModalesYModos();
+            document.getElementById('page-reportes').classList.add('hidden');
+            document.getElementById('page-perfil').classList.add('hidden');
+        };
+
+        function pushEstado() {
+            history.pushState({view: 'subpage'}, "");
+        }
+
         function inicializar() {
-            document.getElementById('input-fecha-filtro').value = new Date().toLocaleDateString('en-CA', {timeZone: 'America/Lima'});
-            dibujarCats(); initCharts(); actualizarInterfaz();
+            document.getElementById('input-fecha-filtro').value = new Date().toLocaleDateString('en-CA');
+            cargarDatosPerfil(); dibujarCats(); initCharts(); actualizarInterfaz();
             const grid = document.getElementById('grid-variedad');
             grid.innerHTML = listaEmojis.map(e => `<span class="emoji-option" onclick="seleccionarEmoji('${e}')">${e}</span>`).join('');
             setTimeout(() => { document.getElementById('splash').style.opacity = '0'; setTimeout(() => document.getElementById('splash').style.display = 'none', 800); }, 3000);
         }
 
-        function togglePrivacidad() { modoPrivado = !modoPrivado; mostrarSaldoUI(); }
-
-        function mostrarSaldoUI() {
-            const elSaldo = document.getElementById('saldo-principal');
-            const elStatus = document.getElementById('lbl-status-balance');
-            if (modoPrivado) { elSaldo.innerText = "S/. ••••"; elStatus.innerText = "🔒 MODO PRIVADO ACTIVO"; elStatus.style.color = "var(--naranja)";
-            } else { elSaldo.innerText = `S/. ${saldoActualGlobal.toFixed(2)}`; elStatus.innerText = "VER BALANCE Y REPORTES ➔"; elStatus.style.color = "#888"; }
+        // --- LÓGICA DE PERFIL ---
+        function cargarDatosPerfil() {
+            document.getElementById('perf-usuario').innerText = userData.nombre;
+            if(userData.foto) {
+                document.getElementById('img-perfil').src = userData.foto;
+                document.getElementById('img-perfil').style.display = 'block';
+                document.getElementById('icono-perfil').style.display = 'none';
+            }
+        }
+        function editarNombre() { let n = prompt("Nuevo nombre:", userData.nombre); if(n) { userData.nombre = n; localStorage.setItem('gt_user_v1', JSON.stringify(userData)); cargarDatosPerfil(); } }
+        function subirFoto(input) { if (input.files && input.files[0]) { let reader = new FileReader(); reader.onload = function(e) { userData.foto = e.target.result; localStorage.setItem('gt_user_v1', JSON.stringify(userData)); cargarDatosPerfil(); }; reader.readAsDataURL(input.files[0]); } }
+        
+        function irAPerfil(mostrar) { 
+            const p = document.getElementById('page-perfil'); 
+            if(mostrar) { 
+                pushEstado();
+                const ti = movs.filter(m => m.tipo === 'ingreso').reduce((a,b) => a + b.mon, 0); 
+                const tg = movs.filter(m => m.tipo === 'gasto').reduce((a,b) => a + b.mon, 0); 
+                document.getElementById('perf-ing').innerText = `S/. ${ti.toFixed(2)}`; 
+                document.getElementById('perf-gas').innerText = `S/. ${tg.toFixed(2)}`; 
+                document.getElementById('perf-regs').innerText = movs.length; 
+                document.getElementById('perf-neto').innerText = `S/. ${(ti - tg).toFixed(2)}`; 
+                p.classList.remove('hidden'); 
+            } else { 
+                p.classList.add('hidden'); 
+            } 
         }
 
-        function abrirVariedad() { document.getElementById('modal-emojis').style.display = 'flex'; }
-        function cerrarVariedad() { document.getElementById('modal-emojis').style.display = 'none'; }
-        function seleccionarEmoji(e) { emojiSeleccionado = e; document.getElementById('btn-emoji-actual').innerText = e; cerrarVariedad(); }
-        function irAReportes(mostrar) { const p = document.getElementById('page-reportes'); mostrar ? p.classList.remove('hidden') : p.classList.add('hidden'); }
-
-        function toggleSeguimiento() {
-            const btn = document.getElementById('btn-gps'), elKm = document.getElementById('km'), elHrs = document.getElementById('hrs');
-            if (!activo) {
-                distTotal = 0; tInicio = new Date(); latAnt = null; lonAnt = null; elKm.value = "0.00 KM"; elHrs.value = "0h 0m";
-                if ("geolocation" in navigator) { watchId = navigator.geolocation.watchPosition(actualizarGPS, null, { enableHighAccuracy: true }); activo = true; btn.innerText = "🛑 FINALIZAR"; btn.style.background = "#7f8c8d"; }
+        function irAReportes(mostrar) { 
+            const p = document.getElementById('page-reportes'); 
+            if(mostrar) {
+                pushEstado();
+                p.classList.remove('hidden'); 
             } else {
-                let tiempoFinal = elHrs.value, kmFinales = elKm.value;
-                if (distTotal > 0.01) {
-                    let mAuto = prompt(`Turno finalizado:\nDistancia: ${kmFinales}\nTiempo: ${tiempoFinal}\n\n¿Ingreso total S/.?`);
-                    if (mAuto) { document.getElementById('monto').value = mAuto; registrar('ingreso'); }
-                }
-                navigator.geolocation.clearWatch(watchId); activo = false; btn.innerText = "🚀 INICIAR TURNO"; btn.style.background = "var(--naranja)";
-                distTotal = 0; elKm.value = "0.00 KM"; elHrs.value = "0h 0m";
+                p.classList.add('hidden'); 
             }
         }
 
-        function actualizarGPS(pos) {
-            if (latAnt && lonAnt) {
-                const R = 6371, dLat = (pos.coords.latitude - latAnt) * Math.PI / 180, dLon = (pos.coords.longitude - lonAnt) * Math.PI / 180;
-                const a = Math.sin(dLat/2)**2 + Math.cos(latAnt*Math.PI/180)*Math.cos(pos.coords.latitude*Math.PI/180)*Math.sin(dLon/2)**2;
-                distTotal += R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); document.getElementById('km').value = distTotal.toFixed(2) + " KM";
-            }
-            latAnt = pos.coords.latitude; lonAnt = pos.coords.longitude;
-            let ms = new Date() - tInicio, hh = Math.floor(ms / 3600000), mm = Math.floor((ms % 3600000) / 60000);
-            document.getElementById('hrs').value = `${hh}h ${mm}m`;
-        }
-
+        // --- FUNCIONES CORE ---
         function registrar(tipo) {
             const mon = parseFloat(document.getElementById('monto').value);
             if (mon >= 0) {
                 const catObj = cats.find(c => c.id === catSeleccionada), ahora = new Date();
-                movs.unshift({ mon, tipo, catN: catObj.n, catI: catObj.i, km: document.getElementById('km').value || "0.00 KM", hrs: document.getElementById('hrs').value || "0h 0m", metodoN: metodoActual.n, fecha: ahora.toISOString(), hora: ahora.toLocaleTimeString('es-PE', {hour:'2-digit', minute:'2-digit', hour12:false}) });
-                localStorage.setItem('movs_v15', JSON.stringify(movs)); document.getElementById('monto').value = ''; actualizarInterfaz();
+                movs.unshift({ 
+                    mon, tipo, catN: catObj.n, catI: catObj.i, 
+                    km: document.getElementById('km').value || "0.00 KM", 
+                    hrs: document.getElementById('hrs').value || "0h 0m", 
+                    metodoN: metodoActual.n, fecha: ahora.toISOString(), 
+                    hora: ahora.toLocaleTimeString('es-PE', {hour:'2-digit', minute:'2-digit', hour12:false}) 
+                });
+                localStorage.setItem('movs_v15', JSON.stringify(movs)); 
+                document.getElementById('monto').value = ''; 
+                actualizarInterfaz();
             }
         }
 
-        /* FUNCIÓN DE FILTRADO PARA PANTALLA 3 */
-        function filtrarPorMetodo(metodo, btn) {
-            filtroMetodoReporte = metodo;
-            document.querySelectorAll('.btn-filtro-pago').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            actualizarInterfaz();
-        }
-
         function actualizarInterfaz() {
-            const listaUI = document.getElementById('lista'), fFiltro = document.getElementById('input-fecha-filtro').value;
-            const rangoSem = getRangoSemana(fRefSemana);
+            const listaUI = document.getElementById('lista'), fFiltro = document.getElementById('input-fecha-filtro').value, rangoSem = getRangoSemana(fRefSemana);
             document.getElementById('txt-mes').innerText = nombresMeses[mesFiltro] + " " + anioFiltro;
-            document.getElementById('txt-semana').innerText = rangoSem.texto;
-            document.getElementById('rango-semana-modal').innerText = rangoSem.texto;
-            document.getElementById('txt-anio').innerText = anioFiltro;
-            document.getElementById('txt-anio-modal').innerText = anioFiltro;
-
+            document.getElementById('txt-semana').innerText = rangoSem.texto; document.getElementById('txt-anio').innerText = anioFiltro;
             let dIng = {}, dGas = {}; listaUI.innerHTML = '';
-            movs.forEach((m, index) => {
-                const fM = new Date(m.fecha); let incluirTiempo = false;
-                if (periodoActual === 'dia') incluirTiempo = (fM.toLocaleDateString('en-CA') === fFiltro);
-                else if (periodoActual === 'semana') incluirTiempo = (fM >= rangoSem.inicio && fM <= rangoSem.fin);
-                else if (periodoActual === 'mes') incluirTiempo = (fM.getMonth() === mesFiltro && fM.getFullYear() === anioFiltro);
-                else if (periodoActual === 'anio') incluirTiempo = (fM.getFullYear() === anioFiltro);
-
-                // FILTRO ADICIONAL POR MÉTODO DE PAGO
-                let incluirMetodo = (filtroMetodoReporte === 'Todos' || m.metodoN === filtroMetodoReporte);
-
-                if (incluirTiempo && incluirMetodo) {
+            movs.forEach((m, idx) => {
+                const fM = new Date(m.fecha); let inclT = false;
+                if (periodoActual === 'dia') inclT = (fM.toLocaleDateString('en-CA') === fFiltro);
+                else if (periodoActual === 'semana') inclT = (fM >= rangoSem.inicio && fM <= rangoSem.fin);
+                else if (periodoActual === 'mes') inclT = (fM.getMonth() === mesFiltro && fM.getFullYear() === anioFiltro);
+                else if (periodoActual === 'anio') inclT = (fM.getFullYear() === anioFiltro);
+                if (inclT && (filtroMetodoReporte === 'Todos' || m.metodoN === filtroMetodoReporte)) {
                     const esI = m.tipo === 'ingreso';
                     if (esI) dIng[m.catN] = (dIng[m.catN] || 0) + m.mon; else dGas[m.catN] = (dGas[m.catN] || 0) + m.mon;
                     listaUI.innerHTML += `<div class="item-mov" style="border-left-color:${esI?'var(--verde)':'var(--rojo)'}">
-                        <div><b>${m.catI} ${m.catN}</b><br><small>${m.hora} | ${m.metodoN} | ${m.km} | ${m.hrs}</small></div>
-                        <div style="text-align:right">
-                            <b style="color:${esI?'var(--verde)':'var(--rojo)'}">S/.${m.mon.toFixed(2)}</b><br>
-                            <span onclick="editarMovimiento(${index})">✏️</span> <span onclick="eliminarMovimiento(${index})" style="margin-left:10px">🗑️</span>
-                        </div>
-                    </div>`;
+                        <div><b>${m.catI} ${m.catN}</b><br><small>${m.hora} | ${m.metodoN}</small><br><small style="color:var(--azul)">📍 ${m.km} | ⏱️ ${m.hrs}</small></div>
+                        <div style="text-align:right"><b style="color:${esI?'var(--verde)':'var(--rojo)'}">S/.${m.mon.toFixed(2)}</b><br>
+                        <span onclick="editarMovimiento(${idx})">✏️</span> <span onclick="eliminarMovimiento(${idx})" style="margin-left:10px">🗑️</span></div></div>`;
                 }
             });
-            const totalI = Object.values(dIng).reduce((a, b) => a + b, 0), totalG = Object.values(dGas).reduce((a, b) => a + b, 0);
-            saldoActualGlobal = totalI - totalG; mostrarSaldoUI();
-            document.getElementById('txt-total-ing').innerText = `S/. ${totalI.toFixed(2)}`;
-            document.getElementById('txt-total-gas').innerText = `S/. ${totalG.toFixed(2)}`;
-            actualizarCharts(totalI, totalG, dIng, dGas);
+            const tI = Object.values(dIng).reduce((a, b) => a + b, 0), tG = Object.values(dGas).reduce((a, b) => a + b, 0);
+            saldoActualGlobal = tI - tG; mostrarSaldoUI(); actualizarBarraMeta();
+            document.getElementById('txt-total-ing').innerText = `S/. ${tI.toFixed(2)}`; document.getElementById('txt-total-gas').innerText = `S/. ${tG.toFixed(2)}`;
+            actualizarCharts(tI, tG, dIng, dGas);
         }
 
-        function editarMovimiento(idx) { let nV = prompt("Nuevo monto S/.", movs[idx].mon); if (nV !== null) { movs[idx].mon = parseFloat(nV); localStorage.setItem('movs_v15', JSON.stringify(movs)); actualizarInterfaz(); } }
+        function toggleSeguimiento() {
+            const btn = document.getElementById('btn-gps'), elKm = document.getElementById('km'), elHrs = document.getElementById('hrs');
+            if (!activo) {
+                distTotal = 0; tInicio = new Date(); latAnt = null; lonAnt = null;
+                watchId = navigator.geolocation.watchPosition(pos => {
+                    if (latAnt && lonAnt) {
+                        const R = 6371, dLat = (pos.coords.latitude - latAnt) * Math.PI / 180, dLon = (pos.coords.longitude - lonAnt) * Math.PI / 180;
+                        const a = Math.sin(dLat/2)**2 + Math.cos(latAnt*Math.PI/180)*Math.cos(pos.coords.latitude*Math.PI/180)*Math.sin(dLon/2)**2;
+                        distTotal += R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); elKm.value = distTotal.toFixed(2) + " KM";
+                    }
+                    latAnt = pos.coords.latitude; lonAnt = pos.coords.longitude;
+                    let ms = new Date() - tInicio, hh = Math.floor(ms / 3600000), mm = Math.floor((ms % 3600000) / 60000);
+                    elHrs.value = `${hh}h ${mm}m`;
+                }, null, { enableHighAccuracy: true });
+                activo = true; btn.innerText = "🛑 FINALIZAR"; btn.style.background = "#7f8c8d";
+            } else { navigator.geolocation.clearWatch(watchId); activo = false; btn.innerText = "🚀 INICIAR TURNO"; btn.style.background = "var(--naranja)"; }
+        }
+
+        // --- OTROS ---
+        function cerrarModalesYModos() {
+            const modales = document.querySelectorAll('.modal');
+            modales.forEach(m => m.style.display = 'none');
+        }
+        function abrirModalMeta() { pushEstado(); document.getElementById('modal-meta').style.display = 'flex'; document.getElementById('input-meta-valor').value = metaDiaria > 0 ? metaDiaria : ""; actualizarBarraMeta(); }
+        function abrirModal() { pushEstado(); document.getElementById('modal').style.display = 'flex'; dibujarGestion(); }
+        function cerrarModal() { cerrarModalesYModos(); }
+        function abrirVariedad() { document.getElementById('modal-emojis').style.display = 'flex'; }
+        function cerrarVariedad() { document.getElementById('modal-emojis').style.display = 'none'; }
+        
+        function actualizarBarraMeta() { const hoyStr = new Date().toLocaleDateString('en-CA'); const ingresosHoy = movs.filter(m => m.tipo === 'ingreso' && new Date(m.fecha).toLocaleDateString('en-CA') === hoyStr).reduce((a, b) => a + b.mon, 0); const porc = metaDiaria > 0 ? Math.min((ingresosHoy / metaDiaria) * 100, 100) : 0; const barra = document.getElementById('progreso-meta'); barra.style.width = porc + "%"; barra.style.background = (porc >= 100) ? "#f1c40f" : "var(--verde)"; document.getElementById('txt-progreso-meta-modal').innerText = `S/. ${ingresosHoy.toFixed(2)} / S/. ${metaDiaria.toFixed(2)}`; }
+        function guardarMeta() { let v = parseFloat(document.getElementById('input-meta-valor').value); metaDiaria = isNaN(v) ? 0 : v; localStorage.setItem('meta_gt_pro', metaDiaria); cerrarModalesYModos(); actualizarBarraMeta(); }
+        function togglePrivacidad() { modoPrivado = !modoPrivado; mostrarSaldoUI(); }
+        function mostrarSaldoUI() { const elSaldo = document.getElementById('saldo-principal'), elStatus = document.getElementById('lbl-status-balance'); if (modoPrivado) { elSaldo.innerText = "S/. ••••"; elStatus.innerText = "🔒 MODO PRIVADO"; } else { elSaldo.innerText = `S/. ${saldoActualGlobal.toFixed(2)}`; elStatus.innerText = "GESTOR TAXI JACK "; } }
+        function editarMovimiento(idx) { let nV = prompt("Monto S/.", movs[idx].mon); if (nV) { movs[idx].mon = parseFloat(nV); localStorage.setItem('movs_v15', JSON.stringify(movs)); actualizarInterfaz(); } }
         function eliminarMovimiento(idx) { if (confirm("¿Eliminar?")) { movs.splice(idx, 1); localStorage.setItem('movs_v15', JSON.stringify(movs)); actualizarInterfaz(); } }
-        function getRangoSemana(f) {
-            let d = new Date(f), day = d.getDay(), diff = d.getDate() - day + (day === 0 ? -6 : 1);
-            let inicio = new Date(d.setDate(diff)); inicio.setHours(0,0,0,0);
-            let fin = new Date(inicio); fin.setDate(inicio.getDate() + 6); fin.setHours(23,59,59,999);
-            return { inicio, fin, texto: `${inicio.toLocaleDateString('es-PE',{day:'2-digit',month:'short'})} - ${fin.toLocaleDateString('es-PE',{day:'2-digit',month:'short'})}` };
-        }
-        function cambiarPeriodo(p, btn) {
-            periodoActual = p; document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active');
-            document.getElementById('input-fecha-filtro').style.display = (p === 'dia') ? 'inline-block' : 'none';
-            document.getElementById('visor-semana').style.display = (p === 'semana') ? 'block' : 'none';
-            document.getElementById('visor-mes').style.display = (p === 'mes') ? 'block' : 'none';
-            document.getElementById('visor-anio').style.display = (p === 'anio') ? 'block' : 'none';
-            actualizarInterfaz();
-        }
+        function filtrarPorMetodo(metodo, btn) { filtroMetodoReporte = metodo; document.querySelectorAll('.btn-filtro-pago').forEach(b => b.classList.remove('active')); btn.classList.add('active'); actualizarInterfaz(); }
         function setMetodo(n, i, btn) { metodoActual = { n, i }; document.querySelectorAll('.metodo-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
         function dibujarCats() { document.getElementById('cat-chips').innerHTML = cats.map(c => `<div class="cat-chip ${c.id === catSeleccionada ? 'activa' : ''}" onclick="catSeleccionada=${c.id};dibujarCats();">${c.i} ${c.n}</div>`).join(''); }
-        function initCharts() { const opt = { maintainAspectRatio: false, cutout: '70%', plugins: { legend: { display: false }, datalabels: { color: '#444', font: { weight: 'bold', size: 10 } } } }; cIng = new Chart(document.getElementById('cIng'), { type: 'doughnut', data: { labels: [], datasets: [{ data: [], backgroundColor: ['#2ecc71', '#27ae60', '#1abc9c'] }] }, options: opt }); cGas = new Chart(document.getElementById('cGas'), { type: 'doughnut', data: { labels: [], datasets: [{ data: [], backgroundColor: ['#e74c3c', '#e67e22', '#f1c40f'] }] }, options: opt }); }
+        function initCharts() { const opt = { maintainAspectRatio: false, cutout: '70%', plugins: { legend: { display: false }, datalabels: { display: false } } }; cIng = new Chart(document.getElementById('cIng'), { type: 'doughnut', data: { labels: [], datasets: [{ data: [], backgroundColor: ['#2ecc71', '#27ae60', '#1abc9c'] }] }, options: opt }); cGas = new Chart(document.getElementById('cGas'), { type: 'doughnut', data: { labels: [], datasets: [{ data: [], backgroundColor: ['#e74c3c', '#e67e22', '#f1c40f'] }] }, options: opt }); }
         function actualizarCharts(ti, tg, di, dg) { cIng.data.labels = Object.keys(di); cIng.data.datasets[0].data = Object.values(di); cIng.update(); cGas.data.labels = Object.keys(dg); cGas.data.datasets[0].data = Object.values(dg); cGas.update(); }
-        function abrirModal() { document.getElementById('modal').style.display = 'flex'; dibujarGestion(); }
-        function cerrarModal() { document.getElementById('modal').style.display = 'none'; }
         function dibujarGestion() { document.getElementById('lista-gestion').innerHTML = cats.map((c, i) => `<div style="display:flex; justify-content:space-between; padding:10px; color:white;"><span>${c.i} ${c.n}</span><button onclick="cats.splice(${i},1);localStorage.setItem('cats_v15', JSON.stringify(cats));dibujarCats();dibujarGestion();">❌</button></div>`).join(''); }
+        function seleccionarEmoji(e) { emojiSeleccionado = e; document.getElementById('btn-emoji-actual').innerText = e; cerrarVariedad(); }
         function crearCat() { const n = document.getElementById('n-nom').value; if(n) { cats.push({id: Date.now(), n, i: emojiSeleccionado}); localStorage.setItem('cats_v15', JSON.stringify(cats)); dibujarCats(); dibujarGestion(); document.getElementById('n-nom').value = ''; } }
-        function abrirModalMes() { const g = document.getElementById('grid-meses'); g.innerHTML = nombresMeses.map((m, i) => `<button onclick="mesFiltro=${i};actualizarInterfaz();document.getElementById('modal-mes').style.display='none';" style="padding:10px">${m}</button>`).join(''); document.getElementById('modal-mes').style.display = 'flex'; }
+        function cambiarPeriodo(p, btn) { periodoActual = p; document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); document.getElementById('input-fecha-filtro').style.display = (p === 'dia') ? 'inline-block' : 'none'; document.getElementById('visor-semana').style.display = (p === 'semana') ? 'block' : 'none'; document.getElementById('visor-mes').style.display = (p === 'mes') ? 'block' : 'none'; document.getElementById('visor-anio').style.display = (p === 'anio') ? 'block' : 'none'; actualizarInterfaz(); }
         function navegarSemana(n) { fRefSemana.setDate(fRefSemana.getDate() + n); actualizarInterfaz(); }
         function navegarAnio(n) { anioFiltro += n; actualizarInterfaz(); }
-        function abrirModalSemana() { document.getElementById('modal-semana').style.display = 'flex'; }
-        function abrirModalAnio() { document.getElementById('modal-anio').style.display = 'flex'; }
-        function compartirWhatsApp() {
-            let val = modoPrivado ? "••••" : document.getElementById('saldo-principal').innerText;
-            let txt = `🚕 *REPORTE GESTOR TAXI*\n💰 *BALANCE:* ${val}\n🟢 *INGRESOS:* ${document.getElementById('txt-total-ing').innerText}\n🔴 *GASTOS:* ${document.getElementById('txt-total-gas').innerText}`;
-            window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`, '_blank');
-        }
+        function abrirModalMes() { pushEstado(); const g = document.getElementById('grid-meses'); g.innerHTML = nombresMeses.map((m, i) => `<button onclick="mesFiltro=${i};actualizarInterfaz();cerrarModalesYModos();" style="padding:10px">${m}</button>`).join(''); document.getElementById('modal-mes').style.display = 'flex'; }
+        function abrirModalSemana() { pushEstado(); document.getElementById('modal-semana').style.display = 'flex'; }
+        function abrirModalAnio() { pushEstado(); document.getElementById('modal-anio').style.display = 'flex'; }
+        function getRangoSemana(f) { let d = new Date(f), day = d.getDay(), diff = d.getDate() - day + (day === 0 ? -6 : 1), ini = new Date(d.setDate(diff)); ini.setHours(0,0,0,0); let fin = new Date(ini); fin.setDate(ini.getDate() + 6); fin.setHours(23,59,59,999); return { inicio: ini, fin: fin, texto: `${ini.toLocaleDateString('es-PE',{day:'2-digit',month:'short'})} - ${fin.toLocaleDateString('es-PE',{day:'2-digit',month:'short'})}` }; }
+        function compartirWhatsApp() { let val = modoPrivado ? "••••" : `S/. ${saldoActualGlobal.toFixed(2)}`; let txt = `🚕 *REPORTE GESTOR TAXI*\n💰 *BALANCE:* ${val}\n🟢 *ING:* ${document.getElementById('txt-total-ing').innerText}\n🔴 *GAS:* ${document.getElementById('txt-total-gas').innerText}`; window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`, '_blank'); }
     </script>
 </body>
 </html>
