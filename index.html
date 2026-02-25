@@ -311,22 +311,57 @@
         }
 
         function toggleSeguimiento() {
-            const btn = document.getElementById('btn-gps'), elKm = document.getElementById('km'), elHrs = document.getElementById('hrs');
-            if (!activo) {
-                distTotal = 0; tInicio = new Date(); latAnt = null; lonAnt = null;
-                watchId = navigator.geolocation.watchPosition(pos => {
-                    if (latAnt && lonAnt) {
-                        const R = 6371, dLat = (pos.coords.latitude - latAnt) * Math.PI / 180, dLon = (pos.coords.longitude - lonAnt) * Math.PI / 180;
-                        const a = Math.sin(dLat/2)**2 + Math.cos(latAnt*Math.PI/180)*Math.cos(pos.coords.latitude*Math.PI/180)*Math.sin(dLon/2)**2;
-                        distTotal += R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); elKm.value = distTotal.toFixed(2) + " KM";
-                    }
-                    latAnt = pos.coords.latitude; lonAnt = pos.coords.longitude;
-                    let ms = new Date() - tInicio, hh = Math.floor(ms / 3600000), mm = Math.floor((ms % 3600000) / 60000);
-                    elHrs.value = `${hh}h ${mm}m`;
-                }, null, { enableHighAccuracy: true });
-                activo = true; btn.innerText = "🛑 FINALIZAR"; btn.style.background = "#7f8c8d";
-            } else { navigator.geolocation.clearWatch(watchId); activo = false; btn.innerText = "🚀 INICIAR TURNO"; btn.style.background = "var(--naranja)"; }
-        }
+    const btn = document.getElementById('btn-gps'), 
+          elKm = document.getElementById('km'), 
+          elHrs = document.getElementById('hrs');
+
+    if (!activo) {
+        // --- INICIAR TURNO ---
+        distTotal = 0; 
+        tInicio = new Date(); 
+        latAnt = null; 
+        lonAnt = null;
+        
+        // Limpiamos visualmente por si había algo antes
+        elKm.value = "0.00 KM";
+        elHrs.value = "0h 0m";
+
+        watchId = navigator.geolocation.watchPosition(pos => {
+            if (latAnt && lonAnt) {
+                const R = 6371, 
+                      dLat = (pos.coords.latitude - latAnt) * Math.PI / 180, 
+                      dLon = (pos.coords.longitude - lonAnt) * Math.PI / 180;
+                const a = Math.sin(dLat/2)**2 + Math.cos(latAnt*Math.PI/180)*Math.cos(pos.coords.latitude*Math.PI/180)*Math.sin(dLon/2)**2;
+                distTotal += R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+                elKm.value = distTotal.toFixed(2) + " KM";
+            }
+            latAnt = pos.coords.latitude; 
+            lonAnt = pos.coords.longitude;
+            
+            let ms = new Date() - tInicio, 
+                hh = Math.floor(ms / 3600000), 
+                mm = Math.floor((ms % 3600000) / 60000);
+            elHrs.value = `${hh}h ${mm}m`;
+        }, null, { enableHighAccuracy: true });
+
+        activo = true; 
+        btn.innerText = "🛑 FINALIZAR"; 
+        btn.style.background = "#7f8c8d";
+    } else {
+        // --- FINALIZAR TURNO ---
+        navigator.geolocation.clearWatch(watchId);
+        activo = false;
+        btn.innerText = "🚀 INICIAR TURNO";
+        btn.style.background = "var(--naranja)";
+        
+        // REINICIO VISUAL AL TERMINAR
+        distTotal = 0;
+        elKm.value = ""; // O puedes poner "0.00 KM"
+        elHrs.value = ""; // O puedes poner "0h 0m"
+        latAnt = null;
+        lonAnt = null;
+    }
+}
 
         // --- OTROS ---
         function cerrarModalesYModos() {
