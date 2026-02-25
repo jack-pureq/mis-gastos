@@ -175,7 +175,6 @@
             setTimeout(() => { document.getElementById('splash').style.opacity = '0'; setTimeout(() => document.getElementById('splash').style.display = 'none', 800); }, 3000);
         }
 
-        // --- FUNCIÓN DE PRIVACIDAD ---
         function togglePrivacidad() {
             modoPrivado = !modoPrivado;
             mostrarSaldoUI();
@@ -202,15 +201,35 @@
 
         function toggleSeguimiento() {
             const btn = document.getElementById('btn-gps');
+            const elKm = document.getElementById('km');
+            const elHrs = document.getElementById('hrs');
+
             if (!activo) {
+                // INICIAR TURNO
                 distTotal = 0; tInicio = new Date(); latAnt = null; lonAnt = null;
-                if ("geolocation" in navigator) { watchId = navigator.geolocation.watchPosition(actualizarGPS, null, { enableHighAccuracy: true }); activo = true; btn.innerText = "🛑 FINALIZAR"; btn.style.background = "#7f8c8d"; }
+                elKm.value = "0.00 KM";
+                elHrs.value = "0h 0m";
+                if ("geolocation" in navigator) { 
+                    watchId = navigator.geolocation.watchPosition(actualizarGPS, null, { enableHighAccuracy: true }); 
+                    activo = true; 
+                    btn.innerText = "🛑 FINALIZAR"; 
+                    btn.style.background = "#7f8c8d"; 
+                }
             } else {
+                // FINALIZAR TURNO
                 if (distTotal > 0.01) {
-                    let mAuto = prompt(`KM: ${distTotal.toFixed(2)}\n¿Monto?`);
+                    let mAuto = prompt(`KM recorridos: ${distTotal.toFixed(2)}\n¿Cuál fue el ingreso total de este turno?`);
                     if (mAuto) { document.getElementById('monto').value = mAuto; registrar('ingreso'); }
                 }
-                navigator.geolocation.clearWatch(watchId); activo = false; btn.innerText = "🚀 INICIAR TURNO"; btn.style.background = "var(--naranja)";
+                navigator.geolocation.clearWatch(watchId); 
+                activo = false; 
+                btn.innerText = "🚀 INICIAR TURNO"; 
+                btn.style.background = "var(--naranja)";
+                
+                // RESETEO DE CONTADORES VISUALES AL FINALIZAR
+                distTotal = 0;
+                elKm.value = "0.00 KM";
+                elHrs.value = "0h 0m";
             }
         }
 
@@ -269,7 +288,7 @@
             const totalI = Object.values(dIng).reduce((a, b) => a + b, 0), totalG = Object.values(dGas).reduce((a, b) => a + b, 0);
             
             saldoActualGlobal = totalI - totalG;
-            mostrarSaldoUI(); // Actualiza según si está en modo privado o no
+            mostrarSaldoUI();
 
             document.getElementById('txt-total-ing').innerText = `S/. ${totalI.toFixed(2)}`;
             document.getElementById('txt-total-gas').innerText = `S/. ${totalG.toFixed(2)}`;
