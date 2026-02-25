@@ -27,7 +27,6 @@
         .header-perfil { display: flex; justify-content: flex-end; padding: 5px; }
         .btn-perfil { background: #fff; border: 1px solid #ddd; padding: 8px 15px; border-radius: 12px; font-weight: bold; font-size: 12px; }
         
-        /* CONTENEDOR BALANCE */
         .main-balance-container { text-align: center; margin: 20px 0; cursor: pointer; user-select: none; }
         #saldo-principal { font-size: 48px; font-weight: 900; color: var(--oscuro); display: block; }
         .lbl-balance { font-size: 12px; font-weight: bold; color: #888; }
@@ -55,6 +54,12 @@
         .nav-periodos { display: flex; justify-content: space-around; margin-top: 50px; border-bottom: 1px solid #eee; }
         .tab-btn { padding: 12px; border: none; background: none; font-weight: bold; color: #888; }
         .tab-btn.active { color: var(--azul); border-bottom: 3px solid var(--azul); }
+        
+        /* FILTROS DE PAGO EN REPORTES */
+        .filtros-pago-reporte { display: flex; gap: 5px; padding: 10px 15px; background: #f9f9f9; border-bottom: 1px solid #eee; }
+        .btn-filtro-pago { flex: 1; padding: 8px; border-radius: 10px; border: 1px solid #ddd; background: white; font-size: 10px; font-weight: bold; color: #666; transition: 0.3s; }
+        .btn-filtro-pago.active { background: var(--azul); color: white; border-color: var(--azul); }
+
         .caja-grafico { position: relative; height: 180px; background: #fff; border-radius: 20px; padding: 5px; border: 2px solid #eee; margin-bottom: 10px; }
         .item-mov { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid #f5f5f5; font-size: 14px; border-left: 5px solid transparent; }
     </style>
@@ -129,6 +134,14 @@
             <button class="tab-btn" onclick="cambiarPeriodo('mes', this)">Mes</button>
             <button class="tab-btn" onclick="cambiarPeriodo('anio', this)">Año</button>
         </div>
+
+        <div class="filtros-pago-reporte">
+            <button class="btn-filtro-pago active" id="f-todos" onclick="filtrarPorMetodo('Todos', this)">TODOS</button>
+            <button class="btn-filtro-pago" onclick="filtrarPorMetodo('Efectivo', this)">EFECTIVO</button>
+            <button class="btn-filtro-pago" onclick="filtrarPorMetodo('Yape', this)">YAPE</button>
+            <button class="btn-filtro-pago" onclick="filtrarPorMetodo('Tarjeta', this)">TARJETA</button>
+        </div>
+
         <div style="flex:1; overflow-y:auto; padding-top:10px;">
             <div id="visor-fecha-general" style="text-align:center; margin-bottom:10px;">
                 <input type="date" id="input-fecha-filtro" onchange="actualizarInterfaz()" style="border:none; background:#eee; padding:10px; border-radius:10px; font-weight:bold;">
@@ -163,8 +176,9 @@
         let fRefSemana = new Date(), mesFiltro = new Date().getMonth(), anioFiltro = new Date().getFullYear();
         let cIng, cGas, watchId = null, latAnt = null, lonAnt = null, distTotal = 0, tInicio = null, activo = false;
         let emojiSeleccionado = "🚕", modoPrivado = false, saldoActualGlobal = 0;
+        let filtroMetodoReporte = 'Todos'; // Variable para el filtro de la pantalla 3
+
         const nombresMeses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-        
         const listaEmojis = ["🚕","🚗","🚙","🚌","🚐","🏎️","🚓","🚑","🚒","🚚","🚛","🚜","🏍️","🚲","🛵","✈️","⛽","🛠️","🔧","🔨","⚒️","🔩","⚙️","🧼","🧽","🧹","🅿️","🚧","🚦","🚥","🗺️","📍","🚩","🏁","⚽","🏀","🏐","🏈","⚾","🎾","🏋️","🚴","🍔","🍟","🍕","🥪","🌭","🌮","🌯","🥗","🥘","🍿","☕","🥤","💰","💵","💳","🧾","🏦","🪙","📱","🔋","🔌","💡","💧","🔥","♨️","📶","🌐","🗑️","👮","👨‍✈️","👷","🏠","🐶","🐱","🐭","🐹","🐰","🦊","🐻","🐼","✨","⭐","⚡","✅","❌","⚠️"];
 
         function inicializar() {
@@ -175,23 +189,13 @@
             setTimeout(() => { document.getElementById('splash').style.opacity = '0'; setTimeout(() => document.getElementById('splash').style.display = 'none', 800); }, 3000);
         }
 
-        function togglePrivacidad() {
-            modoPrivado = !modoPrivado;
-            mostrarSaldoUI();
-        }
+        function togglePrivacidad() { modoPrivado = !modoPrivado; mostrarSaldoUI(); }
 
         function mostrarSaldoUI() {
             const elSaldo = document.getElementById('saldo-principal');
             const elStatus = document.getElementById('lbl-status-balance');
-            if (modoPrivado) {
-                elSaldo.innerText = "S/. ••••";
-                elStatus.innerText = "🔒 MODO PRIVADO ACTIVO";
-                elStatus.style.color = "var(--naranja)";
-            } else {
-                elSaldo.innerText = `S/. ${saldoActualGlobal.toFixed(2)}`;
-                elStatus.innerText = "VER BALANCE Y REPORTES ➔";
-                elStatus.style.color = "#888";
-            }
+            if (modoPrivado) { elSaldo.innerText = "S/. ••••"; elStatus.innerText = "🔒 MODO PRIVADO ACTIVO"; elStatus.style.color = "var(--naranja)";
+            } else { elSaldo.innerText = `S/. ${saldoActualGlobal.toFixed(2)}`; elStatus.innerText = "VER BALANCE Y REPORTES ➔"; elStatus.style.color = "#888"; }
         }
 
         function abrirVariedad() { document.getElementById('modal-emojis').style.display = 'flex'; }
@@ -200,36 +204,18 @@
         function irAReportes(mostrar) { const p = document.getElementById('page-reportes'); mostrar ? p.classList.remove('hidden') : p.classList.add('hidden'); }
 
         function toggleSeguimiento() {
-            const btn = document.getElementById('btn-gps');
-            const elKm = document.getElementById('km');
-            const elHrs = document.getElementById('hrs');
-
+            const btn = document.getElementById('btn-gps'), elKm = document.getElementById('km'), elHrs = document.getElementById('hrs');
             if (!activo) {
-                // INICIAR TURNO
-                distTotal = 0; tInicio = new Date(); latAnt = null; lonAnt = null;
-                elKm.value = "0.00 KM";
-                elHrs.value = "0h 0m";
-                if ("geolocation" in navigator) { 
-                    watchId = navigator.geolocation.watchPosition(actualizarGPS, null, { enableHighAccuracy: true }); 
-                    activo = true; 
-                    btn.innerText = "🛑 FINALIZAR"; 
-                    btn.style.background = "#7f8c8d"; 
-                }
+                distTotal = 0; tInicio = new Date(); latAnt = null; lonAnt = null; elKm.value = "0.00 KM"; elHrs.value = "0h 0m";
+                if ("geolocation" in navigator) { watchId = navigator.geolocation.watchPosition(actualizarGPS, null, { enableHighAccuracy: true }); activo = true; btn.innerText = "🛑 FINALIZAR"; btn.style.background = "#7f8c8d"; }
             } else {
-                // FINALIZAR TURNO
+                let tiempoFinal = elHrs.value, kmFinales = elKm.value;
                 if (distTotal > 0.01) {
-                    let mAuto = prompt(`KM recorridos: ${distTotal.toFixed(2)}\n¿Cuál fue el ingreso total de este turno?`);
+                    let mAuto = prompt(`Turno finalizado:\nDistancia: ${kmFinales}\nTiempo: ${tiempoFinal}\n\n¿Ingreso total S/.?`);
                     if (mAuto) { document.getElementById('monto').value = mAuto; registrar('ingreso'); }
                 }
-                navigator.geolocation.clearWatch(watchId); 
-                activo = false; 
-                btn.innerText = "🚀 INICIAR TURNO"; 
-                btn.style.background = "var(--naranja)";
-                
-                // RESETEO DE CONTADORES VISUALES AL FINALIZAR
-                distTotal = 0;
-                elKm.value = "0.00 KM";
-                elHrs.value = "0h 0m";
+                navigator.geolocation.clearWatch(watchId); activo = false; btn.innerText = "🚀 INICIAR TURNO"; btn.style.background = "var(--naranja)";
+                distTotal = 0; elKm.value = "0.00 KM"; elHrs.value = "0h 0m";
             }
         }
 
@@ -237,8 +223,7 @@
             if (latAnt && lonAnt) {
                 const R = 6371, dLat = (pos.coords.latitude - latAnt) * Math.PI / 180, dLon = (pos.coords.longitude - lonAnt) * Math.PI / 180;
                 const a = Math.sin(dLat/2)**2 + Math.cos(latAnt*Math.PI/180)*Math.cos(pos.coords.latitude*Math.PI/180)*Math.sin(dLon/2)**2;
-                distTotal += R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-                document.getElementById('km').value = distTotal.toFixed(2) + " KM";
+                distTotal += R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); document.getElementById('km').value = distTotal.toFixed(2) + " KM";
             }
             latAnt = pos.coords.latitude; lonAnt = pos.coords.longitude;
             let ms = new Date() - tInicio, hh = Math.floor(ms / 3600000), mm = Math.floor((ms % 3600000) / 60000);
@@ -248,12 +233,18 @@
         function registrar(tipo) {
             const mon = parseFloat(document.getElementById('monto').value);
             if (mon >= 0) {
-                const catObj = cats.find(c => c.id === catSeleccionada);
-                const ahora = new Date();
+                const catObj = cats.find(c => c.id === catSeleccionada), ahora = new Date();
                 movs.unshift({ mon, tipo, catN: catObj.n, catI: catObj.i, km: document.getElementById('km').value || "0.00 KM", hrs: document.getElementById('hrs').value || "0h 0m", metodoN: metodoActual.n, fecha: ahora.toISOString(), hora: ahora.toLocaleTimeString('es-PE', {hour:'2-digit', minute:'2-digit', hour12:false}) });
-                localStorage.setItem('movs_v15', JSON.stringify(movs));
-                document.getElementById('monto').value = ''; actualizarInterfaz();
+                localStorage.setItem('movs_v15', JSON.stringify(movs)); document.getElementById('monto').value = ''; actualizarInterfaz();
             }
+        }
+
+        /* FUNCIÓN DE FILTRADO PARA PANTALLA 3 */
+        function filtrarPorMetodo(metodo, btn) {
+            filtroMetodoReporte = metodo;
+            document.querySelectorAll('.btn-filtro-pago').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            actualizarInterfaz();
         }
 
         function actualizarInterfaz() {
@@ -267,17 +258,20 @@
 
             let dIng = {}, dGas = {}; listaUI.innerHTML = '';
             movs.forEach((m, index) => {
-                const fM = new Date(m.fecha); let incluir = false;
-                if (periodoActual === 'dia') incluir = (fM.toLocaleDateString('en-CA') === fFiltro);
-                else if (periodoActual === 'semana') incluir = (fM >= rangoSem.inicio && fM <= rangoSem.fin);
-                else if (periodoActual === 'mes') incluir = (fM.getMonth() === mesFiltro && fM.getFullYear() === anioFiltro);
-                else if (periodoActual === 'anio') incluir = (fM.getFullYear() === anioFiltro);
+                const fM = new Date(m.fecha); let incluirTiempo = false;
+                if (periodoActual === 'dia') incluirTiempo = (fM.toLocaleDateString('en-CA') === fFiltro);
+                else if (periodoActual === 'semana') incluirTiempo = (fM >= rangoSem.inicio && fM <= rangoSem.fin);
+                else if (periodoActual === 'mes') incluirTiempo = (fM.getMonth() === mesFiltro && fM.getFullYear() === anioFiltro);
+                else if (periodoActual === 'anio') incluirTiempo = (fM.getFullYear() === anioFiltro);
 
-                if (incluir) {
+                // FILTRO ADICIONAL POR MÉTODO DE PAGO
+                let incluirMetodo = (filtroMetodoReporte === 'Todos' || m.metodoN === filtroMetodoReporte);
+
+                if (incluirTiempo && incluirMetodo) {
                     const esI = m.tipo === 'ingreso';
                     if (esI) dIng[m.catN] = (dIng[m.catN] || 0) + m.mon; else dGas[m.catN] = (dGas[m.catN] || 0) + m.mon;
                     listaUI.innerHTML += `<div class="item-mov" style="border-left-color:${esI?'var(--verde)':'var(--rojo)'}">
-                        <div><b>${m.catI} ${m.catN}</b><br><small>${m.hora} | ${m.metodoN} | ${m.km}</small></div>
+                        <div><b>${m.catI} ${m.catN}</b><br><small>${m.hora} | ${m.metodoN} | ${m.km} | ${m.hrs}</small></div>
                         <div style="text-align:right">
                             <b style="color:${esI?'var(--verde)':'var(--rojo)'}">S/.${m.mon.toFixed(2)}</b><br>
                             <span onclick="editarMovimiento(${index})">✏️</span> <span onclick="eliminarMovimiento(${index})" style="margin-left:10px">🗑️</span>
@@ -286,10 +280,7 @@
                 }
             });
             const totalI = Object.values(dIng).reduce((a, b) => a + b, 0), totalG = Object.values(dGas).reduce((a, b) => a + b, 0);
-            
-            saldoActualGlobal = totalI - totalG;
-            mostrarSaldoUI();
-
+            saldoActualGlobal = totalI - totalG; mostrarSaldoUI();
             document.getElementById('txt-total-ing').innerText = `S/. ${totalI.toFixed(2)}`;
             document.getElementById('txt-total-gas').innerText = `S/. ${totalG.toFixed(2)}`;
             actualizarCharts(totalI, totalG, dIng, dGas);
@@ -318,17 +309,7 @@
         function abrirModal() { document.getElementById('modal').style.display = 'flex'; dibujarGestion(); }
         function cerrarModal() { document.getElementById('modal').style.display = 'none'; }
         function dibujarGestion() { document.getElementById('lista-gestion').innerHTML = cats.map((c, i) => `<div style="display:flex; justify-content:space-between; padding:10px; color:white;"><span>${c.i} ${c.n}</span><button onclick="cats.splice(${i},1);localStorage.setItem('cats_v15', JSON.stringify(cats));dibujarCats();dibujarGestion();">❌</button></div>`).join(''); }
-        
-        function crearCat() { 
-            const n = document.getElementById('n-nom').value; 
-            if(n) { 
-                cats.push({id: Date.now(), n, i: emojiSeleccionado}); 
-                localStorage.setItem('cats_v15', JSON.stringify(cats)); 
-                dibujarCats(); dibujarGestion(); 
-                document.getElementById('n-nom').value = ''; 
-            } 
-        }
-        
+        function crearCat() { const n = document.getElementById('n-nom').value; if(n) { cats.push({id: Date.now(), n, i: emojiSeleccionado}); localStorage.setItem('cats_v15', JSON.stringify(cats)); dibujarCats(); dibujarGestion(); document.getElementById('n-nom').value = ''; } }
         function abrirModalMes() { const g = document.getElementById('grid-meses'); g.innerHTML = nombresMeses.map((m, i) => `<button onclick="mesFiltro=${i};actualizarInterfaz();document.getElementById('modal-mes').style.display='none';" style="padding:10px">${m}</button>`).join(''); document.getElementById('modal-mes').style.display = 'flex'; }
         function navegarSemana(n) { fRefSemana.setDate(fRefSemana.getDate() + n); actualizarInterfaz(); }
         function navegarAnio(n) { anioFiltro += n; actualizarInterfaz(); }
