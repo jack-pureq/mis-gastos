@@ -23,7 +23,7 @@
         .balance-card { background: var(--oscuro); color: white; padding: 15px; border-radius: 25px; text-align: center; margin-bottom: 10px; flex-shrink: 0; }
         #saldo { font-size: 28px; font-weight: bold; }
 
-        .btn-gps { width: 100%; padding: 12px; border-radius: 15px; border: none; color: white; font-weight: bold; font-size: 16px; margin-bottom: 10px; cursor: pointer; flex-shrink: 0; }
+        .btn-gps { width: 100%; padding: 30px; border-radius: 15px; border: none; color: white; font-weight: bold; font-size: 30px; margin-bottom: 10px; cursor: pointer; flex-shrink: 0; }
 
         .seccion-graficos { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
         .caja-grafico { position: relative; background: #fff; padding: 5px; border-radius: 20px; height: 180px; border: 2px solid #eee; text-align: center; }
@@ -74,10 +74,6 @@
     </div>
 
     <div class="scroll-interno">
-        <div id="status-gps" style="text-align: right; font-size: 11px; font-weight: bold; margin-bottom: 5px; color: #444;">
-            🛰️ SEÑAL: <span id="gps-punto" style="display:inline-block; width:10px; height:10px; background:#ccc; border-radius:50%; margin-left:3px;"></span>
-            <span id="gps-txt">Apagado</span>
-        </div>
         <button id="btn-gps" class="btn-gps" style="background: var(--naranja);" onclick="toggleSeguimiento()">🚀 INICIAR TURNO (GPS)</button>
 
         <div class="seccion-graficos">
@@ -165,73 +161,65 @@
         dibujarCats(); initCharts(); actualizarInterfaz();
     }
 
+    // --- FUNCIÓN WHATSAPP (REMPLAZA AL PDF) ---
     function compartirWhatsApp() {
         let txt = `🚕 *REPORTE GESTOR TAXI PUREQ*\n`;
         txt += `📅 *MES:* ${nombresMeses[mesFiltro].toUpperCase()} ${anioFiltro}\n`;
         txt += `------------------------------\n\n`;
+
         let totalI = 0, totalG = 0;
         const movsFiltrados = movs.filter(m => {
             const f = new Date(m.fecha);
             return f.getMonth() === mesFiltro && f.getFullYear() === anioFiltro;
         }).sort((a,b) => new Date(a.fecha) - new Date(b.fecha));
-        if(movsFiltrados.length === 0) { alert("No hay datos"); return; }
+
+        if(movsFiltrados.length === 0) { alert("No hay datos en este mes"); return; }
+
         movsFiltrados.forEach(m => {
             const esI = m.tipo === 'ingreso';
             if(esI) totalI += m.mon; else totalG += m.mon;
             let fechaCorta = new Date(m.fecha).toLocaleDateString('es-PE', {day:'2-digit', month:'2-digit'});
             txt += `${fechaCorta} | ${esI ? '🟢' : '🔴'} S/.${m.mon.toFixed(2)} | ${m.catN}\n`;
         });
-        txt += `\n🟢 *INGRESOS:* S/. ${totalI.toFixed(2)}\n🔴 *GASTOS:* S/. ${totalG.toFixed(2)}\n💰 *BALANCE:* S/. ${(totalI - totalG).toFixed(2)}\n🚗 *KM TOTAL:* ${movsFiltrados.reduce((a,b)=>a+(parseFloat(b.km)||0),0).toFixed(2)} km\n\n_Generado desde mi Gestor Pro_`;
-        window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`, '_blank');
+
+        txt += `\n------------------------------\n`;
+        txt += `🟢 *INGRESOS:* S/. ${totalI.toFixed(2)}\n`;
+        txt += `🔴 *GASTOS:* S/. ${totalG.toFixed(2)}\n`;
+        txt += `💰 *BALANCE:* S/. ${(totalI - totalG).toFixed(2)}\n`;
+        txt += `🚗 *KM TOTAL:* ${movsFiltrados.reduce((a,b)=>a+(parseFloat(b.km)||0),0).toFixed(2)} km\n\n`;
+        txt += `_Generado desde mi Gestor Pro_`;
+
+        const encoded = encodeURIComponent(txt);
+        window.open(`https://wa.me/?text=${encoded}`, '_blank');
     }
 
     function toggleSeguimiento() {
         const btn = document.getElementById('btn-gps');
-        const dot = document.getElementById('gps-punto');
-        const txt = document.getElementById('gps-txt');
         if (!activo) {
             distTotal = 0; tInicio = new Date(); latAnt = null; lonAnt = null;
             if ("geolocation" in navigator) {
-                const opcionesGps = { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 };
-                watchId = navigator.geolocation.watchPosition(actualizarGPS, (err) => {
-                    dot.style.background = "red"; txt.innerText = "Error GPS";
-                }, opcionesGps);
+                watchId = navigator.geolocation.watchPosition(actualizarGPS, null, { enableHighAccuracy: true });
                 activo = true; btn.innerText = "🛑 FINALIZAR TURNO"; btn.style.background = "#7f8c8d";
-                dot.style.background = "gold"; txt.innerText = "Buscando...";
             }
         } else {
             const tFinal = new Date(), diffMs = tFinal - tInicio;
             let hh = Math.floor(diffMs / 3600000), mm = Math.floor((diffMs % 3600000) / 60000);
+            const tiempoFinal = `${hh}h ${mm}m`;
             if (distTotal > 0.01) {
-                let montoAuto = prompt(`RESUMEN:\n🚗 ${distTotal.toFixed(2)} km\n⏱️ ${hh}h ${mm}m\n\n¿Cobro?`);
+                let montoAuto = prompt(`RESUMEN:\n🚗 ${distTotal.toFixed(2)} km\n⏱️ ${tiempoFinal}\n\n¿Cobro?`);
                 if (montoAuto) { document.getElementById('monto').value = montoAuto; registrar('ingreso'); }
             }
-            navigator.geolocation.clearWatch(watchId); activo = false;
-            btn.innerText = "🚀 INICIAR TURNO (GPS)"; btn.style.background = "var(--naranja)";
-            dot.style.background = "#ccc"; txt.innerText = "Apagado";
+            navigator.geolocation.clearWatch(watchId); activo = false; btn.innerText = "🚀 INICIAR TURNO (GPS)"; btn.style.background = "var(--naranja)";
             document.getElementById('km').value = ""; document.getElementById('hrs').value = "";
         }
     }
 
     function actualizarGPS(pos) {
-        const dot = document.getElementById('gps-punto');
-        const txt = document.getElementById('gps-txt');
-        const acc = pos.coords.accuracy;
-        // Indicador Visual de precisión
-        if (acc < 20) { dot.style.background = "#27ae60"; txt.innerText = "Estable"; }
-        else if (acc < 50) { dot.style.background = "gold"; txt.innerText = "Débil"; }
-        else { dot.style.background = "red"; txt.innerText = "Baja Señal"; return; }
-
         if (latAnt && lonAnt) {
-            const R = 6371;
-            const dLat = (pos.coords.latitude - latAnt) * Math.PI / 180;
-            const dLon = (pos.coords.longitude - lonAnt) * Math.PI / 180;
+            const R = 6371, dLat = (pos.coords.latitude - latAnt) * Math.PI / 180, dLon = (pos.coords.longitude - lonAnt) * Math.PI / 180;
             const a = Math.sin(dLat/2)**2 + Math.cos(latAnt*Math.PI/180)*Math.cos(pos.coords.latitude*Math.PI/180)*Math.sin(dLon/2)**2;
-            const dist = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-            if (dist > 0.003) { // Solo suma si se movió más de 3 metros (evita rebotes)
-                distTotal += dist;
-                document.getElementById('km').value = distTotal.toFixed(2);
-            }
+            distTotal += R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            document.getElementById('km').value = distTotal.toFixed(2);
         }
         latAnt = pos.coords.latitude; lonAnt = pos.coords.longitude;
         let ms = new Date() - tInicio, hh = Math.floor(ms / 3600000), mm = Math.floor((ms % 3600000) / 60000);
@@ -257,6 +245,7 @@
         document.getElementById('txt-mes').innerText = nombresMeses[mesFiltro] + " " + anioFiltro;
         document.getElementById('txt-anio').innerText = anioFiltro;
         document.getElementById('txt-anio-modal').innerText = anioFiltro;
+
         let dIng = {}, dGas = {}; listaUI.innerHTML = '';
         movs.forEach((m, index) => {
             const fM = new Date(m.fecha); let incluir = false;
@@ -264,6 +253,7 @@
             else if (periodoActual === 'semana') incluir = (fM >= rangoSem.inicio && fM <= rangoSem.fin);
             else if (periodoActual === 'mes') incluir = (fM.getMonth() === mesFiltro && fM.getFullYear() === anioFiltro);
             else if (periodoActual === 'anio') incluir = (fM.getFullYear() === anioFiltro);
+
             if (incluir && m.metodoN === metodoActual.n) {
                 const esI = m.tipo === 'ingreso';
                 if (esI) dIng[m.catN] = (dIng[m.catN] || 0) + m.mon; else dGas[m.catN] = (dGas[m.catN] || 0) + m.mon;
@@ -295,6 +285,7 @@
         document.getElementById('visor-anio').style.display = (p === 'anio') ? 'block' : 'none';
         actualizarInterfaz();
     }
+
     function navegarSemana(n) { fRefSemana.setDate(fRefSemana.getDate() + n); actualizarInterfaz(); }
     function navegarAnio(n) { anioFiltro += n; actualizarInterfaz(); }
     function abrirModalSemana() { document.getElementById('modal-semana').style.display = 'flex'; }
@@ -304,6 +295,7 @@
         g.innerHTML = nombresMeses.map((m, i) => `<button class="btn-mes ${i === mesFiltro ? 'active' : ''}" onclick="mesFiltro=${i};actualizarInterfaz();abrirModalMes();">${m}</button>`).join('');
         document.getElementById('modal-mes').style.display = 'flex';
     }
+
     function editarMovimiento(idx) { let nV = prompt("Nuevo monto S/.", movs[idx].mon); if (nV !== null) { movs[idx].mon = parseFloat(nV); localStorage.setItem('movs_v15', JSON.stringify(movs)); actualizarInterfaz(); } }
     function eliminarMovimiento(idx) { if (confirm("¿Eliminar?")) { movs.splice(idx, 1); localStorage.setItem('movs_v15', JSON.stringify(movs)); actualizarInterfaz(); } }
     function setMetodo(n, i, btn) { metodoActual = { n, i }; document.querySelectorAll('.metodo-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); actualizarInterfaz(); }
