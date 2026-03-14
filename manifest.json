@@ -1,6 +1,6 @@
 {
   "name": "GT Gestor",
-  "short_name": "GT",
+  "short_name": "Gestor Taxi",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#2c3e50",
