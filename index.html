@@ -182,27 +182,6 @@
     <div id="modal-anio" class="modal"><div class="modal-content"><h3>Año</h3><div style="display:flex; justify-content:center; gap:10px; align-items:center;"><button onclick="navegarAnio(-1)"> ◀ </button><span id="txt-anio-modal" style="font-size:24px; font-weight:bold;"></span><button onclick="navegarAnio(1)"> ▶ </button></div><button onclick="cerrarModalesYModos()" style="margin-top:15px; width:100%; padding:10px;">OK</button></div></div>
 
     <script>
-        // 1. FUNCIÓN PARA EDITAR NOMBRE
-function editarCategoria(index) {
-    const nuevoNombre = prompt("Edita el nombre de la categoría:", categorias[index].nombre);
-    if (nuevoNombre !== null && nuevoNombre.trim() !== "") {
-        categorias[index].nombre = nuevoNombre.trim();
-        actualizarInterfazCategorias(); // Llamada a tu función que dibuja la lista
-        guardarEnLocalStorage(); // Para que no se pierda el cambio
-    }
-}
-
-// 2. FUNCIÓN PARA MOVER (REORDENAR)
-function moverCategoria(index, direccion) {
-    const nuevaPosicion = index + direccion;
-    // Verificar que no se salga de los límites
-    if (nuevaPosicion >= 0 && nuevaPosicion < categorias.length) {
-        const elemento = categorias.splice(index, 1)[0];
-        categorias.splice(nuevaPosicion, 0, elemento);
-        actualizarInterfazCategorias();
-        guardarEnLocalStorage();
-    }
-}
         Chart.register(ChartDataLabels);
         let movs = JSON.parse(localStorage.getItem('movs_v15')) || [];
         let cats = JSON.parse(localStorage.getItem('cats_v15')) || [{id: 0, n: "Carrera", i: " 🚕 "}, {id: 1, n: "Gasolina", i: " ⛽ "}, {id: 2, n: "Comida", i: " 🍔 "}];
