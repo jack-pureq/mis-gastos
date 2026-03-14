@@ -182,6 +182,27 @@
     <div id="modal-anio" class="modal"><div class="modal-content"><h3>Año</h3><div style="display:flex; justify-content:center; gap:10px; align-items:center;"><button onclick="navegarAnio(-1)"> ◀ </button><span id="txt-anio-modal" style="font-size:24px; font-weight:bold;"></span><button onclick="navegarAnio(1)"> ▶ </button></div><button onclick="cerrarModalesYModos()" style="margin-top:15px; width:100%; padding:10px;">OK</button></div></div>
 
     <script>
+        function editarCategoria(index) {
+    const nuevoNombre = prompt("Edita el nombre:", cats[index].n);
+    if (nuevoNombre !== null && nuevoNombre.trim() !== "") {
+        cats[index].n = nuevoNombre.trim();
+        localStorage.setItem('cats_v15', JSON.stringify(cats));
+        dibujarCats();
+        dibujarGestion();
+    }
+}
+
+function moverCategoria(index, direccion) {
+    const nuevaPosicion = index + direccion;
+    if (nuevaPosicion >= 0 && nuevaPosicion < cats.length) {
+        const elemento = cats.splice(index, 1)[0];
+        cats.splice(nuevaPosicion, 0, elemento);
+        localStorage.setItem('cats_v15', JSON.stringify(cats));
+        dibujarCats();
+        dibujarGestion();
+    }
+}
+
         Chart.register(ChartDataLabels);
         let movs = JSON.parse(localStorage.getItem('movs_v15')) || [];
         let cats = JSON.parse(localStorage.getItem('cats_v15')) || [{id: 0, n: "Carrera", i: " 🚕 "}, {id: 1, n: "Gasolina", i: " ⛽ "}, {id: 2, n: "Comida", i: " 🍔 "}];
