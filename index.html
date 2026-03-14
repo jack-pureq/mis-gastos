@@ -203,20 +203,6 @@ function moverCategoria(index, direccion) {
         guardarEnLocalStorage();
     }
 }
-
-// 3. EJEMPLO DE CÓMO DEBE QUEDAR TU HTML DINÁMICO (Template)
-// Al generar la lista con un bucle, añade estos botones:
-/*
-  `<div class="item-categoria">
-     <span>${cat.emoji} ${cat.nombre}</span>
-     <div class="acciones">
-        <button onclick="moverCategoria(${i}, -1)">▲</button>
-        <button onclick="moverCategoria(${i}, 1)">▼</button>
-        <button onclick="editarCategoria(${i})">✏️</button>
-        <button onclick="eliminarCategoria(${i})">❌</button>
-     </div>
-   </div>`
-*/
         Chart.register(ChartDataLabels);
         let movs = JSON.parse(localStorage.getItem('movs_v15')) || [];
         let cats = JSON.parse(localStorage.getItem('cats_v15')) || [{id: 0, n: "Carrera", i: " 🚕 "}, {id: 1, n: "Gasolina", i: " ⛽ "}, {id: 2, n: "Comida", i: " 🍔 "}];
