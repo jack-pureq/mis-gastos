@@ -331,6 +331,18 @@
             barra.style.background = (porc >= 100) ? "#f1c40f" : "var(--verde)"; 
             document.getElementById('txt-progreso-meta-modal').innerText = `S/. ${ingresosHoy.toFixed(2)} / S/. ${metaDiaria.toFixed(2)}`; 
         }
+   function dibujarGestion() {
+    document.getElementById('lista-gestion').innerHTML = cats.map((c, i) => `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; color:white; border-bottom:1px solid rgba(255,255,255,0.1);">
+            <span style="flex:1;">${c.i} ${c.n}</span>
+            <div style="display:flex; gap:5px;">
+                <button onclick="moverCategoria(${i}, -1)" style="background:none; border:1px solid white; color:white; border-radius:5px; padding:5px;">▲</button>
+                <button onclick="moverCategoria(${i}, 1)" style="background:none; border:1px solid white; color:white; border-radius:5px; padding:5px;">▼</button>
+                <button onclick="editarCategoria(${i})" style="background:#f39c12; border:none; color:white; border-radius:5px; padding:5px;">✏️</button>
+                <button onclick="cats.splice(${i},1);localStorage.setItem('cats_v15', JSON.stringify(cats));dibujarCats();dibujarGestion();" style="background:#e74c3c; border:none; color:white; border-radius:5px; padding:5px;">❌</button>
+            </div>
+        </div>`).join('');
+}
 
         function guardarMeta() { let v = parseFloat(document.getElementById('input-meta-valor').value); metaDiaria = isNaN(v) ? 0 : v; localStorage.setItem('meta_gt_pro', metaDiaria); cerrarModalesYModos(); actualizarBarraMeta(); }
         function togglePrivacidad() { modoPrivado = !modoPrivado; mostrarSaldoUI(); }
