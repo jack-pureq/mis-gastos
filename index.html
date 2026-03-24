@@ -1,4 +1,4 @@
-        <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <link rel="manifest" href="manifest.json">
@@ -27,10 +27,11 @@
         #progreso-meta { height: 100%; width: 0%; background: var(--verde); transition: width 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .header-perfil { display: flex; justify-content: flex-end; padding: 15px 5px 5px 5px; }
         .btn-perfil { background: #fff; border: 1px solid #ddd; padding: 8px 15px; border-radius: 12px; font-weight: bold; font-size: 12px; cursor: pointer; }
-        .main-balance-container { text-align: center; margin: 20px 0; cursor: pointer; user-select: none; }
+        .main-balance-container { text-align: center; margin: 10px 0; cursor: pointer; user-select: none; }
         #saldo-principal { font-size: 48px; font-weight: 900; color: var(--oscuro); display: block; }
         .lbl-balance { font-size: 12px; font-weight: bold; color: #888; }
-        .btn-gps-principal { width: 100%; padding: 40px; border-radius: 20px; border: none; color: white; font-weight: 900; font-size: 30px; background: var(--naranja); box-shadow: 0 6px 0 #d35400; margin-bottom: 15px; }
+        /* LÍNEA 30: AJUSTE DE TAMAÑO DE BOTONES */
+        .btn-gps-principal { width: 100%; padding: 22px 10px; border-radius: 20px; border: none; color: white; font-weight: 900; font-size: 24px; background: var(--naranja); box-shadow: 0 6px 0 #d35400; margin-bottom: 15px; }
         .contenedor-cats { display: flex; gap: 8px; overflow-x: auto; padding: 10px 0; margin-bottom: 10px; scrollbar-width: none; }
         .cat-chip { flex: 0 0 auto; background: #fff; padding: 12px 20px; border-radius: 50px; border: 2px solid #ccc; font-weight: bold; font-size: 14px; }
         .cat-chip.activa { border-color: var(--azul); background: #e8f4fd; color: var(--azul); }
@@ -182,7 +183,7 @@
     <div id="modal-anio" class="modal"><div class="modal-content"><h3>Año</h3><div style="display:flex; justify-content:center; gap:10px; align-items:center;"><button onclick="navegarAnio(-1)"> ◀ </button><span id="txt-anio-modal" style="font-size:24px; font-weight:bold;"></span><button onclick="navegarAnio(1)"> ▶ </button></div><button onclick="cerrarModalesYModos()" style="margin-top:15px; width:100%; padding:10px;">OK</button></div></div>
 
     <script>
-        // --- FUNCIONES AGREGADAS PARA EDITAR Y MOVER ---
+        // --- FUNCIONES PARA EDITAR Y MOVER ---
         function editarCategoria(index) {
             const nuevoNombre = prompt("Edita el nombre:", cats[index].n);
             if (nuevoNombre !== null && nuevoNombre.trim() !== "") {
@@ -203,7 +204,6 @@
                 dibujarGestion();
             }
         }
-        // --- FIN DE FUNCIONES AGREGADAS ---
 
         Chart.register(ChartDataLabels);
         let movs = JSON.parse(localStorage.getItem('movs_v15')) || [];
@@ -216,7 +216,7 @@
         let cIng, cGas, watchId = null, latAnt = null, lonAnt = null, distTotal = 0, tInicio = null, activo = false;
         let emojiSeleccionado = " 🚕 ", modoPrivado = false, saldoActualGlobal = 0, filtroMetodoReporte = 'Todos';
         const nombresMeses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-        const listaEmojis = [" 🚕 "," 🚗 "," 🚙 "," 🚌 "," 🚐 "," 🏎 ️"," 🚓 "," 🚑 "," 🚒 "," 🚚 "," 🚛 "," 🚜 "," 🏍 ️"," 🚲 ","🛵"," ✈️ "," ⛽ "," 🛠 ️"," 🔧 "," 🔨 "," ⚒️ "," 🔩 "," ⚙️ ","🧼","🧽","🧹"," 🅿 ️"," 🚧 "," 🚦 "," 🚥 "," 🗺 ️"," 📍 "," 🚩 "," 🏁 "," ⚽ "," 🏀 ","🏐"," 🏈 "," ⚾ "," 🎾 "," 🏋 ️"," 🚴 "," 🍔 ","  Fries "," 🍕 ","🥪","🌭","🌮","🌯","🥗","🥘","🍿"," ☕ ","🥤"," 💰 "," 💵 "," 💳 ","🧾"," 🏦 ","🪙"," 📱 "," 🔋 "," 🔌 ","💡"," 💧 "," 🔥 "," ♨️ "," 📶 "," 🌐 "," 🗑 ️"," 👮 "," 👨 ‍ ✈️ "," 👷 "," 🏠 "," 🐶 "," 🐱 "," 🐭 "," 🐹 "," 🐰 "," foxes "," 🐻 "," 🐼 "," ✨ "," ⭐ "," ⚡ "," ✅ "," ❌ "," ⚠️ "];
+        const listaEmojis = [" 🚕 "," 🚗 "," 🚙 "," 🚌 "," 🚐 "," 🏎 ️"," 🚓 "," 🚑 "," 🚒 "," 🚚 "," 🚛 "," 🚜 "," 🏍 ️"," 🚲 ","🛵"," ✈️ "," ⛽ "," 🛠 ️"," 🔧 "," 🔨 "," ⚒️ "," 🔩 "," ⚙️ ","🧼","🧽","🧹"," 🅿 ️"," 🚧 "," 🚦 "," 🚥 "," 🗺 ️"," 📍 "," 🚩 "," 🏁 "," ⚽ "," 🏀 ","🏐"," 🏈 "," ⚾ "," 🎾 "," 🏋 ️"," 🚴 "," 🍔 ","🍟"," 🍕 ","🥪","hotdog","taco","burrito","ensalada","olla","popcorn"," ☕ ","🥤"," 💰 "," 💵 "," 💳 ","recibo"," 🏦 ","moneda"," 📱 "," 🔋 "," 🔌 ","💡"," 💧 "," 🔥 "," ♨️ "," 📶 "," 🌐 "," 🗑 ️"," 👮 ","piloto","obrero"," 🏠 "," 🐶 "," 🐱 "," 🐭 "," 🐹 "," 🐰 ","zorro"," 🐻 "," 🐼 "," ✨ "," ⭐ "," ⚡ "," ✅ "," ❌ "," ⚠️ "];
 
         window.onpopstate = function(event) {
             cerrarModalesYModos();
@@ -313,17 +313,39 @@
             if (!activo) {
                 distTotal = 0; tInicio = new Date(); latAnt = null; lonAnt = null;
                 elKm.value = "0.00 KM"; elHrs.value = "0h 0m";
+                
+                // MEJORA: Configuración de alta precisión
                 watchId = navigator.geolocation.watchPosition(pos => {
+                    // 1. Filtro de precisión: Ignoramos si el error es mayor a 30 metros
+                    if (pos.coords.accuracy > 30) return;
+
                     if (latAnt && lonAnt) {
-                        const R = 6371, dLat = (pos.coords.latitude - latAnt) * Math.PI / 180, dLon = (pos.coords.longitude - lonAnt) * Math.PI / 180;
+                        const R = 6371;
+                        const dLat = (pos.coords.latitude - latAnt) * Math.PI / 180;
+                        const dLon = (pos.coords.longitude - lonAnt) * Math.PI / 180;
                         const a = Math.sin(dLat/2)**2 + Math.cos(latAnt*Math.PI/180)*Math.cos(pos.coords.latitude*Math.PI/180)*Math.sin(dLon/2)**2;
-                        distTotal += R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-                        elKm.value = distTotal.toFixed(2) + " KM";
+                        const distSalto = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                        
+                        // 2. Filtro de movimiento mínimo: Solo suma si te moviste más de 5 metros
+                        // Esto evita que el kilometraje suba solo cuando estás en un semáforo
+                        if (distSalto > 0.005) {
+                            distTotal += distSalto;
+                            elKm.value = distTotal.toFixed(2) + " KM";
+                        }
                     }
-                    latAnt = pos.coords.latitude; lonAnt = pos.coords.longitude;
+                    latAnt = pos.coords.latitude; 
+                    lonAnt = pos.coords.longitude;
+                    
                     let ms = new Date() - tInicio, hh = Math.floor(ms / 3600000), mm = Math.floor((ms % 3600000) / 60000);
                     elHrs.value = `${hh}h ${mm}m`;
-                }, null, { enableHighAccuracy: true });
+                }, 
+                (err) => { console.warn("Error GPS: ", err); }, 
+                { 
+                    enableHighAccuracy: true, // FUERZA el uso del sensor GPS real
+                    timeout: 10000, 
+                    maximumAge: 0 // No usa posiciones guardadas en memoria
+                });
+
                 activo = true;
                 btn.innerText = "🛑 FINALIZAR";
                 btn.style.background = "#7f8c8d";
@@ -361,33 +383,51 @@
         function filtrarPorMetodo(metodo, btn) { filtroMetodoReporte = metodo; document.querySelectorAll('.btn-filtro-pago').forEach(b => b.classList.remove('active')); btn.classList.add('active'); actualizarInterfaz(); }
         function setMetodo(n, i, btn) { metodoActual = { n, i }; document.querySelectorAll('.metodo-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
         function dibujarCats() { document.getElementById('cat-chips').innerHTML = cats.map(c => `<div class="cat-chip ${c.id === catSeleccionada ? 'activa' : ''}" onclick="catSeleccionada=${c.id};dibujarCats();">${c.i} ${c.n}</div>`).join(''); }
-        function initCharts() { const opt = { maintainAspectRatio: false, cutout: '70%', plugins: { legend: { display: false }, datalabels: { display: false } } }; cIng = new Chart(document.getElementById('cIng'), { type: 'doughnut', data: { labels: [], datasets: [{ data: [], backgroundColor: ['#2ecc71', '#27ae60', '#1abc9c'] }] }, options: opt }); cGas = new Chart(document.getElementById('cGas'), { type: 'doughnut', data: { labels: [], datasets: [{ data: [], backgroundColor: ['#e74c3c', '#e67e22', '#f1c40f'] }] }, options: opt }); }
-        function actualizarCharts(ti, tg, di, dg) { cIng.data.labels = Object.keys(di); cIng.data.datasets[0].data = Object.values(di); cIng.update(); cGas.data.labels = Object.keys(dg); cGas.data.datasets[0].data = Object.values(dg); cGas.update(); }
-        
-        // --- ACTUALIZACIÓN DE dibujarGestion CON BOTONES NUEVOS ---
-        function dibujarGestion() { 
-            document.getElementById('lista-gestion').innerHTML = cats.map((c, i) => `
-                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; color:white; border-bottom:1px solid rgba(255,255,255,0.1);">
-                    <span style="flex:1;">${c.i} ${c.n}</span>
-                    <div style="display:flex; gap:5px;">
-                        <button onclick="moverCategoria(${i}, -1)" style="background:none; border:1px solid white; color:white; border-radius:5px; padding:5px;">▲</button>
-                        <button onclick="moverCategoria(${i}, 1)" style="background:none; border:1px solid white; color:white; border-radius:5px; padding:5px;">▼</button>
-                        <button onclick="editarCategoria(${i})" style="background:#f39c12; border:none; color:white; border-radius:5px; padding:5px;">✏️</button>
-                        <button onclick="cats.splice(${i},1);localStorage.setItem('cats_v15', JSON.stringify(cats));dibujarCats();dibujarGestion();" style="background:#e74c3c; border:none; color:white; border-radius:5px; padding:5px;">❌</button>
-                    </div>
-                </div>`).join(''); 
+
+        function initCharts() { 
+            const opt = { maintainAspectRatio: false, cutout: '70%', plugins: { legend: { display: false }, datalabels: { display: false } } }; 
+            cIng = new Chart(document.getElementById('cIng'), { type: 'doughnut', data: { labels: [], datasets: [{ data: [], backgroundColor: ['#2ecc71', '#27ae60', '#1abc9c'] }] }, options: opt }); 
+            cGas = new Chart(document.getElementById('cGas'), { type: 'doughnut', data: { labels: [], datasets: [{ data: [], backgroundColor: ['#e74c3c', '#e67e22', '#f1c40f'] }] }, options: opt }); 
         }
-        
+
+        function actualizarCharts(tI, tG, dI, dG) { 
+            cIng.data.labels = Object.keys(dI); cIng.data.datasets[0].data = Object.values(dI); cIng.update(); 
+            cGas.data.labels = Object.keys(dG); cGas.data.datasets[0].data = Object.values(dG); cGas.update(); 
+        }
+
+        function crearCat() { 
+            const n = document.getElementById('n-nom').value.trim(); 
+            if(n) { cats.push({id: Date.now(), n, i: emojiSeleccionado}); localStorage.setItem('cats_v15', JSON.stringify(cats)); dibujarCats(); dibujarGestion(); document.getElementById('n-nom').value=''; } 
+        }
+        function borrarCat(index) { if(confirm("¿Borrar categoría?")) { cats.splice(index, 1); localStorage.setItem('cats_v15', JSON.stringify(cats)); dibujarCats(); dibujarGestion(); } }
+        function dibujarGestion() { 
+            const l = document.getElementById('lista-gestion'); 
+            l.innerHTML = cats.map((c, i) => `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid rgba(255,255,255,0.1); align-items:center;">
+                <span>${c.i} ${c.n}</span>
+                <div>
+                    <button onclick=\"moverCategoria(${i},-1)\" style=\"background:none; border:none; color:white;\">🔼</button>
+                    <button onclick=\"moverCategoria(${i},1)\" style=\"background:none; border:none; color:white;\">🔽</button>
+                    <button onclick=\"editarCategoria(${i})\" style=\"background:none; border:none; color:white;\">✏️</button>
+                    <button onclick=\"borrarCat(${i})\" style=\"background:none; border:none; color:white;\">🗑️</button>
+                </div></div>`).join(''); 
+        }
         function seleccionarEmoji(e) { emojiSeleccionado = e; document.getElementById('btn-emoji-actual').innerText = e; cerrarVariedad(); }
-        function crearCat() { const n = document.getElementById('n-nom').value; if(n) { cats.push({id: Date.now(), n, i: emojiSeleccionado}); localStorage.setItem('cats_v15', JSON.stringify(cats)); dibujarCats(); dibujarGestion(); document.getElementById('n-nom').value = ''; } }
-        function cambiarPeriodo(p, btn) { periodoActual = p; document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); document.getElementById('input-fecha-filtro').style.display = (p === 'dia') ? 'inline-block' : 'none'; document.getElementById('visor-semana').style.display = (p === 'semana') ? 'block' : 'none'; document.getElementById('visor-mes').style.display = (p === 'mes') ? 'block' : 'none'; document.getElementById('visor-anio').style.display = (p === 'anio') ? 'block' : 'none'; actualizarInterfaz(); }
+        function cambiarPeriodo(p, btn) { 
+            periodoActual = p; 
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); 
+            document.getElementById('input-fecha-filtro').style.display = (p === 'dia') ? 'inline-block' : 'none'; 
+            document.getElementById('visor-mes').style.display = (p === 'mes') ? 'block' : 'none'; 
+            document.getElementById('visor-semana').style.display = (p === 'semana') ? 'block' : 'none'; 
+            document.getElementById('visor-anio').style.display = (p === 'anio') ? 'block' : 'none'; 
+            actualizarInterfaz(); 
+        }
         function navegarSemana(n) { fRefSemana.setDate(fRefSemana.getDate() + n); actualizarInterfaz(); }
         function navegarAnio(n) { anioFiltro += n; actualizarInterfaz(); }
-        function abrirModalMes() { pushEstado(); const g = document.getElementById('grid-meses'); g.innerHTML = nombresMeses.map((m, i) => `<button onclick="mesFiltro=${i};actualizarInterfaz();cerrarModalesYModos();" style="padding:10px">${m}</button>`).join(''); document.getElementById('modal-mes').style.display = 'flex'; }
+        function abrirModalMes() { pushEstado(); const g = document.getElementById('grid-meses'); g.innerHTML = nombresMeses.map((m, i) => `<button onclick=\"mesFiltro=${i};actualizarInterfaz();cerrarModalesYModos();\" style=\"padding:10px\">${m}</button>`).join(''); document.getElementById('modal-mes').style.display = 'flex'; }
         function abrirModalSemana() { pushEstado(); document.getElementById('modal-semana').style.display = 'flex'; }
         function abrirModalAnio() { pushEstado(); document.getElementById('modal-anio').style.display = 'flex'; }
         function getRangoSemana(f) { let d = new Date(f), day = d.getDay(), diff = d.getDate() - day + (day === 0 ? -6 : 1), ini = new Date(d.setDate(diff)); ini.setHours(0,0,0,0); let fin = new Date(ini); fin.setDate(ini.getDate() + 6); fin.setHours(23,59,59,999); return { inicio: ini, fin: fin, texto: `${ini.toLocaleDateString('es-PE',{day:'2-digit',month:'short'})} - ${fin.toLocaleDateString('es-PE',{day:'2-digit',month:'short'})}` }; }
-        function compartirWhatsApp() { let val = modoPrivado ? "••••" : `S/. ${saldoActualGlobal.toFixed(2)}`; let txt = ` 🚕  *REPORTE GESTOR TAXI*\n 💰  *BALANCE:* ${val}\n🟢 *ING:* ${document.getElementById('txt-total-ing').innerText}\n 🔴  *GAS:* ${document.getElementById('txt-total-gas').innerText}`; window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`, '_blank'); }
+        function compartirWhatsApp() { let val = modoPrivado ? "••••" : `S/. ${saldoActualGlobal.toFixed(2)}`; let txt = `*RESUMEN GT PUREQ*\nSaldo Actual: ${val}\nFecha: ${new Date().toLocaleDateString()}\n--------------------------`; window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`, '_blank'); }
     </script>
 </body>
 </html>
