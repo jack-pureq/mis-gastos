@@ -12,7 +12,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
     <style>
-        :root { --verde: #27ae60; --rojo: #e74c3c; --oscuro: #2c3e50; --azul: #3498db; --naranja: #f39c12; --gris: #f0f2f5; }
+        :root { --verde: #27ae60; --rojo: #e74c3c; --oscuro: #2c3e50; --azul: #3498db; --naranja: #f39c12; --gris: #f0f2f5; --yape: #742284; --plin: #00b4ff; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         html, body { overflow: hidden; height: 100%; width: 100%; position: fixed; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
         #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #2c3e50 0%, #000 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; color: white; transition: opacity 0.8s ease; }
@@ -27,21 +27,24 @@
         #progreso-meta { height: 100%; width: 0%; background: var(--verde); transition: width 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .header-perfil { display: flex; justify-content: flex-end; padding: 15px 5px 5px 5px; }
         .btn-perfil { background: #fff; border: 1px solid #ddd; padding: 8px 15px; border-radius: 12px; font-weight: bold; font-size: 12px; cursor: pointer; }
-        .main-balance-container { text-align: center; margin: 10px 0; cursor: pointer; user-select: none; }
+        .main-balance-container { text-align: center; margin: 20px 0; cursor: pointer; user-select: none; }
         #saldo-principal { font-size: 48px; font-weight: 900; color: var(--oscuro); display: block; }
         .lbl-balance { font-size: 12px; font-weight: bold; color: #888; }
-        /* LÍNEA 30: AJUSTE DE TAMAÑO DE BOTONES */
         .btn-gps-principal { width: 100%; padding: 22px 10px; border-radius: 20px; border: none; color: white; font-weight: 900; font-size: 24px; background: var(--naranja); box-shadow: 0 6px 0 #d35400; margin-bottom: 15px; }
+        .contenedor-qr-doble { display: flex; gap: 10px; margin-top: 5px; }
+        .wrapper-qr { flex: 1; position: relative; display: flex; align-items: stretch; }
+        .btn-qr { flex: 1; padding: 14px; border-radius: 15px; border: none; color: white; font-weight: bold; font-size: 14px; box-shadow: 0 4px 0 rgba(0,0,0,0.2); text-align: center; }
+        .btn-lapiz-qr { position: absolute; top: 0; right: 0; height: 100%; width: 35px; background: rgba(0,0,0,0.1); border-radius: 0 15px 15px 0; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; border-left: 1px solid rgba(255,255,255,0.2); }
         .contenedor-cats { display: flex; gap: 8px; overflow-x: auto; padding: 10px 0; margin-bottom: 10px; scrollbar-width: none; }
         .cat-chip { flex: 0 0 auto; background: #fff; padding: 12px 20px; border-radius: 50px; border: 2px solid #ccc; font-weight: bold; font-size: 14px; }
         .cat-chip.activa { border-color: var(--azul); background: #e8f4fd; color: var(--azul); }
-        .metodos-pago { display: flex; gap: 8px; margin-bottom: 15px; }
-        .metodo-btn { flex: 1; padding: 15px; border-radius: 15px; border: 1px solid #ddd; background: #fff; font-size: 12px; font-weight: bold; }
+        .metodos-pago { display: flex; gap: 5px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
+        .metodo-btn { flex: 1; min-width: 80px; padding: 12px 5px; border-radius: 12px; border: 1px solid #ddd; background: #fff; font-size: 10px; font-weight: bold; text-align: center; }
         .metodo-btn.active { background: var(--oscuro); color: white; border-color: var(--oscuro); }
         .input-monto { flex: 1; padding: 18px; border-radius: 30px; border: 2px solid #ddd; font-size: 24px; text-align: center; font-weight: bold; outline: none; min-width: 0; }
         .btn-engranaje { width: 65px; border-radius: 15px; border: 1px solid #ddd; background: #fff; font-size: 24px; box-shadow: 0 4px 0 #ccc; flex-shrink: 0; }
         .input-auto-visual { flex: 1; min-width: 0; padding: 12px 5px; border-radius: 12px; background: #fffdf0; border: 2px solid var(--naranja); text-align: center; font-weight: bold; color: var(--naranja); font-size: 14px; outline: none; }
-        #page-perfil { z-index: 150; background: var(--oscuro); color: white; }
+        #page-perfil { z-index: 150; background: var(--oscuro); color: white; overflow-y: auto; }
         .card-perfil { background: rgba(255,255,255,0.1); padding: 20px; border-radius: 25px; margin-top: 60px; text-align: center; }
         .foto-perfil-circulo { width: 100px; height: 100px; background: #555; border-radius: 50%; margin: 0 auto 15px; border: 4px solid var(--azul); overflow: hidden; position: relative; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .foto-perfil-circulo img { width: 100%; height: 100%; object-fit: cover; }
@@ -53,8 +56,8 @@
         .nav-periodos { display: flex; justify-content: space-around; margin-top: 50px; border-bottom: 1px solid #eee; }
         .tab-btn { padding: 12px; border: none; background: none; font-weight: bold; color: #888; }
         .tab-btn.active { color: var(--azul); border-bottom: 3px solid var(--azul); }
-        .filtros-pago-reporte { display: flex; gap: 5px; padding: 10px 15px; background: #f9f9f9; border-bottom: 1px solid #eee; }
-        .btn-filtro-pago { flex: 1; padding: 8px; border-radius: 10px; border: 1px solid #ddd; background: white; font-size: 10px; font-weight: bold; color: #666; }
+        .filtros-pago-reporte { display: flex; gap: 5px; padding: 10px 15px; background: #f9f9f9; border-bottom: 1px solid #eee; overflow-x: auto; }
+        .btn-filtro-pago { flex: 0 0 auto; padding: 8px 12px; border-radius: 10px; border: 1px solid #ddd; background: white; font-size: 10px; font-weight: bold; color: #666; }
         .btn-filtro-pago.active { background: var(--azul); color: white; border-color: var(--azul); }
         .caja-grafico { position: relative; height: 180px; background: #fff; border-radius: 20px; padding: 5px; border: 2px solid #eee; margin-bottom: 10px; }
         .item-mov { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid #f5f5f5; font-size: 14px; border-left: 5px solid transparent; }
@@ -63,42 +66,205 @@
         .btn-emoji-selector { width: 55px; height: 55px; border-radius: 50%; border: 2px dashed white; background: rgba(255,255,255,0.2); font-size: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .emoji-grid-container { background: white; border-radius: 15px; padding: 10px; color: #333; max-height: 300px; overflow-y: auto; display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 10px; }
         .emoji-option { font-size: 30px; padding: 5px; cursor: pointer; }
+
+        /* ===== NUEVOS ESTILOS: CONTROL DE VEHÍCULO Y MANTENIMIENTO ===== */
+        .card-vehiculo {
+            background: rgba(255,255,255,0.08);
+            border-radius: 20px;
+            padding: 18px;
+            margin-top: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .card-vehiculo h4 {
+            margin: 0 0 14px 0;
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--naranja);
+            letter-spacing: 0.5px;
+        }
+        .km-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .km-box {
+            background: rgba(0,0,0,0.25);
+            border-radius: 14px;
+            padding: 14px 10px;
+            text-align: center;
+        }
+        .km-box small {
+            display: block;
+            font-size: 10px;
+            color: rgba(255,255,255,0.55);
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+        .km-box input {
+            background: none;
+            border: none;
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            font-size: 22px;
+            font-weight: 900;
+            text-align: center;
+            width: 100%;
+            outline: none;
+            padding: 2px 0;
+        }
+        .km-box input:focus {
+            border-bottom-color: var(--azul);
+        }
+        .km-box b {
+            font-size: 22px;
+            font-weight: 900;
+        }
+        .total-recorrido {
+            text-align: center;
+            font-size: 14px;
+            color: rgba(255,255,255,0.7);
+            padding: 8px 0 4px;
+        }
+        .total-recorrido span {
+            color: var(--azul);
+            font-weight: 900;
+            font-size: 18px;
+        }
+
+        /* Separador */
+        .separador-card {
+            height: 1px;
+            background: rgba(255,255,255,0.1);
+            margin: 16px 0;
+        }
+
+        /* Plan de Mantenimiento */
+        .mant-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        .mant-box {
+            background: rgba(0,0,0,0.25);
+            border-radius: 14px;
+            padding: 14px 10px;
+            text-align: center;
+        }
+        .mant-box small {
+            display: block;
+            font-size: 10px;
+            color: rgba(255,255,255,0.55);
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+        .mant-box input {
+            background: none;
+            border: none;
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            font-size: 22px;
+            font-weight: 900;
+            text-align: center;
+            width: 100%;
+            outline: none;
+            padding: 2px 0;
+        }
+        .mant-box input:focus { border-bottom-color: var(--naranja); }
+        .mant-box.proximo input { border-bottom-color: rgba(243,156,18,0.5); }
+
+        .faltan-label {
+            text-align: center;
+            font-size: 12px;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 6px;
+            letter-spacing: 1px;
+        }
+        .faltan-valor {
+            text-align: center;
+            font-size: 26px;
+            font-weight: 900;
+            color: var(--naranja);
+            margin-bottom: 10px;
+        }
+        .faltan-valor.ok { color: var(--verde); }
+        .faltan-valor.alerta { color: var(--rojo); }
+
+        .barra-mant-wrap {
+            width: 100%;
+            height: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .barra-mant-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: var(--verde);
+        }
+        /* ===== FIN NUEVOS ESTILOS ===== */
     </style>
 </head>
 <body onload="inicializar()">
     <div id="splash">
         <div class="logo-gt">GT</div>
-        <div class="m-software">MAPA SOFTWARE </div>
+        <div class="m-software">MAPA SOFTWARE</div>
         <div class="loader"></div>
     </div>
 
     <div id="page-trabajo" class="page">
         <div id="contenedor-meta" onclick="abrirModalMeta()"><div id="progreso-meta"></div></div>
-        <div class="header-perfil"><button class="btn-perfil" onclick="irAPerfil(true)"> 👤  Perfil</button></div>
+        <div class="header-perfil"><button class="btn-perfil" onclick="irAPerfil(true)"> 👤 Perfil</button></div>
         <div class="main-balance-container" onclick="togglePrivacidad()">
             <span id="saldo-principal">S/. 0.00</span>
-            <span class="lbl-balance" id="lbl-status-balance">GESTOR TAXI JACK </span>
+            <span class="lbl-balance" id="lbl-status-balance">GESTOR TAXI JACK</span>
         </div>
-        <button id="btn-gps" class="btn-gps-principal" onclick="toggleSeguimiento()"> 🚀  INICIAR TURNO</button>
+        <button id="btn-gps" class="btn-gps-principal" onclick="toggleSeguimiento()"> 🚀 INICIAR TURNO</button>
         <div class="contenedor-cats" id="cat-chips"></div>
+        
         <div class="metodos-pago">
-            <button class="metodo-btn active" onclick="setMetodo('Efectivo', ' 💵 ', this)"> 💵  EFECTIVO</button>
+            <button class="metodo-btn active" onclick="setMetodo('Efectivo', ' 💵 ', this)"> 💵 EFECTIVO</button>
             <button class="metodo-btn" onclick="setMetodo('Yape', '🟣', this)">🟣 YAPE</button>
-            <button class="metodo-btn" onclick="setMetodo('Tarjeta', ' 💳 ', this)"> 💳  TARJETA</button>
+            <button class="metodo-btn" onclick="setMetodo('Plin', '🔵', this)">🔵 PLIN</button>
+            <button class="metodo-btn" onclick="setMetodo('Tarjeta', ' 💳 ', this)"> 💳 TARJETA</button>
         </div>
+
         <div style="display:flex; gap:10px; margin-bottom:10px;">
             <input type="number" id="monto" class="input-monto" placeholder="S/. 0.00">
             <button class="btn-engranaje" onclick="abrirModal()"> ⚙️ </button>
         </div>
-        <div style="display:flex; gap:10px; margin-bottom:15px; width: 100%;">
+        <div style="display:flex; gap:10px; margin-bottom:10px; width: 100%;">
             <input type="text" id="km" class="input-auto-visual" placeholder="0.00 KM" readonly>
             <input type="text" id="hrs" class="input-auto-visual" placeholder="0h 0m" readonly>
         </div>
         <div style="display:flex; gap:10px;">
-            <button class="btn-gps-principal" style="flex:1; background:var(--verde); box-shadow:0 6px 0 #1e8449;" onclick="registrar('ingreso')"> ➕  INGRESO</button>
-            <button class="btn-gps-principal" style="flex:1; background:var(--rojo); box-shadow:0 6px 0 #c0392b;" onclick="registrar('gasto')"> ➖  GASTO</button>
+            <button class="btn-gps-principal" style="flex:1; background:var(--verde); box-shadow:0 6px 0 #1e8449;" onclick="registrar('ingreso')"> ➕ INGRESO</button>
+            <button class="btn-gps-principal" style="flex:1; background:var(--rojo); box-shadow:0 6px 0 #c0392b;" onclick="registrar('gasto')"> ➖ GASTO</button>
         </div>
-        <div style="text-align:center; margin-top:5px;"><small onclick="irAReportes(true)" style="color:var(--azul); font-weight:bold; cursor:pointer;"> 📂  ABRIR REPORTES</small></div>
+        
+        <div class="contenedor-qr-doble">
+            <div class="wrapper-qr">
+                <button class="btn-qr" style="background:var(--yape);" onclick="verQRDirecto('qr1')">🟣 QR YAPE</button>
+                <div class="btn-lapiz-qr" onclick="cambiarQR('qr1')">✏️</div>
+            </div>
+            <div class="wrapper-qr">
+                <button class="btn-qr" style="background:var(--plin);" onclick="verQRDirecto('qr2')">🔵 QR PLIN</button>
+                <div class="btn-lapiz-qr" onclick="cambiarQR('qr2')">✏️</div>
+            </div>
+        </div>
+        <input type="file" id="input-qr1" accept="image/*" style="display:none;" onchange="subirQR(this, 'qr1')">
+        <input type="file" id="input-qr2" accept="image/*" style="display:none;" onchange="subirQR(this, 'qr2')">
+
+        <div style="text-align:center; margin-top:10px;"><small onclick="irAReportes(true)" style="color:var(--azul); font-weight:bold; cursor:pointer;"> 📂 ABRIR REPORTES</small></div>
+    </div>
+
+    <div id="modal-visor-qr" class="modal" onclick="this.style.display='none'">
+        <div class="modal-content" style="background: white; padding: 10px;">
+            <img id="img-qr-grande" src="" style="width: 100%; border-radius: 10px;">
+            <p style="color: #333; font-weight: bold; margin-top: 10px;">TOCA PARA CERRAR</p>
+        </div>
     </div>
 
     <div id="page-reportes" class="page hidden">
@@ -113,14 +279,15 @@
             <button class="btn-filtro-pago active" id="f-todos" onclick="filtrarPorMetodo('Todos', this)">TODOS</button>
             <button class="btn-filtro-pago" onclick="filtrarPorMetodo('Efectivo', this)">EFECTIVO</button>
             <button class="btn-filtro-pago" onclick="filtrarPorMetodo('Yape', this)">YAPE</button>
+            <button class="btn-filtro-pago" onclick="filtrarPorMetodo('Plin', this)">PLIN</button>
             <button class="btn-filtro-pago" onclick="filtrarPorMetodo('Tarjeta', this)">TARJETA</button>
         </div>
         <div style="flex:1; overflow-y:auto; padding-top:10px;">
             <div id="visor-fecha-general" style="text-align:center; margin-bottom:10px;">
                 <input type="date" id="input-fecha-filtro" onchange="actualizarInterfaz()" style="border:none; background:#eee; padding:10px; border-radius:10px; font-weight:bold;">
-                <div id="visor-mes" onclick="abrirModalMes()" style="display:none; cursor:pointer; font-weight:bold; padding:10px;"> 📅  <span id="txt-mes"></span></div>
-                <div id="visor-semana" onclick="abrirModalSemana()" style="display:none; cursor:pointer; font-weight:bold; padding:10px;"> 🗓 ️ <span id="txt-semana"></span></div>
-                <div id="visor-anio" onclick="abrirModalAnio()" style="display:none; cursor:pointer; font-weight:bold; padding:10px;"> ⭐  <span id="txt-anio"></span></div>
+                <div id="visor-mes" onclick="abrirModalMes()" style="display:none; cursor:pointer; font-weight:bold; padding:10px;"> 📅 <span id="txt-mes"></span></div>
+                <div id="visor-semana" onclick="abrirModalSemana()" style="display:none; cursor:pointer; font-weight:bold; padding:10px;"> 🗓️ <span id="txt-semana"></span></div>
+                <div id="visor-anio" onclick="abrirModalAnio()" style="display:none; cursor:pointer; font-weight:bold; padding:10px;"> ⭐ <span id="txt-anio"></span></div>
             </div>
             <div class="seccion-graficos">
                 <div class="caja-grafico">
@@ -132,11 +299,27 @@
                     <canvas id="cGas"></canvas>
                 </div>
             </div>
+
+            <div id="resumen-turno-card" style="background: #f8f9fa; border-radius: 15px; padding: 15px; margin-bottom: 15px; border: 1px solid #ddd;">
+                <h4 style="margin: 0 0 10px 0; color: var(--oscuro); font-size: 14px;">📊 RENDIMIENTO DEL PERIODO</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div style="background: white; padding: 10px; border-radius: 10px; text-align: center; border: 1px solid #eee;">
+                        <small style="color: #888;">S/. por KM</small><br>
+                        <b id="res-sol-km" style="color: var(--azul);">S/. 0.00</b>
+                    </div>
+                    <div style="background: white; padding: 10px; border-radius: 10px; text-align: center; border: 1px solid #eee;">
+                        <small style="color: #888;">S/. por Hora</small><br>
+                        <b id="res-sol-hr" style="color: var(--azul);">S/. 0.00</b>
+                    </div>
+                </div>
+            </div>
+
             <div id="lista" class="historial-lista"></div>
-            <button class="btn-gps-principal" style="background:#25D366; box-shadow:0 4px 0 #128C7E; margin-top:20px;" onclick="compartirWhatsApp()"> 📲  WHATSAPP</button>
+            <button class="btn-gps-principal" style="background:#25D366; box-shadow:0 4px 0 #128C7E; margin-top:20px;" onclick="compartirWhatsApp()"> 📲 WHATSAPP</button>
         </div>
     </div>
 
+    <!-- ===== PÁGINA PERFIL CON NUEVAS SECCIONES ===== -->
     <div id="page-perfil" class="page hidden">
         <button class="btn-volver" onclick="irAPerfil(false)"> ⬅ </button>
         <div class="card-perfil">
@@ -145,85 +328,85 @@
                 <span id="icono-perfil" style="font-size:50px;"> 👤 </span>
             </div>
             <input type="file" id="input-foto" accept="image/*" style="display:none;" onchange="subirFoto(this)">
-            <h2 id="perf-usuario">TAXI JACK </h2>
-            <button class="edit-nombre-btn" onclick="editarNombre()"> ✏️  EDITAR NOMBRE</button>
-            <p style="opacity: 0.6; font-size: 12px; margin-top:10px;">CONDUCTOR PROFESIONAL </p>
+            <h2 id="perf-usuario">TAXI JACK</h2>
+            <button class="edit-nombre-btn" onclick="editarNombre()"> ✏️ EDITAR NOMBRE</button>
             <div class="stat-grid">
                 <div class="stat-box"><small>INGRESOS TOTALES</small><br><b id="perf-ing" style="color:var(--verde); font-size:18px;">S/. 0.00</b></div>
                 <div class="stat-box"><small>GASTOS TOTALES</small><br><b id="perf-gas" style="color:var(--rojo); font-size:18px;">S/. 0.00</b></div>
-                <div class="stat-box"><small>REGISTROS</small><br><b id="perf-regs" style="font-size:18px;">0</b></div>
+                <div class="stat-box"><small>SERVICIOS</small><br><b id="perf-regs" style="font-size:18px;">0</b></div>
                 <div class="stat-box"><small>BALANCE NETO</small><br><b id="perf-neto" style="color:var(--azul); font-size:18px;">S/. 0.00</b></div>
             </div>
         </div>
-    </div>
 
-    <div id="modal-meta" class="modal"><div class="modal-content" style="background: white; color: #333; border-top: 5px solid var(--verde);">
-        <h3 style="color: var(--verde); margin-top:0;">Mi Meta Diaria </h3>
-        <p style="font-size:14px; color:#666;">Define cuánto quieres ganar hoy </p>
-        <div id="txt-progreso-meta-modal" style="font-size: 24px; font-weight: 900; margin: 15px 0; color:var(--oscuro);">S/. 0 / S/. 0</div>
-        <input type="number" id="input-meta-valor" placeholder="Ej: 150" style="width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #ddd; text-align: center; font-size: 20px; outline: none; margin-bottom:10px;">
-        <button onclick="guardarMeta()" style="width:100%; padding:15px; border:none; border-radius:12px; background:var(--verde); font-weight:bold; color:white;">GUARDAR META</button>
-        <button onclick="cerrarModalesYModos()" style="width:100%; margin-top:10px; background:none; border:none; color:#999;">Cerrar</button>
-    </div></div>
+        <!-- CONTROL DE VEHÍCULO -->
+        <div class="card-vehiculo">
+            <h4>🚗 CONTROL DE VEHÍCULO</h4>
+            <p style="font-size:12px; color:rgba(255,255,255,0.5); margin:-8px 0 12px; text-align:left;">📊 Recorrido del Turno</p>
+            <div class="km-grid">
+                <div class="km-box">
+                    <small>KM INICIO</small>
+                    <input type="number" id="km-inicio" placeholder="0.00" oninput="calcularRecorrido()" 
+                           value="">
+                </div>
+                <div class="km-box">
+                    <small>KM FINAL (Actual)</small>
+                    <input type="number" id="km-final" placeholder="0.00" oninput="calcularRecorrido()"
+                           value="">
+                </div>
+            </div>
+            <div class="total-recorrido">
+                Total Recorrido: <span id="total-recorrido">0.00 KM</span>
+            </div>
 
-    <div id="modal" class="modal"><div class="modal-content">
-        <h3>Categorías</h3>
-        <div id="lista-gestion" style="max-height:180px; overflow-y:auto; margin-bottom:15px; background:rgba(255,255,255,0.1); border-radius:10px;"></div>
-        <div style="display:flex; align-items:center; gap:10px; background:rgba(0,0,0,0.1); padding:10px; border-radius:15px;">
-            <div id="btn-emoji-actual" class="btn-emoji-selector" onclick="abrirVariedad()"> 🚕 </div>
-            <input type="text" id="n-nom" placeholder="Nombre" style="flex:1; padding:12px; border-radius:10px; border:none; outline:none;">
-            <button onclick="crearCat()" style="background:var(--verde); color:white; border:none; width:50px; height:50px; border-radius:10px; font-size:24px;">+</button>
+            <div class="separador-card"></div>
+
+            <!-- PLAN DE MANTENIMIENTO -->
+            <p style="font-size:14px; font-weight:800; color:rgba(255,255,255,0.85); margin:0 0 12px; text-align:left;">🔧 Plan de Mantenimiento</p>
+            <div class="mant-grid">
+                <div class="mant-box">
+                    <small>KM ACTUAL (Tablero)</small>
+                    <input type="number" id="km-tablero" placeholder="0" oninput="vehiculoData.kmTableroBase = this.value; calcularMantenimiento(); guardarVehiculo()">
+                </div>
+                <div class="mant-box proximo">
+                    <small>PRÓX. MANTENIM.</small>
+                    <input type="number" id="km-proximo-mant" placeholder="0" oninput="calcularMantenimiento(); guardarVehiculo()">
+                </div>
+            </div>
+            <div class="faltan-label">FALTAN PARA EL SERVICIO:</div>
+            <div class="faltan-valor" id="faltan-km-valor">-- KM</div>
+            <div class="barra-mant-wrap">
+                <div class="barra-mant-fill" id="barra-mant" style="width:0%;"></div>
+            </div>
         </div>
-        <button onclick="cerrarModal()" style="width:100%; margin-top:15px; padding:12px; border:none; border-radius:10px; background:white; font-weight:bold; color:var(--azul);">CERRAR</button>
-    </div></div>
 
+        <div style="height: 30px;"></div>
+    </div>
+    <!-- ===== FIN PERFIL ===== -->
+
+    <div id="modal-meta" class="modal"><div class="modal-content" style="background: white; color: #333; border-top: 5px solid var(--verde);"><h3>Mi Meta Diaria</h3><div id="txt-progreso-meta-modal" style="font-size: 24px; font-weight: 900; margin: 15px 0; color:var(--oscuro);">S/. 0 / S/. 0</div><input type="number" id="input-meta-valor" placeholder="Ej: 150" style="width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #ddd; text-align: center; font-size: 20px; outline: none; margin-bottom:10px;"><button onclick="guardarMeta()" style="width:100%; padding:15px; border:none; border-radius:12px; background:var(--verde); font-weight:bold; color:white;">GUARDAR META</button><button onclick="cerrarModalesYModos()" style="width:100%; margin-top:10px; background:none; border:none; color:#999;">Cerrar</button></div></div>
+    <div id="modal" class="modal"><div class="modal-content"><h3>Categorías</h3><div id="lista-gestion" style="max-height:180px; overflow-y:auto; margin-bottom:15px; background:rgba(255,255,255,0.1); border-radius:10px;"></div><div style="display:flex; align-items:center; gap:10px; background:rgba(0,0,0,0.1); padding:10px; border-radius:15px;"><div id="btn-emoji-actual" class="btn-emoji-selector" onclick="abrirVariedad()"> 🚕 </div><input type="text" id="n-nom" placeholder="Nombre" style="flex:1; padding:12px; border-radius:10px; border:none; outline:none;"><button onclick="crearCat()" style="background:var(--verde); color:white; border:none; width:50px; height:50px; border-radius:10px; font-size:24px;">+</button></div><button onclick="cerrarModal()" style="width:100%; margin-top:15px; padding:12px; border:none; border-radius:10px; background:white; font-weight:bold; color:var(--azul);">CERRAR</button></div></div>
     <div id="modal-emojis" class="modal"><div class="modal-content" style="background: white; color: #333;"><h3 style="color: var(--azul);">Selecciona un Emoji</h3><div class="emoji-grid-container" id="grid-variedad"></div><button onclick="cerrarVariedad()" style="width:100%; margin-top:15px; padding:12px; border:none; border-radius:10px; background:var(--azul); font-weight:bold; color:white;">VOLVER</button></div></div>
     <div id="modal-mes" class="modal"><div class="modal-content"><h3>Mes</h3><div id="grid-meses" style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;"></div><button onclick="cerrarModalesYModos()" style="margin-top:15px; width:100%; padding:10px;">Cerrar</button></div></div>
     <div id="modal-semana" class="modal"><div class="modal-content"><h3>Semanas</h3><div style="display:flex; justify-content:center; gap:10px; align-items:center;"><button onclick="navegarSemana(-7)"> ◀ </button><span id="rango-semana-modal"></span><button onclick="navegarSemana(7)"> ▶ </button></div><button onclick="cerrarModalesYModos()" style="margin-top:15px; width:100%; padding:10px;">OK</button></div></div>
     <div id="modal-anio" class="modal"><div class="modal-content"><h3>Año</h3><div style="display:flex; justify-content:center; gap:10px; align-items:center;"><button onclick="navegarAnio(-1)"> ◀ </button><span id="txt-anio-modal" style="font-size:24px; font-weight:bold;"></span><button onclick="navegarAnio(1)"> ▶ </button></div><button onclick="cerrarModalesYModos()" style="margin-top:15px; width:100%; padding:10px;">OK</button></div></div>
 
     <script>
-        // --- FUNCIONES PARA EDITAR Y MOVER ---
-        function editarCategoria(index) {
-            const nuevoNombre = prompt("Edita el nombre:", cats[index].n);
-            if (nuevoNombre !== null && nuevoNombre.trim() !== "") {
-                cats[index].n = nuevoNombre.trim();
-                localStorage.setItem('cats_v15', JSON.stringify(cats));
-                dibujarCats();
-                dibujarGestion();
-            }
-        }
-
-        function moverCategoria(index, direccion) {
-            const nuevaPosicion = index + direccion;
-            if (nuevaPosicion >= 0 && nuevaPosicion < cats.length) {
-                const elemento = cats.splice(index, 1)[0];
-                cats.splice(nuevaPosicion, 0, elemento);
-                localStorage.setItem('cats_v15', JSON.stringify(cats));
-                dibujarCats();
-                dibujarGestion();
-            }
-        }
-
         Chart.register(ChartDataLabels);
         let movs = JSON.parse(localStorage.getItem('movs_v15')) || [];
         let cats = JSON.parse(localStorage.getItem('cats_v15')) || [{id: 0, n: "Carrera", i: " 🚕 "}, {id: 1, n: "Gasolina", i: " ⛽ "}, {id: 2, n: "Comida", i: " 🍔 "}];
         let metaDiaria = parseFloat(localStorage.getItem('meta_gt_pro')) || 0;
         let userData = JSON.parse(localStorage.getItem('gt_user_v1')) || { nombre: "TAXI JACK", foto: "" };
+        let vehiculoData = JSON.parse(localStorage.getItem('gt_vehiculo_v1')) || { kmInicio: "", kmFinal: "", kmTablero: "", kmProximo: "" };
 
         let catSeleccionada = cats[0].id, metodoActual = { n: 'Efectivo', i: ' 💵 ' }, periodoActual = 'dia';
         let fRefSemana = new Date(), mesFiltro = new Date().getMonth(), anioFiltro = new Date().getFullYear();
         let cIng, cGas, watchId = null, latAnt = null, lonAnt = null, distTotal = 0, tInicio = null, activo = false;
         let emojiSeleccionado = " 🚕 ", modoPrivado = false, saldoActualGlobal = 0, filtroMetodoReporte = 'Todos';
+        
         const nombresMeses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-        const listaEmojis = [" 🚕 "," 🚗 "," 🚙 "," 🚌 "," 🚐 "," 🏎 ️"," 🚓 "," 🚑 "," 🚒 "," 🚚 "," 🚛 "," 🚜 "," 🏍 ️"," 🚲 ","🛵"," ✈️ "," ⛽ "," 🛠 ️"," 🔧 "," 🔨 "," ⚒️ "," 🔩 "," ⚙️ ","🧼","🧽","🧹"," 🅿 ️"," 🚧 "," 🚦 "," 🚥 "," 🗺 ️"," 📍 "," 🚩 "," 🏁 "," ⚽ "," 🏀 ","🏐"," 🏈 "," ⚾ "," 🎾 "," 🏋 ️"," 🚴 "," 🍔 ","🍟"," 🍕 ","🥪","hotdog","taco","burrito","ensalada","olla","popcorn"," ☕ ","🥤"," 💰 "," 💵 "," 💳 ","recibo"," 🏦 ","moneda"," 📱 "," 🔋 "," 🔌 ","💡"," 💧 "," 🔥 "," ♨️ "," 📶 "," 🌐 "," 🗑 ️"," 👮 ","piloto","obrero"," 🏠 "," 🐶 "," 🐱 "," 🐭 "," 🐹 "," 🐰 ","zorro"," 🐻 "," 🐼 "," ✨ "," ⭐ "," ⚡ "," ✅ "," ❌ "," ⚠️ "];
+        const listaEmojis = ["💰","💵","💸","💳","🪙","💹","📈","📉","🏦","🏧","💎","⚖️","🧾","🛍️","🛒","🏷️","🎁","💼","📁","📂","📊","📋","📌","📍","🔍","⚙️","🛠️","🔧","⚒️","🔨","🪛","🧰","🏠","🏢","🏭","🚗","🚕","🚙","🚌","🚎","🏎️","🚓","🚑","🚒","🚐","🚚","🚛","🚜","🛵","🚲","⛽","🚨","🚥","🚦","🚧","👨‍✈️","👷","👨‍🔧","👮","🍔","🍟","🍕","🥪","🌮","☕","🥤","🍺","🍷","🍫","🦊","🐶","🐱","🐹","✨","⭐","🌟","⚡","❄️","🔥","💧","✅","❌","⚠️"];
 
-        window.onpopstate = function(event) {
-            cerrarModalesYModos();
-            document.getElementById('page-reportes').classList.add('hidden');
-            document.getElementById('page-perfil').classList.add('hidden');
-        };
-
+        window.onpopstate = function() { cerrarModalesYModos(); document.getElementById('page-reportes').classList.add('hidden'); document.getElementById('page-perfil').classList.add('hidden'); };
         function pushEstado() { history.pushState({view: 'subpage'}, ""); }
 
         function inicializar() {
@@ -231,6 +414,7 @@
             cargarDatosPerfil(); dibujarCats(); initCharts(); actualizarInterfaz();
             const grid = document.getElementById('grid-variedad');
             grid.innerHTML = listaEmojis.map(e => `<span class="emoji-option" onclick="seleccionarEmoji('${e}')">${e}</span>`).join('');
+            cargarDatosVehiculo();
             setTimeout(() => { document.getElementById('splash').style.opacity = '0'; setTimeout(() => document.getElementById('splash').style.display = 'none', 800); }, 3000);
         }
 
@@ -243,6 +427,89 @@
             }
         }
 
+        // ===== NUEVAS FUNCIONES: VEHÍCULO Y MANTENIMIENTO =====
+
+        function cargarDatosVehiculo() {
+            document.getElementById('km-inicio').value = vehiculoData.kmInicio || '';
+            document.getElementById('km-final').value = vehiculoData.kmFinal || '';
+            document.getElementById('km-tablero').value = vehiculoData.kmTablero || '';
+            document.getElementById('km-proximo-mant').value = vehiculoData.kmProximo || '';
+            calcularRecorrido();
+            calcularMantenimiento();
+        }
+
+        function guardarVehiculo() {
+            vehiculoData.kmInicio = document.getElementById('km-inicio').value;
+            vehiculoData.kmFinal = document.getElementById('km-final').value;
+            vehiculoData.kmTablero = document.getElementById('km-tablero').value;
+            vehiculoData.kmProximo = document.getElementById('km-proximo-mant').value;
+            // kmTableroBase se actualiza solo desde calcularRecorrido
+            localStorage.setItem('gt_vehiculo_v1', JSON.stringify(vehiculoData));
+        }
+
+        function calcularRecorrido() {
+            const inicio = parseFloat(document.getElementById('km-inicio').value) || 0;
+            const final_ = parseFloat(document.getElementById('km-final').value) || 0;
+            const total = final_ >= inicio ? (final_ - inicio) : 0;
+            document.getElementById('total-recorrido').innerText = total.toFixed(2) + ' KM';
+
+            // El KM Final del turno ES el odómetro actual del tablero
+            if (final_ > 0) {
+                document.getElementById('km-tablero').value = final_.toFixed(0);
+                vehiculoData.kmTableroBase = final_;
+            }
+
+            guardarVehiculo();
+            calcularMantenimiento();
+        }
+
+        function calcularMantenimiento() {
+            const actual = parseFloat(document.getElementById('km-tablero').value) || 0;
+            const proximo = parseFloat(document.getElementById('km-proximo-mant').value) || 0;
+            const faltanEl = document.getElementById('faltan-km-valor');
+            const barraEl = document.getElementById('barra-mant');
+
+            if (proximo <= 0) {
+                faltanEl.innerText = '-- KM';
+                faltanEl.className = 'faltan-valor';
+                barraEl.style.width = '0%';
+                barraEl.style.background = 'var(--verde)';
+                return;
+            }
+
+            const faltan = proximo - actual;
+            
+            if (faltan <= 0) {
+                faltanEl.innerText = '¡SERVICIO YA!';
+                faltanEl.className = 'faltan-valor alerta';
+                barraEl.style.width = '100%';
+                barraEl.style.background = 'var(--rojo)';
+            } else {
+                faltanEl.innerText = faltan.toFixed(0) + ' KM';
+                // Calcular progreso: qué % del camino hacia el mantenimiento ya recorrimos
+                // Asumimos que el punto de inicio fue cuando proximo se configuró
+                // Usamos una lógica simple: porcentaje = actual / proximo
+                const porcentaje = Math.min((actual / proximo) * 100, 100);
+                barraEl.style.width = porcentaje + '%';
+
+                if (faltan <= proximo * 0.1) {
+                    // Menos del 10% restante → rojo
+                    faltanEl.className = 'faltan-valor alerta';
+                    barraEl.style.background = 'var(--rojo)';
+                } else if (faltan <= proximo * 0.25) {
+                    // Menos del 25% restante → naranja
+                    faltanEl.className = 'faltan-valor';
+                    barraEl.style.background = 'var(--naranja)';
+                } else {
+                    // Normal → verde
+                    faltanEl.className = 'faltan-valor ok';
+                    barraEl.style.background = 'var(--verde)';
+                }
+            }
+        }
+
+        // ===== FIN NUEVAS FUNCIONES =====
+
         function editarNombre() { let n = prompt("Nuevo nombre:", userData.nombre); if(n) { userData.nombre = n; localStorage.setItem('gt_user_v1', JSON.stringify(userData)); cargarDatosPerfil(); } }
         function subirFoto(input) { if (input.files && input.files[0]) { let reader = new FileReader(); reader.onload = function(e) { userData.foto = e.target.result; localStorage.setItem('gt_user_v1', JSON.stringify(userData)); cargarDatosPerfil(); }; reader.readAsDataURL(input.files[0]); } }
 
@@ -250,12 +517,15 @@
             const p = document.getElementById('page-perfil');
             if(mostrar) {
                 pushEstado();
-                const ti = movs.filter(m => m.tipo === 'ingreso').reduce((a,b) => a + b.mon, 0);
-                const tg = movs.filter(m => m.tipo === 'gasto').reduce((a,b) => a + b.mon, 0);
+                const ingresos = movs.filter(m => m.tipo === 'ingreso');
+                const gastos = movs.filter(m => m.tipo === 'gasto');
+                const ti = ingresos.reduce((a, b) => a + b.mon, 0);
+                const tg = gastos.reduce((a, b) => a + b.mon, 0);
                 document.getElementById('perf-ing').innerText = `S/. ${ti.toFixed(2)}`;
                 document.getElementById('perf-gas').innerText = `S/. ${tg.toFixed(2)}`;
-                document.getElementById('perf-regs').innerText = movs.length;
+                document.getElementById('perf-regs').innerText = ingresos.length;
                 document.getElementById('perf-neto').innerText = `S/. ${(ti - tg).toFixed(2)}`;
+                cargarDatosVehiculo();
                 p.classList.remove('hidden');
             } else { p.classList.add('hidden'); }
         }
@@ -287,25 +557,51 @@
             document.getElementById('txt-mes').innerText = nombresMeses[mesFiltro] + " " + anioFiltro;
             document.getElementById('txt-semana').innerText = rangoSem.texto; document.getElementById('txt-anio').innerText = anioFiltro;
             let dIng = {}, dGas = {}; listaUI.innerHTML = '';
+            
+            let filteredList = [];
+
             movs.forEach((m, idx) => {
                 const fM = new Date(m.fecha); let inclT = false;
                 if (periodoActual === 'dia') inclT = (fM.toLocaleDateString('en-CA') === fFiltro);
                 else if (periodoActual === 'semana') inclT = (fM >= rangoSem.inicio && fM <= rangoSem.fin);
                 else if (periodoActual === 'mes') inclT = (fM.getMonth() === mesFiltro && fM.getFullYear() === anioFiltro);
                 else if (periodoActual === 'anio') inclT = (fM.getFullYear() === anioFiltro);
+                
                 if (inclT && (filtroMetodoReporte === 'Todos' || m.metodoN === filtroMetodoReporte)) {
+                    filteredList.push(m);
                     const esI = m.tipo === 'ingreso';
                     if (esI) dIng[m.catN] = (dIng[m.catN] || 0) + m.mon; else dGas[m.catN] = (dGas[m.catN] || 0) + m.mon;
                     listaUI.innerHTML += `<div class="item-mov" style="border-left-color:${esI?'var(--verde)':'var(--rojo)'}">
-                    <div><b>${m.catI} ${m.catN}</b><br><small>${m.hora} | ${m.metodoN}</small><br><small style="color:var(--azul)"> 📍  ${m.km} | ⏱️ ${m.hrs}</small></div>
+                    <div><b>${m.catI} ${m.catN}</b><br><small>${m.hora} | ${m.metodoN}</small><br><small style="color:var(--azul)"> 📍 ${m.km} | ⏱️ ${m.hrs}</small></div>
                     <div style="text-align:right"><b style="color:${esI?'var(--verde)':'var(--rojo)'}">S/.${m.mon.toFixed(2)}</b><br>
-                    <span onclick="editarMovimiento(${idx})"> ✏️ </span> <span onclick="eliminarMovimiento(${idx})" style="margin-left:10px"> 🗑 ️</span></div></div>`;
+                    <span onclick="editarMovimiento(${idx})"> ✏️ </span> <span onclick="eliminarMovimiento(${idx})" style="margin-left:10px"> 🗑️ </span></div></div>`;
                 }
             });
             const tI = Object.values(dIng).reduce((a, b) => a + b, 0), tG = Object.values(dGas).reduce((a, b) => a + b, 0);
             saldoActualGlobal = tI - tG; mostrarSaldoUI(); actualizarBarraMeta();
             document.getElementById('txt-total-ing').innerText = `S/. ${tI.toFixed(2)}`; document.getElementById('txt-total-gas').innerText = `S/. ${tG.toFixed(2)}`;
             actualizarCharts(tI, tG, dIng, dGas);
+            calcularRendimiento(tI, filteredList);
+        }
+
+        function calcularRendimiento(totalIngresos, movimientosFiltrados) {
+            let kmTotales = 0;
+            let minutosTotales = 0;
+            movimientosFiltrados.forEach(m => {
+                if (m.tipo === 'ingreso') {
+                    kmTotales += parseFloat(m.km) || 0;
+                    let tiempoStr = m.hrs || "0h 0m";
+                    let partes = tiempoStr.split(' ');
+                    let horas = parseInt(partes[0]) || 0;
+                    let minutos = parseInt(partes[1]) || 0;
+                    minutosTotales += (horas * 60) + minutos;
+                }
+            });
+            let solKm = kmTotales > 0 ? (totalIngresos / kmTotales) : 0;
+            let horasDecimal = minutosTotales / 60;
+            let solHr = horasDecimal > 0 ? (totalIngresos / horasDecimal) : 0;
+            document.getElementById('res-sol-km').innerText = `S/. ${solKm.toFixed(2)}`;
+            document.getElementById('res-sol-hr').innerText = `S/. ${solHr.toFixed(2)}`;
         }
 
         function toggleSeguimiento() {
@@ -313,50 +609,36 @@
             if (!activo) {
                 distTotal = 0; tInicio = new Date(); latAnt = null; lonAnt = null;
                 elKm.value = "0.00 KM"; elHrs.value = "0h 0m";
-                
-                // MEJORA: Configuración de alta precisión
                 watchId = navigator.geolocation.watchPosition(pos => {
-                    // 1. Filtro de precisión: Ignoramos si el error es mayor a 30 metros
                     if (pos.coords.accuracy > 30) return;
-
                     if (latAnt && lonAnt) {
-                        const R = 6371;
-                        const dLat = (pos.coords.latitude - latAnt) * Math.PI / 180;
-                        const dLon = (pos.coords.longitude - lonAnt) * Math.PI / 180;
+                        const R = 6371, dLat = (pos.coords.latitude - latAnt) * Math.PI / 180, dLon = (pos.coords.longitude - lonAnt) * Math.PI / 180;
                         const a = Math.sin(dLat/2)**2 + Math.cos(latAnt*Math.PI/180)*Math.cos(pos.coords.latitude*Math.PI/180)*Math.sin(dLon/2)**2;
                         const distSalto = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-                        
-                        // 2. Filtro de movimiento mínimo: Solo suma si te moviste más de 5 metros
-                        // Esto evita que el kilometraje suba solo cuando estás en un semáforo
-                        if (distSalto > 0.005) {
-                            distTotal += distSalto;
-                            elKm.value = distTotal.toFixed(2) + " KM";
-                        }
+                        if (distSalto > 0.005) { distTotal += distSalto; elKm.value = distTotal.toFixed(2) + " KM"; }
                     }
-                    latAnt = pos.coords.latitude; 
-                    lonAnt = pos.coords.longitude;
-                    
+                    latAnt = pos.coords.latitude; lonAnt = pos.coords.longitude;
                     let ms = new Date() - tInicio, hh = Math.floor(ms / 3600000), mm = Math.floor((ms % 3600000) / 60000);
                     elHrs.value = `${hh}h ${mm}m`;
-                }, 
-                (err) => { console.warn("Error GPS: ", err); }, 
-                { 
-                    enableHighAccuracy: true, // FUERZA el uso del sensor GPS real
-                    timeout: 10000, 
-                    maximumAge: 0 // No usa posiciones guardadas en memoria
-                });
-
-                activo = true;
-                btn.innerText = "🛑 FINALIZAR";
-                btn.style.background = "#7f8c8d";
+                }, null, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
+                activo = true; btn.innerText = "🛑 FINALIZAR"; btn.style.background = "#7f8c8d";
             } else {
-                navigator.geolocation.clearWatch(watchId);
-                activo = false;
-                btn.innerText = " 🚀  INICIAR TURNO";
-                btn.style.background = "var(--naranja)";
+                navigator.geolocation.clearWatch(watchId); activo = false;
+                btn.innerText = " 🚀 INICIAR TURNO"; btn.style.background = "var(--naranja)";
                 document.getElementById('monto').focus();
             }
         }
+
+        function verQRDirecto(clave) {
+            const data = localStorage.getItem(clave);
+            if (data) { mostrarQR(clave); } 
+            else { alert("Primero sube una imagen con el lápiz ✏️"); }
+        }
+        function cambiarQR(clave) {
+            document.getElementById(clave === 'qr1' ? 'input-qr1' : 'input-qr2').click();
+        }
+        function subirQR(input, clave) { if (input.files && input.files[0]) { let reader = new FileReader(); reader.onload = function(e) { localStorage.setItem(clave, e.target.result); alert("QR Guardado ✅"); }; reader.readAsDataURL(input.files[0]); } }
+        function mostrarQR(clave) { const data = localStorage.getItem(clave); if (data) { document.getElementById('img-qr-grande').src = data; document.getElementById('modal-visor-qr').style.display = 'flex'; } }
 
         function cerrarModalesYModos() { const modales = document.querySelectorAll('.modal'); modales.forEach(m => m.style.display = 'none'); }
         function abrirModalMeta() { pushEstado(); document.getElementById('modal-meta').style.display = 'flex'; document.getElementById('input-meta-valor').value = metaDiaria > 0 ? metaDiaria : ""; actualizarBarraMeta(); }
@@ -377,9 +659,11 @@
 
         function guardarMeta() { let v = parseFloat(document.getElementById('input-meta-valor').value); metaDiaria = isNaN(v) ? 0 : v; localStorage.setItem('meta_gt_pro', metaDiaria); cerrarModalesYModos(); actualizarBarraMeta(); }
         function togglePrivacidad() { modoPrivado = !modoPrivado; mostrarSaldoUI(); }
-        function mostrarSaldoUI() { const elSaldo = document.getElementById('saldo-principal'), elStatus = document.getElementById('lbl-status-balance'); if (modoPrivado) { elSaldo.innerText = "S/. ••••"; elStatus.innerText = " 🔒  MODO PRIVADO"; } else { elSaldo.innerText = `S/. ${saldoActualGlobal.toFixed(2)}`; elStatus.innerText = "GESTOR TAXI JACK "; } }
+        function mostrarSaldoUI() { const elSaldo = document.getElementById('saldo-principal'), elStatus = document.getElementById('lbl-status-balance'); if (modoPrivado) { elSaldo.innerText = "S/. ••••"; elStatus.innerText = " 🔒 MODO PRIVADO"; } else { elSaldo.innerText = `S/. ${saldoActualGlobal.toFixed(2)}`; elStatus.innerText = "GESTOR TAXI JACK"; } }
+        
         function editarMovimiento(idx) { let nV = prompt("Monto S/.", movs[idx].mon); if (nV) { movs[idx].mon = parseFloat(nV); localStorage.setItem('movs_v15', JSON.stringify(movs)); actualizarInterfaz(); } }
         function eliminarMovimiento(idx) { if (confirm("¿Eliminar?")) { movs.splice(idx, 1); localStorage.setItem('movs_v15', JSON.stringify(movs)); actualizarInterfaz(); } }
+        
         function filtrarPorMetodo(metodo, btn) { filtroMetodoReporte = metodo; document.querySelectorAll('.btn-filtro-pago').forEach(b => b.classList.remove('active')); btn.classList.add('active'); actualizarInterfaz(); }
         function setMetodo(n, i, btn) { metodoActual = { n, i }; document.querySelectorAll('.metodo-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
         function dibujarCats() { document.getElementById('cat-chips').innerHTML = cats.map(c => `<div class="cat-chip ${c.id === catSeleccionada ? 'activa' : ''}" onclick="catSeleccionada=${c.id};dibujarCats();">${c.i} ${c.n}</div>`).join(''); }
@@ -389,7 +673,6 @@
             cIng = new Chart(document.getElementById('cIng'), { type: 'doughnut', data: { labels: [], datasets: [{ data: [], backgroundColor: ['#2ecc71', '#27ae60', '#1abc9c'] }] }, options: opt }); 
             cGas = new Chart(document.getElementById('cGas'), { type: 'doughnut', data: { labels: [], datasets: [{ data: [], backgroundColor: ['#e74c3c', '#e67e22', '#f1c40f'] }] }, options: opt }); 
         }
-
         function actualizarCharts(tI, tG, dI, dG) { 
             cIng.data.labels = Object.keys(dI); cIng.data.datasets[0].data = Object.values(dI); cIng.update(); 
             cGas.data.labels = Object.keys(dG); cGas.data.datasets[0].data = Object.values(dG); cGas.update(); 
@@ -400,21 +683,29 @@
             if(n) { cats.push({id: Date.now(), n, i: emojiSeleccionado}); localStorage.setItem('cats_v15', JSON.stringify(cats)); dibujarCats(); dibujarGestion(); document.getElementById('n-nom').value=''; } 
         }
         function borrarCat(index) { if(confirm("¿Borrar categoría?")) { cats.splice(index, 1); localStorage.setItem('cats_v15', JSON.stringify(cats)); dibujarCats(); dibujarGestion(); } }
+        function editarCategoria(index) {
+            const nuevoNombre = prompt("Edita el nombre:", cats[index].n);
+            if (nuevoNombre !== null && nuevoNombre.trim() !== "") { cats[index].n = nuevoNombre.trim(); localStorage.setItem('cats_v15', JSON.stringify(cats)); dibujarCats(); dibujarGestion(); }
+        }
+        function moverCategoria(index, direccion) {
+            const nuevaPos = index + direccion;
+            if (nuevaPos >= 0 && nuevaPos < cats.length) { const el = cats.splice(index, 1)[0]; cats.splice(nuevaPos, 0, el); localStorage.setItem('cats_v15', JSON.stringify(cats)); dibujarCats(); dibujarGestion(); }
+        }
         function dibujarGestion() { 
             const l = document.getElementById('lista-gestion'); 
             l.innerHTML = cats.map((c, i) => `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid rgba(255,255,255,0.1); align-items:center;">
                 <span>${c.i} ${c.n}</span>
                 <div>
-                    <button onclick=\"moverCategoria(${i},-1)\" style=\"background:none; border:none; color:white;\">🔼</button>
-                    <button onclick=\"moverCategoria(${i},1)\" style=\"background:none; border:none; color:white;\">🔽</button>
-                    <button onclick=\"editarCategoria(${i})\" style=\"background:none; border:none; color:white;\">✏️</button>
-                    <button onclick=\"borrarCat(${i})\" style=\"background:none; border:none; color:white;\">🗑️</button>
+                    <button onclick="moverCategoria(${i},-1)" style="background:none; border:none; color:white;">🔼</button>
+                    <button onclick="moverCategoria(${i},1)" style="background:none; border:none; color:white;">🔽</button>
+                    <button onclick="editarCategoria(${i})" style="background:none; border:none; color:white;">✏️</button>
+                    <button onclick="borrarCat(${i})" style="background:none; border:none; color:white;">🗑️</button>
                 </div></div>`).join(''); 
         }
         function seleccionarEmoji(e) { emojiSeleccionado = e; document.getElementById('btn-emoji-actual').innerText = e; cerrarVariedad(); }
+
         function cambiarPeriodo(p, btn) { 
-            periodoActual = p; 
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); 
+            periodoActual = p; document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); 
             document.getElementById('input-fecha-filtro').style.display = (p === 'dia') ? 'inline-block' : 'none'; 
             document.getElementById('visor-mes').style.display = (p === 'mes') ? 'block' : 'none'; 
             document.getElementById('visor-semana').style.display = (p === 'semana') ? 'block' : 'none'; 
@@ -423,11 +714,21 @@
         }
         function navegarSemana(n) { fRefSemana.setDate(fRefSemana.getDate() + n); actualizarInterfaz(); }
         function navegarAnio(n) { anioFiltro += n; actualizarInterfaz(); }
-        function abrirModalMes() { pushEstado(); const g = document.getElementById('grid-meses'); g.innerHTML = nombresMeses.map((m, i) => `<button onclick=\"mesFiltro=${i};actualizarInterfaz();cerrarModalesYModos();\" style=\"padding:10px\">${m}</button>`).join(''); document.getElementById('modal-mes').style.display = 'flex'; }
+        function abrirModalMes() { pushEstado(); const g = document.getElementById('grid-meses'); g.innerHTML = nombresMeses.map((m, i) => `<button onclick="mesFiltro=${i};actualizarInterfaz();cerrarModalesYModos();" style="padding:10px">${m}</button>`).join(''); document.getElementById('modal-mes').style.display = 'flex'; }
         function abrirModalSemana() { pushEstado(); document.getElementById('modal-semana').style.display = 'flex'; }
         function abrirModalAnio() { pushEstado(); document.getElementById('modal-anio').style.display = 'flex'; }
-        function getRangoSemana(f) { let d = new Date(f), day = d.getDay(), diff = d.getDate() - day + (day === 0 ? -6 : 1), ini = new Date(d.setDate(diff)); ini.setHours(0,0,0,0); let fin = new Date(ini); fin.setDate(ini.getDate() + 6); fin.setHours(23,59,59,999); return { inicio: ini, fin: fin, texto: `${ini.toLocaleDateString('es-PE',{day:'2-digit',month:'short'})} - ${fin.toLocaleDateString('es-PE',{day:'2-digit',month:'short'})}` }; }
-        function compartirWhatsApp() { let val = modoPrivado ? "••••" : `S/. ${saldoActualGlobal.toFixed(2)}`; let txt = `*RESUMEN GT PUREQ*\nSaldo Actual: ${val}\nFecha: ${new Date().toLocaleDateString()}\n--------------------------`; window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`, '_blank'); }
+        function getRangoSemana(f) { 
+            let d = new Date(f), day = d.getDay(), diff = d.getDate() - day + (day === 0 ? -6 : 1), ini = new Date(d.setDate(diff));
+            ini.setHours(0,0,0,0); let fin = new Date(ini); fin.setDate(ini.getDate() + 6); fin.setHours(23,59,59,999);
+            return { inicio: ini, fin: fin, texto: `${ini.toLocaleDateString('es-PE',{day:'2-digit',month:'short'})} - ${fin.toLocaleDateString('es-PE',{day:'2-digit',month:'short'})}` };
+        }
+        function compartirWhatsApp() { 
+            let val = modoPrivado ? "••••" : `S/. ${saldoActualGlobal.toFixed(2)}`;
+            let rKM = document.getElementById('res-sol-km').innerText;
+            let rHR = document.getElementById('res-sol-hr').innerText;
+            let txt = `🚕 *REPORTE GESTOR TAXI*\n💰 *BALANCE:* ${val}\n📈 *ING:* ${document.getElementById('txt-total-ing').innerText}\n📉 *GAS:* ${document.getElementById('txt-total-gas').innerText}\n\n📊 *RENDIMIENTO:*\n🛣️ *KM:* ${rKM}\n⏱️ *HR:* ${rHR}`; 
+            window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`, '_blank'); 
+        }
     </script>
 </body>
 </html>
