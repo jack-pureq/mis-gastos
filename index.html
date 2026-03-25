@@ -309,7 +309,8 @@
                     </div>
                     <div style="background: white; padding: 10px; border-radius: 10px; text-align: center; border: 1px solid #eee;">
                         <small style="color: #888;">S/. por Hora</small><br>
-                        <b id="res-sol-hr" style="color: var(--azul);">S/. 0.00</b>
+                        <b id="res-sol-hr" style="color: var(--azul);">S/. 0.00</b><br>
+                        <small id="res-rango-horas" style="color: #aaa; font-size: 10px;"></small>
                     </div>
                 </div>
             </div>
@@ -586,22 +587,44 @@
 
         function calcularRendimiento(totalIngresos, movimientosFiltrados) {
             let kmTotales = 0;
-            let minutosTotales = 0;
+            let fechas = [];
+
             movimientosFiltrados.forEach(m => {
                 if (m.tipo === 'ingreso') {
                     kmTotales += parseFloat(m.km) || 0;
-                    let tiempoStr = m.hrs || "0h 0m";
-                    let partes = tiempoStr.split(' ');
-                    let horas = parseInt(partes[0]) || 0;
-                    let minutos = parseInt(partes[1]) || 0;
-                    minutosTotales += (horas * 60) + minutos;
                 }
+                // Recopilar todas las fechas (ingresos y gastos) para el rango real del turno
+                if (m.fecha) fechas.push(new Date(m.fecha));
             });
+
+            // Tiempo real = desde el primer registro hasta el último
+            let horasDecimal = 0;
+            let txtHoras = '--';
+            if (fechas.length >= 2) {
+                fechas.sort((a, b) => a - b);
+                const primerViaje = fechas[0];
+                const ultimoViaje = fechas[fechas.length - 1];
+                const diffMs = ultimoViaje - primerViaje;
+                horasDecimal = diffMs / 3600000;
+                const hh = Math.floor(horasDecimal);
+                const mm = Math.round((horasDecimal - hh) * 60);
+                txtHoras = `${hh}h ${mm}m`;
+            } else if (fechas.length === 1) {
+                horasDecimal = 0;
+                txtHoras = '0h 0m';
+            }
+
             let solKm = kmTotales > 0 ? (totalIngresos / kmTotales) : 0;
-            let horasDecimal = minutosTotales / 60;
             let solHr = horasDecimal > 0 ? (totalIngresos / horasDecimal) : 0;
+
             document.getElementById('res-sol-km').innerText = `S/. ${solKm.toFixed(2)}`;
             document.getElementById('res-sol-hr').innerText = `S/. ${solHr.toFixed(2)}`;
+
+            // Mostrar el rango horario real si existe el elemento
+            const elRango = document.getElementById('res-rango-horas');
+            if (elRango) elRango.innerText = fechas.length >= 2
+                ? `⏱️ ${fechas[0].toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit',hour12:false})} → ${fechas[fechas.length-1].toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit',hour12:false})} (${txtHoras})`
+                : '';
         }
 
         function toggleSeguimiento() {
