@@ -204,6 +204,64 @@
             transition: width 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             background: var(--verde);
         }
+
+        /* ===== TEMA OSCURO ===== */
+        body.dark-mode { --gris: #1a1a2e; }
+        body.dark-mode .page { background: #1a1a2e; }
+        body.dark-mode .btn-perfil { background: #2d2d44; border-color: #444; color: #eee; }
+        body.dark-mode .cat-chip { background: #2d2d44; border-color: #444; color: #eee; }
+        body.dark-mode .cat-chip.activa { background: #1a3a5c; border-color: var(--azul); color: var(--azul); }
+        body.dark-mode .metodo-btn { background: #2d2d44; border-color: #444; color: #eee; }
+        body.dark-mode .metodo-btn.active { background: var(--azul); color: white; border-color: var(--azul); }
+        body.dark-mode .input-monto { background: #2d2d44; border-color: #444; color: #eee; }
+        body.dark-mode .btn-engranaje { background: #2d2d44; border-color: #444; color: #eee; box-shadow: 0 4px 0 #111; }
+        body.dark-mode .input-auto-visual { background: #2d2d44; }
+        body.dark-mode #saldo-principal { color: #eee; }
+        body.dark-mode .lbl-balance { color: #aaa; }
+        body.dark-mode #contenedor-meta { background: #2d2d44; }
+        body.dark-mode #page-reportes { background: #1a1a2e; color: #eee; }
+        body.dark-mode .nav-periodos { border-color: #444; }
+        body.dark-mode .tab-btn { color: #888; }
+        body.dark-mode .filtros-pago-reporte { background: #2d2d44; border-color: #444; }
+        body.dark-mode .btn-filtro-pago { background: #3a3a55; border-color: #555; color: #ccc; }
+        body.dark-mode .caja-grafico { background: #2d2d44; border-color: #444; }
+        body.dark-mode #resumen-turno-card { background: #2d2d44; border-color: #444; color: #eee; }
+        body.dark-mode #resumen-turno-card div { background: #3a3a55 !important; border-color: #555 !important; }
+        body.dark-mode .item-mov { border-bottom-color: #333; }
+        body.dark-mode .modal-content { }
+
+        /* Barra configuración */
+        .barra-config {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 8px;
+            padding: 15px 5px 5px 5px;
+        }
+        .btn-config-small {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 7px 12px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s;
+        }
+        body.dark-mode .btn-config-small {
+            background: #2d2d44;
+            border-color: #444;
+            color: #eee;
+        }
+        .btn-config-small.active-dark {
+            background: #2c3e50;
+            color: white;
+            border-color: #2c3e50;
+        }
+        /* ===== FIN TEMA OSCURO ===== */
         /* ===== FIN NUEVOS ESTILOS ===== */
     </style>
 </head>
@@ -216,7 +274,11 @@
 
     <div id="page-trabajo" class="page">
         <div id="contenedor-meta" onclick="abrirModalMeta()"><div id="progreso-meta"></div></div>
-        <div class="header-perfil"><button class="btn-perfil" onclick="irAPerfil(true)"> 👤 Perfil</button></div>
+        <div class="barra-config">
+            <button class="btn-config-small" id="btn-idioma" onclick="toggleIdioma()">🌐 <span id="lbl-idioma">EN</span></button>
+            <button class="btn-config-small" id="btn-tema" onclick="toggleTema()">🌙 <span id="lbl-tema">Dark</span></button>
+            <button class="btn-config-small" onclick="irAPerfil(true)">👤 <span data-i="perfil">Perfil</span></button>
+        </div>
         <div class="main-balance-container" onclick="togglePrivacidad()">
             <span id="saldo-principal">S/. 0.00</span>
             <span class="lbl-balance" id="lbl-status-balance">GESTOR TAXI JACK</span>
@@ -257,7 +319,7 @@
         <input type="file" id="input-qr1" accept="image/*" style="display:none;" onchange="subirQR(this, 'qr1')">
         <input type="file" id="input-qr2" accept="image/*" style="display:none;" onchange="subirQR(this, 'qr2')">
 
-        <div style="text-align:center; margin-top:10px;"><small onclick="irAReportes(true)" style="color:var(--azul); font-weight:bold; cursor:pointer;"> 📂 ABRIR REPORTES</small></div>
+        <div style="text-align:center; margin-top:10px;"><small onclick="irAReportes(true)" style="color:var(--azul); font-weight:bold; cursor:pointer;">📂 ABRIR REPORTES</small></div>
     </div>
 
     <div id="modal-visor-qr" class="modal" onclick="this.style.display='none'">
@@ -407,6 +469,96 @@
         const nombresMeses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
         const listaEmojis = ["💰","💵","💸","💳","🪙","💹","📈","📉","🏦","🏧","💎","⚖️","🧾","🛍️","🛒","🏷️","🎁","💼","📁","📂","📊","📋","📌","📍","🔍","⚙️","🛠️","🔧","⚒️","🔨","🪛","🧰","🏠","🏢","🏭","🚗","🚕","🚙","🚌","🚎","🏎️","🚓","🚑","🚒","🚐","🚚","🚛","🚜","🛵","🚲","⛽","🚨","🚥","🚦","🚧","👨‍✈️","👷","👨‍🔧","👮","🍔","🍟","🍕","🥪","🌮","☕","🥤","🍺","🍷","🍫","🦊","🐶","🐱","🐹","✨","⭐","🌟","⚡","❄️","🔥","💧","✅","❌","⚠️"];
 
+        // ===== IDIOMA Y TEMA =====
+        let idiomaActual = localStorage.getItem('gt_idioma') || 'es';
+        let temaOscuro = localStorage.getItem('gt_tema') === 'dark';
+
+        const traducciones = {
+            es: {
+                perfil: 'Perfil', iniciarTurno: '🚀 INICIAR TURNO', finalizarTurno: '🛑 FINALIZAR',
+                ingreso: '➕ INGRESO', gasto: '➖ GASTO', efectivo: '💵 EFECTIVO',
+                tarjeta: '💳 TARJETA', abrirReportes: '📂 ABRIR REPORTES',
+                dia: 'Día', semana: 'Semana', mes: 'Mes', anio: 'Año',
+                todos: 'TODOS', whatsapp: '📲 WHATSAPP',
+                solKm: 'S/. por KM', solHr: 'S/. por Hora',
+                rendimiento: '📊 RENDIMIENTO DEL PERIODO',
+                dark: 'Dark', light: 'Light', lblBalance: 'GESTOR TAXI JACK', privado: '🔒 MODO PRIVADO'
+            },
+            en: {
+                perfil: 'Profile', iniciarTurno: '🚀 START SHIFT', finalizarTurno: '🛑 END SHIFT',
+                ingreso: '➕ INCOME', gasto: '➖ EXPENSE', efectivo: '💵 CASH',
+                tarjeta: '💳 CARD', abrirReportes: '📂 OPEN REPORTS',
+                dia: 'Day', semana: 'Week', mes: 'Month', anio: 'Year',
+                todos: 'ALL', whatsapp: '📲 WHATSAPP',
+                solKm: 'S/. per KM', solHr: 'S/. per Hour',
+                rendimiento: '📊 PERIOD PERFORMANCE',
+                dark: 'Dark', light: 'Light', lblBalance: 'TAXI JACK MANAGER', privado: '🔒 PRIVATE MODE'
+            }
+        };
+
+        function toggleIdioma() {
+            idiomaActual = idiomaActual === 'es' ? 'en' : 'es';
+            localStorage.setItem('gt_idioma', idiomaActual);
+            aplicarIdioma();
+        }
+
+        function aplicarIdioma() {
+            const t = traducciones[idiomaActual];
+            document.getElementById('lbl-idioma').innerText = idiomaActual === 'es' ? 'EN' : 'ES';
+            // Botón GPS
+            const btnGps = document.getElementById('btn-gps');
+            if (btnGps) btnGps.innerText = activo ? t.finalizarTurno : t.iniciarTurno;
+            // Botones principales
+            const btns = document.querySelectorAll('[data-i]');
+            btns.forEach(b => { const k = b.getAttribute('data-i'); if(t[k]) b.innerText = t[k]; });
+            // Métodos de pago
+            const metodosBtns = document.querySelectorAll('.metodo-btn');
+            if(metodosBtns[0]) metodosBtns[0].innerHTML = t.efectivo;
+            if(metodosBtns[3]) metodosBtns[3].innerHTML = t.tarjeta;
+            // Tabs de periodo
+            const tabs = document.querySelectorAll('.tab-btn');
+            const periodos = [t.dia, t.semana, t.mes, t.anio];
+            tabs.forEach((tab, i) => { if(periodos[i]) tab.innerText = periodos[i]; });
+            // Filtro todos
+            const fTodos = document.getElementById('f-todos');
+            if(fTodos) fTodos.innerText = t.todos;
+            // WhatsApp btn
+            const waBtn = document.querySelector('[onclick="compartirWhatsApp()"]');
+            if(waBtn) waBtn.innerText = t.whatsapp;
+            // Rendimiento card
+            const rendCard = document.querySelector('#resumen-turno-card h4');
+            if(rendCard) rendCard.innerText = t.rendimiento;
+            const lblKm = document.querySelector('#res-sol-km')?.previousElementSibling;
+            const lblHr = document.querySelector('#res-sol-hr')?.previousElementSibling;
+            if(lblKm) lblKm.innerText = t.solKm;
+            if(lblHr) lblHr.innerText = t.solHr;
+            // Reportes link
+            const rLink = document.querySelector('[onclick="irAReportes(true)"]');
+            if(rLink) rLink.innerText = t.abrirReportes;
+            // Balance label
+            if(!modoPrivado) document.getElementById('lbl-status-balance').innerText = t.lblBalance;
+        }
+
+        function toggleTema() {
+            temaOscuro = !temaOscuro;
+            localStorage.setItem('gt_tema', temaOscuro ? 'dark' : 'light');
+            aplicarTema();
+        }
+
+        function aplicarTema() {
+            const t = traducciones[idiomaActual];
+            if (temaOscuro) {
+                document.body.classList.add('dark-mode');
+                document.getElementById('lbl-tema').innerText = t.light;
+                document.getElementById('btn-tema').classList.add('active-dark');
+            } else {
+                document.body.classList.remove('dark-mode');
+                document.getElementById('lbl-tema').innerText = t.dark;
+                document.getElementById('btn-tema').classList.remove('active-dark');
+            }
+        }
+        // ===== FIN IDIOMA Y TEMA =====
+
         window.onpopstate = function() { cerrarModalesYModos(); document.getElementById('page-reportes').classList.add('hidden'); document.getElementById('page-perfil').classList.add('hidden'); };
         function pushEstado() { history.pushState({view: 'subpage'}, ""); }
 
@@ -416,6 +568,8 @@
             const grid = document.getElementById('grid-variedad');
             grid.innerHTML = listaEmojis.map(e => `<span class="emoji-option" onclick="seleccionarEmoji('${e}')">${e}</span>`).join('');
             cargarDatosVehiculo();
+            aplicarTema();
+            aplicarIdioma();
             setTimeout(() => { document.getElementById('splash').style.opacity = '0'; setTimeout(() => document.getElementById('splash').style.display = 'none', 800); }, 3000);
         }
 
