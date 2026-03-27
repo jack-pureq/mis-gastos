@@ -781,30 +781,107 @@
                 : '';
         }
 
+        // ===== GPS MEJORADO =====
+        let velocidadActual = 0;
+        let ultimaPosValida = null;
+        let timerHoras = null;
+        let bufferPosiciones = []; // suavizado de posiciones
+
+        function haversine(lat1, lon1, lat2, lon2) {
+            const R = 6371;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLon/2)**2;
+            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        }
+
+        function posicionPromediada(buffer) {
+            // Promedia las últimas N posiciones para suavizar el ruido del GPS
+            const n = buffer.length;
+            return {
+                lat: buffer.reduce((s, p) => s + p.lat, 0) / n,
+                lon: buffer.reduce((s, p) => s + p.lon, 0) / n
+            };
+        }
+
         function toggleSeguimiento() {
             const btn = document.getElementById('btn-gps'), elKm = document.getElementById('km'), elHrs = document.getElementById('hrs');
             if (!activo) {
+                // Reiniciar todo
                 distTotal = 0; tInicio = new Date(); latAnt = null; lonAnt = null;
+                bufferPosiciones = []; ultimaPosValida = null; velocidadActual = 0;
                 elKm.value = "0.00 KM"; elHrs.value = "0h 0m";
-                watchId = navigator.geolocation.watchPosition(pos => {
-                    if (pos.coords.accuracy > 30) return;
-                    if (latAnt && lonAnt) {
-                        const R = 6371, dLat = (pos.coords.latitude - latAnt) * Math.PI / 180, dLon = (pos.coords.longitude - lonAnt) * Math.PI / 180;
-                        const a = Math.sin(dLat/2)**2 + Math.cos(latAnt*Math.PI/180)*Math.cos(pos.coords.latitude*Math.PI/180)*Math.sin(dLon/2)**2;
-                        const distSalto = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-                        if (distSalto > 0.005) { distTotal += distSalto; elKm.value = distTotal.toFixed(2) + " KM"; }
-                    }
-                    latAnt = pos.coords.latitude; lonAnt = pos.coords.longitude;
-                    let ms = new Date() - tInicio, hh = Math.floor(ms / 3600000), mm = Math.floor((ms % 3600000) / 60000);
+
+                // Timer independiente para las horas (no depende del GPS)
+                timerHoras = setInterval(() => {
+                    let ms = new Date() - tInicio;
+                    let hh = Math.floor(ms / 3600000), mm = Math.floor((ms % 3600000) / 60000);
                     elHrs.value = `${hh}h ${mm}m`;
-                }, null, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
-                activo = true; btn.innerText = "🛑 FINALIZAR"; btn.style.background = "#7f8c8d";
+                }, 10000); // actualiza cada 10 seg
+
+                watchId = navigator.geolocation.watchPosition(pos => {
+                    const { latitude: lat, longitude: lon, accuracy, speed } = pos.coords;
+
+                    // Mejora 1: aceptar hasta 50m de precisión (antes 30m era muy restrictivo)
+                    if (accuracy > 50) return;
+
+                    // Mejora 2: velocidad del GPS para detectar si estamos en movimiento
+                    // speed viene en m/s, convertir a km/h
+                    velocidadActual = speed != null ? speed * 3.6 : 0;
+
+                    // Mejora 3: buffer de suavizado — guardar últimas 3 posiciones
+                    bufferPosiciones.push({ lat, lon });
+                    if (bufferPosiciones.length > 3) bufferPosiciones.shift();
+
+                    const posActual = bufferPosiciones.length >= 2
+                        ? posicionPromediada(bufferPosiciones)
+                        : { lat, lon };
+
+                    if (latAnt !== null && lonAnt !== null) {
+                        const distSalto = haversine(latAnt, lonAnt, posActual.lat, posActual.lon);
+
+                        // Mejora 4: filtros inteligentes
+                        const enMovimiento = velocidadActual > 2 || distSalto > 0.003; // >2 km/h o >3m
+                        const saltoRazonable = distSalto < 0.5; // ignorar saltos >500m (teleport GPS)
+                        const distMinima = distSalto > 0.002; // ignorar drift <2m parado
+
+                        if (enMovimiento && saltoRazonable && distMinima) {
+                            distTotal += distSalto;
+                            elKm.value = distTotal.toFixed(2) + " KM";
+                            ultimaPosValida = { lat: posActual.lat, lon: posActual.lon };
+                        }
+                    }
+
+                    latAnt = posActual.lat;
+                    lonAnt = posActual.lon;
+
+                    // Actualizar horas también desde GPS como respaldo
+                    let ms = new Date() - tInicio;
+                    let hh = Math.floor(ms / 3600000), mm = Math.floor((ms % 3600000) / 60000);
+                    elHrs.value = `${hh}h ${mm}m`;
+
+                }, err => {
+                    console.warn("GPS error:", err.message);
+                }, {
+                    enableHighAccuracy: true,  // máxima precisión
+                    timeout: 5000,             // reintentar cada 5s si falla
+                    maximumAge: 0              // nunca usar posición cacheada
+                });
+
+                activo = true;
+                btn.innerText = "🛑 FINALIZAR";
+                btn.style.background = "#7f8c8d";
+
             } else {
-                navigator.geolocation.clearWatch(watchId); activo = false;
-                btn.innerText = " 🚀 INICIAR TURNO"; btn.style.background = "var(--naranja)";
+                navigator.geolocation.clearWatch(watchId);
+                if (timerHoras) clearInterval(timerHoras);
+                activo = false;
+                btn.innerText = " 🚀 INICIAR TURNO";
+                btn.style.background = "var(--naranja)";
                 document.getElementById('monto').focus();
             }
         }
+        // ===== FIN GPS MEJORADO =====
 
         function verQRDirecto(clave) {
             const data = localStorage.getItem(clave);
