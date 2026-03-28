@@ -747,25 +747,37 @@
                 if (m.tipo === 'ingreso') {
                     kmTotales += parseFloat(m.km) || 0;
                 }
-                // Recopilar todas las fechas (ingresos y gastos) para el rango real del turno
                 if (m.fecha) fechas.push(new Date(m.fecha));
             });
 
-            // Tiempo real = desde el primer registro hasta el último
             let horasDecimal = 0;
             let txtHoras = '--';
-            if (fechas.length >= 2) {
+            let horaInicio = null;
+            let horaFin = null;
+
+            if (fechas.length >= 1) {
                 fechas.sort((a, b) => a - b);
-                const primerViaje = fechas[0];
-                const ultimoViaje = fechas[fechas.length - 1];
-                const diffMs = ultimoViaje - primerViaje;
-                horasDecimal = diffMs / 3600000;
-                const hh = Math.floor(horasDecimal);
-                const mm = Math.round((horasDecimal - hh) * 60);
-                txtHoras = `${hh}h ${mm}m`;
-            } else if (fechas.length === 1) {
-                horasDecimal = 0;
-                txtHoras = '0h 0m';
+                horaFin = fechas[fechas.length - 1];
+
+                // Si el turno está activo y es el día de hoy, usar horaInicioTurno
+                const fFiltro = document.getElementById('input-fecha-filtro').value;
+                const esHoy = fFiltro === new Date().toLocaleDateString('en-CA');
+                const turnoGuardado = localStorage.getItem('gt_inicio_turno');
+
+                if (periodoActual === 'dia' && esHoy && turnoGuardado) {
+                    horaInicio = new Date(turnoGuardado);
+                } else {
+                    // Para otros periodos o días anteriores: usar el primer registro
+                    horaInicio = fechas[0];
+                }
+
+                const diffMs = horaFin - horaInicio;
+                if (diffMs > 0) {
+                    horasDecimal = diffMs / 3600000;
+                    const hh = Math.floor(horasDecimal);
+                    const mm = Math.round((horasDecimal - hh) * 60);
+                    txtHoras = `${hh}h ${mm}m`;
+                }
             }
 
             let solKm = kmTotales > 0 ? (totalIngresos / kmTotales) : 0;
@@ -774,14 +786,18 @@
             document.getElementById('res-sol-km').innerText = `S/. ${solKm.toFixed(2)}`;
             document.getElementById('res-sol-hr').innerText = `S/. ${solHr.toFixed(2)}`;
 
-            // Mostrar el rango horario real si existe el elemento
+            // Mostrar rango horario
             const elRango = document.getElementById('res-rango-horas');
-            if (elRango) elRango.innerText = fechas.length >= 2
-                ? `⏱️ ${fechas[0].toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit',hour12:false})} → ${fechas[fechas.length-1].toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit',hour12:false})} (${txtHoras})`
-                : '';
+            if (elRango && horaInicio && horaFin) {
+                const fmt = d => d.toLocaleTimeString('es-PE', {hour:'2-digit', minute:'2-digit', hour12:false});
+                elRango.innerText = `⏱️ ${fmt(horaInicio)} → ${fmt(horaFin)} (${txtHoras})`;
+            } else if (elRango) {
+                elRango.innerText = '';
+            }
         }
 
         // ===== GPS MEJORADO =====
+        let horaInicioTurno = null;
         let velocidadActual = 0;
         let ultimaPosValida = null;
         let timerHoras = null;
@@ -811,6 +827,10 @@
                 distTotal = 0; tInicio = new Date(); latAnt = null; lonAnt = null;
                 bufferPosiciones = []; ultimaPosValida = null; velocidadActual = 0;
                 elKm.value = "0.00 KM"; elHrs.value = "0h 0m";
+                // Guardar hora de inicio del turno para S/. por hora
+                // Guardar hora de inicio del turno
+                horaInicioTurno = new Date();
+                localStorage.setItem('gt_inicio_turno', horaInicioTurno.toISOString());
 
                 // Timer independiente para las horas (no depende del GPS)
                 timerHoras = setInterval(() => {
@@ -876,6 +896,9 @@
                 navigator.geolocation.clearWatch(watchId);
                 if (timerHoras) clearInterval(timerHoras);
                 activo = false;
+                // Limpiar hora de inicio al finalizar turno
+                horaInicioTurno = null;
+                localStorage.removeItem('gt_inicio_turno');
                 btn.innerText = " 🚀 INICIAR TURNO";
                 btn.style.background = "var(--naranja)";
                 document.getElementById('monto').focus();
