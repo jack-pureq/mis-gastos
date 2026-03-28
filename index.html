@@ -796,12 +796,15 @@
             }
         }
 
-        // ===== GPS MEJORADO =====
+        // ===== GPS MEJORADO + WAKE LOCK + RECONEXIÓN =====
         let horaInicioTurno = null;
         let velocidadActual = 0;
         let ultimaPosValida = null;
         let timerHoras = null;
-        let bufferPosiciones = []; // suavizado de posiciones
+        let bufferPosiciones = [];
+        let wakeLock = null;
+        let timerReconexion = null;
+        let kmGuardadoAntesDeBloqueo = 0;
 
         function haversine(lat1, lon1, lat2, lon2) {
             const R = 6371;
@@ -812,13 +815,104 @@
         }
 
         function posicionPromediada(buffer) {
-            // Promedia las últimas N posiciones para suavizar el ruido del GPS
             const n = buffer.length;
             return {
                 lat: buffer.reduce((s, p) => s + p.lat, 0) / n,
                 lon: buffer.reduce((s, p) => s + p.lon, 0) / n
             };
         }
+
+        // ---- Wake Lock: evita que la pantalla se apague ----
+        async function activarWakeLock() {
+            if ('wakeLock' in navigator) {
+                try {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    console.log('Wake Lock activado ✅');
+                } catch(e) {
+                    console.warn('Wake Lock no disponible:', e.message);
+                }
+            }
+        }
+        async function liberarWakeLock() {
+            if (wakeLock) { await wakeLock.release(); wakeLock = null; }
+        }
+
+        // ---- Reconectar GPS al volver a la app ----
+        function iniciarWatchGPS() {
+            if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+            bufferPosiciones = [];
+            latAnt = null; lonAnt = null; // reset de referencia para no sumar salto falso
+
+            watchId = navigator.geolocation.watchPosition(pos => {
+                const { latitude: lat, longitude: lon, accuracy, speed } = pos.coords;
+                if (accuracy > 50) return;
+
+                velocidadActual = speed != null ? speed * 3.6 : 0;
+
+                bufferPosiciones.push({ lat, lon });
+                if (bufferPosiciones.length > 3) bufferPosiciones.shift();
+
+                const posActual = bufferPosiciones.length >= 2
+                    ? posicionPromediada(bufferPosiciones)
+                    : { lat, lon };
+
+                if (latAnt !== null && lonAnt !== null) {
+                    const distSalto = haversine(latAnt, lonAnt, posActual.lat, posActual.lon);
+                    const enMovimiento = velocidadActual > 2 || distSalto > 0.003;
+                    const saltoRazonable = distSalto < 0.5;
+                    const distMinima = distSalto > 0.002;
+
+                    if (enMovimiento && saltoRazonable && distMinima) {
+                        distTotal += distSalto;
+                        document.getElementById('km').value = distTotal.toFixed(2) + " KM";
+                        // Guardar en localStorage por si la app se cierra
+                        localStorage.setItem('gt_dist_turno', distTotal.toFixed(4));
+                        ultimaPosValida = { lat: posActual.lat, lon: posActual.lon };
+                    }
+                }
+
+                latAnt = posActual.lat;
+                lonAnt = posActual.lon;
+
+                let ms = new Date() - tInicio;
+                let hh = Math.floor(ms / 3600000), mm = Math.floor((ms % 3600000) / 60000);
+                document.getElementById('hrs').value = `${hh}h ${mm}m`;
+
+            }, err => {
+                console.warn("GPS error:", err.message);
+                // Si falla, intentar reconectar en 3 segundos
+                if (activo) setTimeout(iniciarWatchGPS, 3000);
+            }, {
+                enableHighAccuracy: true,
+                timeout: 5000,
+                maximumAge: 0
+            });
+        }
+
+        // ---- Detectar cuando el usuario vuelve a la app ----
+        document.addEventListener('visibilitychange', async () => {
+            if (!activo) return;
+
+            if (document.visibilityState === 'hidden') {
+                // App en segundo plano: guardar estado
+                localStorage.setItem('gt_dist_turno', distTotal.toFixed(4));
+                localStorage.setItem('gt_tinicio', tInicio.toISOString());
+
+            } else {
+                // App vuelve al frente: reconectar GPS
+                console.log('App vuelve al frente — reconectando GPS...');
+
+                // Recuperar km acumulados por si se perdieron
+                const distGuardada = parseFloat(localStorage.getItem('gt_dist_turno')) || 0;
+                if (distGuardada > distTotal) distTotal = distGuardada;
+
+                // Reconectar GPS inmediatamente
+                iniciarWatchGPS();
+
+                // Reactivar Wake Lock si se liberó
+                if (wakeLock === null) await activarWakeLock();
+            }
+        });
 
         function toggleSeguimiento() {
             const btn = document.getElementById('btn-gps'), elKm = document.getElementById('km'), elHrs = document.getElementById('hrs');
@@ -827,66 +921,25 @@
                 distTotal = 0; tInicio = new Date(); latAnt = null; lonAnt = null;
                 bufferPosiciones = []; ultimaPosValida = null; velocidadActual = 0;
                 elKm.value = "0.00 KM"; elHrs.value = "0h 0m";
-                // Guardar hora de inicio del turno para S/. por hora
+                localStorage.setItem('gt_dist_turno', '0');
+                localStorage.setItem('gt_tinicio', tInicio.toISOString());
+
                 // Guardar hora de inicio del turno
                 horaInicioTurno = new Date();
                 localStorage.setItem('gt_inicio_turno', horaInicioTurno.toISOString());
 
-                // Timer independiente para las horas (no depende del GPS)
+                // Timer independiente para las horas
                 timerHoras = setInterval(() => {
                     let ms = new Date() - tInicio;
                     let hh = Math.floor(ms / 3600000), mm = Math.floor((ms % 3600000) / 60000);
                     elHrs.value = `${hh}h ${mm}m`;
-                }, 10000); // actualiza cada 10 seg
+                }, 10000);
 
-                watchId = navigator.geolocation.watchPosition(pos => {
-                    const { latitude: lat, longitude: lon, accuracy, speed } = pos.coords;
+                // Activar Wake Lock para mantener pantalla activa
+                activarWakeLock();
 
-                    // Mejora 1: aceptar hasta 50m de precisión (antes 30m era muy restrictivo)
-                    if (accuracy > 50) return;
-
-                    // Mejora 2: velocidad del GPS para detectar si estamos en movimiento
-                    // speed viene en m/s, convertir a km/h
-                    velocidadActual = speed != null ? speed * 3.6 : 0;
-
-                    // Mejora 3: buffer de suavizado — guardar últimas 3 posiciones
-                    bufferPosiciones.push({ lat, lon });
-                    if (bufferPosiciones.length > 3) bufferPosiciones.shift();
-
-                    const posActual = bufferPosiciones.length >= 2
-                        ? posicionPromediada(bufferPosiciones)
-                        : { lat, lon };
-
-                    if (latAnt !== null && lonAnt !== null) {
-                        const distSalto = haversine(latAnt, lonAnt, posActual.lat, posActual.lon);
-
-                        // Mejora 4: filtros inteligentes
-                        const enMovimiento = velocidadActual > 2 || distSalto > 0.003; // >2 km/h o >3m
-                        const saltoRazonable = distSalto < 0.5; // ignorar saltos >500m (teleport GPS)
-                        const distMinima = distSalto > 0.002; // ignorar drift <2m parado
-
-                        if (enMovimiento && saltoRazonable && distMinima) {
-                            distTotal += distSalto;
-                            elKm.value = distTotal.toFixed(2) + " KM";
-                            ultimaPosValida = { lat: posActual.lat, lon: posActual.lon };
-                        }
-                    }
-
-                    latAnt = posActual.lat;
-                    lonAnt = posActual.lon;
-
-                    // Actualizar horas también desde GPS como respaldo
-                    let ms = new Date() - tInicio;
-                    let hh = Math.floor(ms / 3600000), mm = Math.floor((ms % 3600000) / 60000);
-                    elHrs.value = `${hh}h ${mm}m`;
-
-                }, err => {
-                    console.warn("GPS error:", err.message);
-                }, {
-                    enableHighAccuracy: true,  // máxima precisión
-                    timeout: 5000,             // reintentar cada 5s si falla
-                    maximumAge: 0              // nunca usar posición cacheada
-                });
+                // Iniciar GPS
+                iniciarWatchGPS();
 
                 activo = true;
                 btn.innerText = "🛑 FINALIZAR";
@@ -895,8 +948,11 @@
             } else {
                 navigator.geolocation.clearWatch(watchId);
                 if (timerHoras) clearInterval(timerHoras);
+                liberarWakeLock();
                 activo = false;
-                // Limpiar hora de inicio al finalizar turno
+                watchId = null;
+                localStorage.removeItem('gt_dist_turno');
+                localStorage.removeItem('gt_tinicio');
                 horaInicioTurno = null;
                 localStorage.removeItem('gt_inicio_turno');
                 btn.innerText = " 🚀 INICIAR TURNO";
