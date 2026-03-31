@@ -894,22 +894,53 @@
             if (!activo) return;
 
             if (document.visibilityState === 'hidden') {
-                // App en segundo plano: guardar estado
+                // Pantalla apagada: guardar estado completo
                 localStorage.setItem('gt_dist_turno', distTotal.toFixed(4));
                 localStorage.setItem('gt_tinicio', tInicio.toISOString());
+                localStorage.setItem('gt_oculto_desde', new Date().toISOString());
+                localStorage.setItem('gt_ultima_lat', latAnt || '');
+                localStorage.setItem('gt_ultima_lon', lonAnt || '');
 
             } else {
-                // App vuelve al frente: reconectar GPS
-                console.log('App vuelve al frente — reconectando GPS...');
+                // Pantalla encendida: calcular tiempo perdido y compensar
+                const ocultoDesde = localStorage.getItem('gt_oculto_desde');
+                const tiempoSuspendido = ocultoDesde ? (new Date() - new Date(ocultoDesde)) : 0;
 
-                // Recuperar km acumulados por si se perdieron
+                // Recuperar km guardados antes de apagar pantalla
                 const distGuardada = parseFloat(localStorage.getItem('gt_dist_turno')) || 0;
                 if (distGuardada > distTotal) distTotal = distGuardada;
 
-                // Reconectar GPS inmediatamente
-                iniciarWatchGPS();
+                // Si estuvo suspendido más de 5 segundos, intentar estimar km perdidos
+                if (tiempoSuspendido > 5000) {
+                    const latAnterior = parseFloat(localStorage.getItem('gt_ultima_lat')) || null;
+                    const lonAnterior = parseFloat(localStorage.getItem('gt_ultima_lon')) || null;
 
-                // Reactivar Wake Lock si se liberó
+                    // Pedir posición actual para calcular distancia recta durante suspensión
+                    navigator.geolocation.getCurrentPosition(pos => {
+                        if (latAnterior && lonAnterior && pos.coords.accuracy <= 80) {
+                            const distRecta = haversine(latAnterior, lonAnterior, pos.coords.latitude, pos.coords.longitude);
+                            // Solo sumar si la distancia es razonable (no más de 50km en el tiempo suspendido)
+                            const maxPosible = (tiempoSuspendido / 3600000) * 120; // 120 km/h máx
+                            if (distRecta > 0.05 && distRecta < maxPosible) {
+                                distTotal += distRecta;
+                                localStorage.setItem('gt_dist_turno', distTotal.toFixed(4));
+                                document.getElementById('km').value = distTotal.toFixed(2) + " KM";
+                                console.log(`Distancia estimada durante suspensión: ${distRecta.toFixed(2)} km`);
+                            }
+                        }
+                        // Reconectar GPS normal después de obtener posición actual
+                        iniciarWatchGPS();
+                    }, () => {
+                        iniciarWatchGPS();
+                    }, { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 });
+
+                } else {
+                    iniciarWatchGPS();
+                }
+
+                localStorage.removeItem('gt_oculto_desde');
+
+                // Reactivar Wake Lock
                 if (wakeLock === null) await activarWakeLock();
             }
         });
